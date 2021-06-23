@@ -14,6 +14,8 @@ router.post('/login',userController.login_post);
 
 router.get('/logout',userController.logout_get);
 
+router.get('/verify/:id',userController.verify_acct);
+
 
 
 module.exports= router;

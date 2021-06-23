@@ -52,9 +52,40 @@ const handleErrors=(err)=>{
 const maxAge = 3*24*60*60;
 //JWT
 const createToken =(id)=>{
-    return jwt.sign({id},'net ninja secret',{
+    return jwt.sign({id},utils.service.secret,{
         expiresIn: maxAge
     });
+}
+
+//decode JWT
+const decode_JWT= (code)=>{
+
+    const token = code;
+    //check token
+    if(token){
+        let back = {_id:""};
+
+        try{
+            jwt.verify(token,utils.service.secret,(err,decodedToken)=>{
+            if(err){
+                throw err;
+            }
+            else{
+               
+                back._id=decodedToken.id;
+            }
+            });
+
+            return back;
+        }
+        catch(err){
+            throw err;
+        }
+
+        }
+        
+        
+   
 }
 
 //signup page
@@ -78,15 +109,18 @@ var signup_post = async (req,res)=>{
             User.findByIdAndUpdate({_id:user._id},{key})
             .then(()=>{
 
-                 let html = `<a href='localhost/user/verify/${key}' style='
+                 let html = `<a href='http://127.0.0.1:4000/user/verify/${key}' style='
             background-color:#000;
             color:#fff;
-            border-radius:5px;
-            '>Please verify your Account</a>`;
+            border-radius:2px;
+            '>Please verify your Account</a>
+            
+            `;
             
             let mail = {
             "receiver":email,
             "subject":"Verify User Account",
+            "text":"Account Verification",
             "html":html
         }
 
@@ -142,6 +176,32 @@ var logout_get = async (req,res)=>{
     res.redirect('/');
 }
 
+var verify_acct= async (req,res)=>{
+  
+let JWT_back = await decode_JWT(req.params.id);
+
+if(JWT_back){
+    let user = await User.findOne({_id:JWT_back._id});
+
+    if(user){
+        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})
+        
+        .then(()=>{
+        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})
+        res.send('User successfully Activated');
+    }).catch((err)=>{
+        res.send('User was not activated');
+        throw err;
+    });
+    }
+    else{
+        res.send('User Not found');
+    }
+    
+}
+
+}
+
 
 
 
@@ -153,6 +213,7 @@ module.exports={
     signup_post,
     login_get,
     login_post,
-    logout_get
+    logout_get,
+    verify_acct
 
 }

@@ -13,9 +13,11 @@ const app = express();
 
 
 //sets
+app
 app.set('view engine','ejs');
 
 //uses
+app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(express.json());
@@ -45,7 +47,7 @@ app.on('ready',()=>{
 
 
 //routes
-app.use(user);
+app.use('/user',user);
 app.get('/',(req,res)=>{
     res.render('index');
 })

@@ -3,11 +3,17 @@ const myMail = {"mail":"mancuniamoe@gmail.com","password":"moeis1995"};
 module.exports.mailer=(mail)=>{
 
    var transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    // secureConnection: false, // TLS requires secureConnection to be false
     auth: {
       user: myMail.mail,
       pass: myMail.password
-    }
+    },
+    tls: {
+      ciphers:'SSLv3'
+  }
   });
   
   var mailOptions = {
@@ -32,7 +38,7 @@ module.exports.mailer=(mail)=>{
 
 module.exports.service={
     "port":4000,
-    "host":"",
+    "host":"127.0.0.1",
     "DB":"mongodb://localhost:27017/Ananse_fie",
     "secret":"symbiosis"
 }
