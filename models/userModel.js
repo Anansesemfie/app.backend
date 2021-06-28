@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean, 
         default: false
       },
+      dp:{
+        type:String,
+        default:'me.jpg',
+      },
       key:{
           type:String,
           require:false

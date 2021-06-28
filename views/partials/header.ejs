@@ -33,13 +33,13 @@
             <% if(user){ %>
           
             <a class="nav-link dropdown-toggle user_nav" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <div class="chip"><img alt="username" src="images/me.jpg" ></div></a>
+                <div class="chip"><img alt="username" src="images/<%=user.dp%>" ></div></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a href="user/ <%= user._id %>" class="dropdown-item">Profile</a>
-                    <a class="dropdown-item">Settings</a>
-                    <a class="dropdown-item">Events<span class="badge badge-primary">4</span></a>
-                    <a class="dropdown-item">Logout</a>
-                    <a class="dropdown-item">Signin/Signup</a>
+                    <button href="user/profile" class="dropdown-item">Profile</button>
+                    <!-- <a class="dropdown-item">Settings</a>
+                    <a class="dropdown-item">Events<span class="badge badge-primary">4</span></a> -->
+                    <a href="/user/logout" class="dropdown-item">Logout</a>
+                    
                 </div>
                    <% }%>
 

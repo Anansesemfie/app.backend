@@ -73,6 +73,13 @@ body{
      
   }
 
+  .error{
+    color: #ff0099;
+    margin: 10px 2px;
+    font-size: 0.8em;
+    font-weight: bold;
+  }
+
   .cat{
     
     border-radius: 3px;
@@ -145,7 +152,7 @@ body{
   /* toggle */
 
   .headerColor{
-    background-image: linear-gradient(90deg, rgb(10, 108, 153), rgb(10, 86, 199));
+    background-image: linear-gradient(90deg,rgb(134, 85, 20),rgb(30, 42, 112), rgb(10, 108, 153), rgb(43, 105, 199));
   }
 
   .title{

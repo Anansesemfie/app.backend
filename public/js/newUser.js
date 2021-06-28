@@ -31,14 +31,56 @@ loginBtn.on('click',()=>{
     switch (loginBtn.text()) {
     case 'Login':
         // login
-        alert(`user name:${form.email.value} and password:${form.password.value} `);
+        // alert(`user name:${form.email.value} and password:${form.password.value} `);
 
-        
+        form.addEventListener('submit', async(e)=>{
+            e.preventDefault();
+    
+            //reset errors
+            email_err.textContent = '';
+            password_err.textContent = '';
+            
+    
+            //get values
+            let email = form.email.value;
+            let password = form.password.value;
+    
+            // console.log(email,password);
+            try{
+                const result = await fetch('/user/login',{
+                    method:'POST',
+                    body:JSON.stringify({email,password}),
+                    headers:{'Content-type':'application/json'}
+                });
+    
+                const data = await result.json();
+    
+                console.log(data);
+                if(data.errors){
+                    email_err.textContent = data.errors.email;
+                    password_err.textContent=data.errors.password;
+                    status_err.innerHTML=data.errors.status;
+                    
+    
+    
+                }
+                if(data.user){
+                    location.assign('/');
+                }
+    
+            }
+            catch(err){
+                console.log(err);
+            }
+    
+    
+        });
         
         break;
+
     case 'SignUp':
         // signUp
-        alert(`user name:${form.email.value},usrname:${form.userName.value} and password:${form.password.value} `);
+        // alert(`user name:${form.email.value},usrname:${form.userName.value} and password:${form.password.value} `);
 
         form.addEventListener('submit', async(e)=>{
             e.preventDefault();

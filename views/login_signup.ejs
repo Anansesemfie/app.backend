@@ -6,7 +6,7 @@
             width: 100%;
             height: 100%;
             background-color: black; /* fallback color */
-            background-image: url("/images/user_fire.jpg");
+            background-image: linear-gradient(90deg,rgb(163, 57, 7),rgb(168, 94, 10), rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
             background-position: center;
             background-size: cover;
 
@@ -64,26 +64,29 @@
                   
                   
                     <div class=" form-floating mb-3">
+                        <div class="email error"></div>
                       <input type="email" name="email" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
                       <label for="email">Email address<span style="color: brown;">*</span></label>
-                      <span class="email error"></span>
+                      
                     </div>
                      <!-- username -->
                      <div class=" form-floating mb-3" id="userNom">
+                         <div class="username error"></div>
                       <input type="Text" name="userName" class="form-control" placeholder="User Name">
                       <label for="userName">User Name</label>
-                      <span class="username error"></span>
+                      
                   </div>
                   
                  <!-- password -->
                     <div class=" form-floating mb-3">
+                        <div class="password error"></div>
                       <input type="password" name="password" class="form-control" placeholder="Password" required="required">
                       <label for="password">Password</label>
-                      <span class="password error"></span>
+                      
                   </div>
                  
                   <button type="submit" class="cat cat_green" id="loginBtn" >Login</button>
-                  <span class="status error"></span>
+                  <div class="status error"></div>
                 </form>
         
                 <!-- <div class="text-center">
