@@ -1,7 +1,7 @@
 <! DOCTYPE html >
 <html>
 <head>
-<title>Webinar_ui.1</title>
+<title>Anansesem Fie</title>
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,22 +27,21 @@
 
     <div id="nav_bar">
 
-        <nav class="navbar navbar-light fixed-top bg-light">
-            <a class="navbar-brand" href="#"><img src="images/cj_trans_2.png" style="width: 30px; height: 30px;"></a>
-            <% if(user){%>
-
+        <nav class="navbar navbar-light fixed-top bg-black">
+            <a class="logo " href="/"><img src="images/logo_l.png" style="margin-left: 10px; width: 60px;"></a>
+            
+            <% if(user){ %>
           
             <a class="nav-link dropdown-toggle user_nav" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <div class="chip"><img alt="username" src="images/me.jpg" style="width: 50px; height: 50px;"></div></a>
+                <div class="chip"><img alt="username" src="images/me.jpg" ></div></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item">Profile</a>
+                    <a href="user/ <%= user._id %>" class="dropdown-item">Profile</a>
                     <a class="dropdown-item">Settings</a>
                     <a class="dropdown-item">Events<span class="badge badge-primary">4</span></a>
-                    <a class="dropdown-item">Logout</a></div>
-                    <%  }else{ %>
-                                <a class="dropdown-item">Profile</a>
-                                <a class="dropdown-item">Settings</a>
-                        <%}%>
+                    <a class="dropdown-item">Logout</a>
+                    <a class="dropdown-item">Signin/Signup</a>
+                </div>
+                   <% }%>
 
                 </nav>
 

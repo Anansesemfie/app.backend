@@ -2,7 +2,10 @@
 body{
 
     background-color: rgb(223, 222, 222);
-  
+    font-family: 'Sofia', cursive;
+    
+
+    
 
    
 }
@@ -48,6 +51,128 @@ body{
 
 /*our own button*/
 .button {
+    border-color: black;
+    color:black;
+    background-color: rgba(233, 229, 229, 0.637);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 3px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transition-delay: 0.2s;
+  }
+
+  .button:hover{
+      border: 15px white;
+      border-radius: 3px;
+      color:rgba(97, 93, 93, 0.514);
+      background-color: rgba(0, 0, 0, 0.486);
+     
+  }
+
+  .cat{
+    
+    border-radius: 3px;
+    font-size: 16px;
+    font-weight:400px;
+    margin: 4px 2px;
+    background-color: rgba(14, 13, 13, 0.63);
+    border-width: 1px;
+    border-style: outset;
+    color:white;
+    transition-delay: 1s;
+  }
+  .cat_green{
+    background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
+  }
+
+  .cat:hover{
+      /* background-color: rgba(233, 229, 229, 0.842); */
+      background-image: linear-gradient(90deg, rgb(97, 174, 197), rgb(224, 194, 19));
+      color: rgb(255, 255, 255);
+      border-radius: 4px;
+  }
+  
+  /* toggle */
+  .label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    color: #394a56;
+  }
+  
+  .label-text {
+    margin-left: 16px;
+  }
+  
+  .toggle {
+    isolation: isolate;
+    position: relative;
+    height: 30px;
+    width: 60px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow:
+      -8px -4px 8px 0px #ffffff,
+      8px 4px 12px 0px #d1d9e6,
+      4px 4px 4px 0px #d1d9e6 inset,
+      -4px -4px 4px 0px #ffffff inset;
+  }
+  
+  .toggle-state {
+    display: none;
+  }
+  
+  .indicator {
+    height: 100%;
+    width: 200%;
+    background-image: linear-gradient(90deg, rgb(12, 122, 212), rgb(18, 153, 153));
+    border-radius: 15px;
+    transform: translate3d(-75%, 0, 0);
+    transition: transform 0.4s cubic-bezier(0.85, 0.05, 0.18, 1.35);
+    box-shadow:
+      -8px -4px 8px 0px #ffffff,
+      8px 4px 12px 0px #d1d9e6;
+  }
+  
+  .toggle-state:checked ~ .indicator {
+    transform: translate3d(25%, 0, 0);
+  }
+
+  /* toggle */
+
+  .headerColor{
+    background-image: linear-gradient(90deg, rgb(10, 108, 153), rgb(10, 86, 199));
+  }
+
+  .title{
+    
+     border-radius: 10px;
+     border-bottom: #f1f1f100 2px;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 800px;
+      padding: 10px;
+  }
+
+  .pic_heading{
+   
+   font-size:55px;
+    color: rgba(233, 229, 229, 0.842);
+    
+  }
+  .books{
+    transition-duration: 0.5s;
+  }
+
+  .books img{
+    min-height: 300px;
+    max-height: 400px;
+    transition-duration: 0.5s;
+  } button {
     border: none;
     color:black;
     background-color: rgba(233, 229, 229, 0.637);
@@ -60,52 +185,22 @@ body{
     margin: 4px 2px;
     cursor: pointer;
     transition: 0.2s;
+  }.card{
+    transition-duration: 0.5s;
   }
 
-  .button:hover{
+  .books button:hover{
       border: 15px white;
       border-radius: 3px;
-      color:rgba(97, 93, 93, 0.514);
-      background-color: rgba(0, 0, 0, 0.486);
+      color:rgba(255, 255, 255, 0.973);
+      /* background-color: rgba(0, 0, 0, 0.486); */
+      background-image: linear-gradient(90deg, rgb(97, 174, 197), rgb(224, 194, 19));
      
   }
 
-  .cat{
-    font-family: Impact, Charcoal, sans-serif;
-    border-radius: 15px;
-    font-size: 16px;
-    font-weight:400px;
-    margin: 4px 2px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1px;
-    border-style: outset;
-    color:white;
-    transition: 1s;
+  .signin{
+    background-image: linear-gradient(90deg, rgb(134, 45, 10), rgb(172, 82, 30));
   }
-  .cat:hover{
-      background-color: rgba(233, 229, 229, 0.842);
-      color: rgb(0, 0, 0);
-      border-radius: 20px;
-  }
-  
-
-  .title{
-    font-family: Impact, Charcoal, sans-serif;
-     border-radius: 10px;
-     
-      text-align: left;
-      font-size: 22px;
-      font-weight: 800px;
-      padding: 10px;
-  }
-
-  .pic_heading{
-    font-family: 'Sofia', cursive;;
-   font-size:55px;
-    color: rgba(233, 229, 229, 0.842);
-    
-  }
-  
 
   /*nav profile*/
 
@@ -122,9 +217,13 @@ body{
   .chip img {
     float: left;
     margin: 0 10px 0 -25px;
-    height: 50%;
-    width: 50%;
+    height: 50px;
+    width: 50px;
     border-radius: 50%;
+  }
+
+  .bg-black{
+    background-image: linear-gradient(180deg, black, rgba(235, 227, 227, 0.123));
   }
 
   .user_nav{
@@ -258,9 +357,9 @@ min-height: inherit;
 }
 
 
-#com-menu a{
-    /* color:black; */
-}
+/* #com-menu a{
+    /* color:black; 
+} */
 #com-menu a:hover{
     border-width: 1px;
     border-color: #E8290B; 

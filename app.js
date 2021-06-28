@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const {checkUser} = require('./middleware/authMiddleware');
 
 const utils = require('./util/utils');
 
@@ -47,6 +48,8 @@ app.on('ready',()=>{
 
 
 //routes
+app.get('*',checkUser);
+// app.get('/',requireAuth,(req,res)=>{res.render('index');});
 app.use('/user',user);
 app.get('/',(req,res)=>{
     res.render('index');

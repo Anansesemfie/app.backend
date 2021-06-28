@@ -29,8 +29,13 @@ const handleErrors=(err)=>{
 
 
     //incorrect password
-    if(err.message === 'Password is incorrect'){
-        errors.password = 'This Password is not correct';
+    if(err.message === 'Password is incorrect'||err.message==='Minimum password length is 6 characters'){
+        errors.password = 'Please check password';
+    }
+
+    //username
+    if(err.message==='username is required'){
+        errors.username='Username was not received'
     }
 
     //inactive
@@ -109,7 +114,7 @@ var signup_post = async (req,res)=>{
             User.findByIdAndUpdate({_id:user._id},{key})
             .then(()=>{
 
-                 let html = `<a href='http://127.0.0.1:4000/user/verify/${key}' style='
+                 let html = `<a href='${utils.service.host}user/verify/${key}' style='
             background-color:#000;
             color:#fff;
             border-radius:2px;
@@ -124,9 +129,15 @@ var signup_post = async (req,res)=>{
             "html":html
         }
 
-        utils.mailer(mail);
+        
+        if(utils.mailer(mail)){
+            res.status(201).json({user:'User Created'});
+        }
+        else{
+             res.status(300).json({user:'User Creation Attempted but email verification was not sent'});
+        }
 
-        res.status(201).json({user:user._id});
+       
 
             }).catch((err)=>{
                 res.status(400).send('Key was not succesfully created');
@@ -147,7 +158,7 @@ var signup_post = async (req,res)=>{
     
        const errors= handleErrors(err);
         res.status(400).json({errors:errors});
-        throw err;
+        // throw err;
     }
 }
 
@@ -176,6 +187,10 @@ var logout_get = async (req,res)=>{
     res.redirect('/');
 }
 
+var login_signup = async (req,res)=>{
+    res.render('login_signup');
+}
+
 var verify_acct= async (req,res)=>{
   
 let JWT_back = await decode_JWT(req.params.id);
@@ -187,7 +202,7 @@ if(JWT_back){
         User.findByIdAndUpdate({_id:JWT_back._id},{active:true})
         
         .then(()=>{
-        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})
+        User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
         res.send('User successfully Activated');
     }).catch((err)=>{
         res.send('User was not activated');
@@ -214,6 +229,7 @@ module.exports={
     login_get,
     login_post,
     logout_get,
+    login_signup,
     verify_acct
 
 }

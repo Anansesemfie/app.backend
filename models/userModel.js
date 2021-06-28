@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     username:{
         type:String,
         lowercase:true,
-        minlength:[2,'Username has to be longer'],
+        minlength:[2,'Username is too short..'],
         required:[true,'username is required']
     },
     active: {
@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
       },
       key:{
           type:String,
-          require:false,
-          unique:true
+          require:false
+        
       }
 });
 

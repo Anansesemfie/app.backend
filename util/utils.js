@@ -38,7 +38,7 @@ module.exports.mailer=(mail)=>{
 
 module.exports.service={
     "port":4000,
-    "host":"127.0.0.1",
+    "host":"http://127.0.0.1:4000/",
     "DB":"mongodb://localhost:27017/Ananse_fie",
     "secret":"symbiosis"
 }
