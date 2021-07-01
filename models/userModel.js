@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
         minlength:[2,'Username is too short..'],
         required:[true,'username is required']
     },
+    account:{
+        type:String,
+        required:[true,'Please Select account type']
+      },
     active: {
         type: Boolean, 
         default: false
@@ -32,10 +36,15 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:'me.jpg',
       },
+     
       key:{
           type:String,
           require:false
         
+      },
+      moment:{
+          type:Date,
+          default:mongoose.now()
       }
 });
 
@@ -67,6 +76,11 @@ userSchema.statics.login=async function(email,password){
     }
     throw Error('incorrect email');
 };
+
+// static method to follow user
+
+
+// static method to unfollow
 
 const user = mongoose.model('User',userSchema);
 

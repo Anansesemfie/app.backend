@@ -10,6 +10,7 @@ const handleErrors=(err)=>{
         email:'',
         password:'',
         username:'',
+        account:'',
         status:''
 
     }
@@ -30,7 +31,7 @@ const handleErrors=(err)=>{
 
     //incorrect password
     if(err.message === 'Password is incorrect'||err.message==='Minimum password length is 6 characters'){
-        errors.password = 'Please check password';
+        errors.password = err.message;
     }
 
     //username
@@ -40,7 +41,12 @@ const handleErrors=(err)=>{
 
     //inactive
     if(err.message==='Account is not Active'){
-        errors.status = 'User is not active ';
+        errors.status = err.message;
+    }
+
+    //account type
+    if(err.message==='Please Select account type'){
+        errors.account = 'Choose an account type';
     }
 
     //validation errors
@@ -104,10 +110,10 @@ var login_get = (req,res)=>{
 
 //new User
 var signup_post = async (req,res)=>{
-    const {email,password,username} = req.body;
+    const {email,password,username,account} = req.body;
     try{
         
-        const user = await User.create({email,password,username});
+        const user = await User.create({email,password,username,account});
         
         if(user){
             const key = createToken(user._id);

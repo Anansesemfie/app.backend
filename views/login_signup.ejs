@@ -65,25 +65,39 @@
                   
                     <div class=" form-floating mb-3">
                         <div class="email error"></div>
-                      <input type="email" name="email" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
-                      <label for="email">Email address<span style="color: brown;">*</span></label>
+                      <input type="email" name="email" class="form-control" placeholder="Email address*" required="required" autofocus="autofocus">
+                      <!-- <label for="email">Email address<span style="color: brown;">*</span></label> -->
                       
                     </div>
-                     <!-- username -->
-                     <div class=" form-floating mb-3" id="userNom">
-                         <div class="username error"></div>
-                      <input type="Text" name="userName" class="form-control" placeholder="User Name">
-                      <label for="userName">User Name</label>
-                      
-                  </div>
+                   
                   
                  <!-- password -->
                     <div class=" form-floating mb-3">
                         <div class="password error"></div>
                       <input type="password" name="password" class="form-control" placeholder="Password" required="required">
-                      <label for="password">Password</label>
+                      <!-- <label for="password">Password</label> -->
                       
                   </div>
+                    <!-- username -->
+                     <div class=" form-floating mb-3" id="userNom">
+                         <div class="username error"></div>
+                      <input type="Text" name="userName" class="form-control" placeholder="User Name">
+                      <!-- <label for="userName">User Name</label><br> -->
+                      <hr>
+
+                      <label class="label">
+                          <label for="" style="font-size: small;">Creating Account as</label><br>
+                        <div class="label-text">A Consumer</div>
+                        <div class="toggle">
+                          <input class="toggle-state" type="checkbox" id="accountType" name="accountType" value="check" />
+                          <div class="indicator"></div>
+                        </div>
+                        <div class="label-text">A Creator</div>
+                      </label>
+                      
+                  </div>
+                  <!-- account type -->
+                  
                  
                   <button type="submit" class="cat cat_green" id="loginBtn" >Login</button>
                   <div class="status error"></div>

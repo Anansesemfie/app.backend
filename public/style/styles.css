@@ -156,9 +156,9 @@ body{
   }
 
   .title{
-    
-     border-radius: 10px;
-     border-bottom: #f1f1f100 2px;
+    /* background-image: linear-gradient(90deg,rgba(134, 85, 20, 0.377),rgb(109, 110, 110), rgb(221, 221, 221), rgb(253, 253, 253)); */
+     /* border-radius: 10px; */
+     /* border-bottom: #f1f1f100 2px; */
       text-align: left;
       font-size: 22px;
       font-weight: 800px;

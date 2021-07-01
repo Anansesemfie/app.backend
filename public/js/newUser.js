@@ -5,19 +5,21 @@ const _userHolder = $('#userNom');
 const loginBtn = $('#loginBtn');
 
 const form = document.querySelector('form');
-const email_err = $('.email');
-const username_err = $('.username');
-const password_err = $('.password');
-const status_err = $('.status');
+const email_err = document.querySelector('.email.error');
+const username_err = document.querySelector('.username.error');
+const password_err = document.querySelector('.password.error');
+const status_err = document.querySelector('.status.error');
 
 
 
 
-_newAcct.on('click',()=>{
+_newAcct.on('click',async ()=>{
     _userHolder.slideToggle( "slow",()=>{
         if(loginBtn.text()==='Login' ){
             loginBtn.text('SignUp');
-            // loginBtn.attr('id','signup');
+            _accountHolder.slideToggle('slow',()=>{
+                return true;
+            });
         }
         else{
             loginBtn.text('Login');
@@ -95,12 +97,19 @@ loginBtn.on('click',()=>{
             let email = form.email.value;
             let password = form.password.value;
             let username =form.userName.value;
+            let account 
+            if(form.accountType.checked){
+               account="Creator";
+            }
+            else{
+                account="Consumer";
+            }
     
             // console.log(email,password);
             try{
                 const result = await fetch('/user/signup',{
                     method:'POST',
-                    body:JSON.stringify({email,password,username}),
+                    body:JSON.stringify({email,password,username,account}),
                     headers:{'Content-type':'application/json'}
                 });
     
