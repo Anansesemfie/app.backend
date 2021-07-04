@@ -17,9 +17,9 @@ _newAcct.on('click',async ()=>{
     _userHolder.slideToggle( "slow",()=>{
         if(loginBtn.text()==='Login' ){
             loginBtn.text('SignUp');
-            _accountHolder.slideToggle('slow',()=>{
-                return true;
-            });
+            // _accountHolder.slideToggle('slow',()=>{
+            //     return true;
+            // });
         }
         else{
             loginBtn.text('Login');

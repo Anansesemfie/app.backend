@@ -13,14 +13,13 @@ const bookSchema = new mongoose.Schema({
         type:String,
         required:[true,'Say something to tease your audience'],
         minlength:[20,'Express yourself much more than this'],
-        maxlength:[100,`Don't narrate the whole thing here`],
+        maxlength:[100,'Do not narrate the whole thing here'],
         lowercase:true
     },
     status:{
         type:String,
         required:true,
         default:'Pending'
-
     },
     snippet:{
         type:String
