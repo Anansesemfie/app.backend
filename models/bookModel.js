@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 
+const Schema = mongoose.Schema
 
 // book schema here
-const bookSchema = new mongoose.Schema({
+const bookSchema = new Schema({
     title:{
         type:String,
         required:[true,'This book needs a title!'],
         lowercase:true,
-        maxlength:[20,'This is a very long name...']
+        maxlength:[20,'This is a very long title']
     },
     description:{
         type:String,
@@ -29,17 +30,16 @@ const bookSchema = new mongoose.Schema({
     category:[],
     cover:{
         type:String,
-        required:[true,'Missing cover']
+        required:true,
+        default:'images/default_cover.jpg'
     },
     uploader:{
         type:String,
         required:[true,'Missing uploader']
-    },
-    moment:{
-        type:Date,
-        default:mongoose.now()
     }
 
+ },{
+     timestamp:true
  });
 
  //STATICS..........................................................................
@@ -82,7 +82,7 @@ bookSchema.static.authorPop = async (user,book_id)=>{
 }
 
 // Reactions schema.......................................................................
-const bookReactSchema = new mongoose.Schema({
+const bookReactSchema = new Schema({
     bookID:{
         type:String,
         required:[true,'Missing book to react']
@@ -92,7 +92,8 @@ const bookReactSchema = new mongoose.Schema({
         required:[true,'Missing to react to book']
     },
     action:{
-        deault:"Like"
+        type:String,
+        default:'Like'
     },
     moment:{
         type:Date,
@@ -107,7 +108,7 @@ const bookReactSchema = new mongoose.Schema({
 
 
 // Comments schema...............................................................................
-const bookCommentSchema = new mongoose.Schema({
+const bookCommentSchema = new Schema({
     bookID:{
         type:String,
         required:[true,'Missing book to comment on']

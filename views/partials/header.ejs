@@ -10,7 +10,10 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Sofia&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style/styles.css">
+<!-- <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" /> -->
+        <!-- <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet" /> -->
+        <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="/style/styles.css">
 
 
 <!--Styling resources -->
@@ -23,22 +26,30 @@
 </head>
 
 <body>
+
+    
+   
+  
     <!-- Just an image -->
+
 
     <div id="nav_bar">
 
         <nav class="navbar navbar-light fixed-top bg-black">
-            <a class="logo " href="/"><img src="images/logo_l.png" style="margin-left: 10px; width: 60px;"></a>
+            <a class="logo " href="/"><img src="/images/logo_l.png" style="margin-left: 10px; width: 60px;"></a>
             
             <% if(user){ %>
           
             <a class="nav-link dropdown-toggle user_nav" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <div class="chip"><img alt="username" src="images/<%=user.dp%>" ></div></a>
+                <div class="chip"><img alt="username" src="/images/<%=user.dp%>" ></div></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <button href="user/profile" id="profile" class="dropdown-item">Profile</button>
                     <!-- <a class="dropdown-item">Settings</a>
                     <a class="dropdown-item">Events<span class="badge badge-primary">4</span></a> -->
                     <a href="/user/logout" class="dropdown-item">Logout</a>
+                    <%if(user.account === "Creator"){%>
+                        <a href="/book/upload" class="dropdown-item">Add a new Book</a>
+                        <%}%>
                     
                 </div>
                    <% }%>
@@ -46,3 +57,4 @@
                 </nav>
 
     </div>
+     

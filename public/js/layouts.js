@@ -1,24 +1,80 @@
-const nav= $('#nav_bar');
 
-function navbar(dp){
-  dp='images/'+dp;
-   nav.append(
-      $('<nav/>', {'class': 'navbar navbar-light fixed-top bg-light'}).append(
-          $('<a/>', {'class': 'navbar-brand','href':'#'}).append(
-              $('<img/>', {'src': 'images/cj_trans_2.png','width':30,'height':30})
-          ),
-          $('<a/>',{'class':'nav-link dropdown-toggle user_nav','id':'navbarDropdown', 'role':'button','data-toggle':'dropdown','aria-haspopup':'true','aria-expanded':'false'}).append(
-            $('<div/>',{'class':'chip'}).append($('<img/>',{'alt':'username','width':'50','height':'50','src':dp}))
-          ),
-          $('<div/>',{'class':'dropdown-menu','aria-labelledby':'navbarDropdown'}).append(
-              $('<a/>',{'class':'dropdown-item'}).append('Profile'),
-              $('<a/>',{'class':'dropdown-item'}).append('Settings'),
-              $('<a/>',{'class':'dropdown-item'}).append('Events').append($('<span/>',{'class':'badge badge-primary'}).append(/*upcoming*/'4')),
-              $('<a/>',{'class':'dropdown-item'}).append('Logout')
-          )
+//   <!-- Modal -->
+//   <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
+//       <div class="modal-dialog modal-lg">
+//         <div class="modal-content">
+//           <div class="modal-header headerColor">
+//             <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+//           </div>
+//           <div class="modal-body">
+//               
+            
+//           </div>
+         
+//         </div>
+//       </div>
+//     </div>
+
+
+const initModal = async ()=>{
+    let position= $('body');
+    position.append(`<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
+           <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+               <div class="modal-header headerColor">
+                 <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+               </div>
+             <div class="modal-body">
+                   
+                
+    </div>
+             
+     </div>
+     </div>
+     </div>`)
+}
+     
+const bookForm = async (loc)=>{
+    let position = $(loc);
+
+    position.append(`<form action="/book/upload" enctype="multipart/form-data" method="POST">
+                       <div class="container">
+                      <div class="row">
+                          <!-- title and description -->
+                          <div class="col-6">
+                              <label for="title">Title</label>
+                           <input type="text"  name="title" id="title" class="form-control" required>
+                           <label for="description">Description</label>
+                           <textarea name="description" id="description" cols="30" class="form-control" rows="10"></textarea>
+                          </div>
+                          <!-- cover image here -->
+                          <div class="col-6">
+                              <input type="file" name="file" class=""> 
+                               <img id="file" class="image_viewer">
+                          </div>
+                      </div>
       
-      )
-  );
+                     
+                      <div class="row">
+                          <!-- category / genre -->
+                          <div class="col-10">
+                           <select name="" id=""></select>
+                          </div>
+                          <div class="col-2">
+                              <div class="row">
+                                  <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning">Cancel</button></div>
+                                  <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary">Post</button></div>
+                           </div>
+                             
+                          </div>
+                      </div>
+      
+                 </div>
+               </form>`)
+}
+/*
+  
+*/
 
 
 /*  
@@ -39,7 +95,7 @@ function navbar(dp){
         </div>
 */ 
 
-}
+
 
 
 

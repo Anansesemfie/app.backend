@@ -1,3 +1,6 @@
+<! DOCTYPE html >
+<html>
+
 <%- include('partials/header'); %>
 
 
@@ -16,16 +19,21 @@
            <div class="pic_heading">
              Anansesem Fie
              <%if(!user){%>
-             <a href="/user" type="button" class="button btn cat signin">Signin / Signup </a>
-             <%}%>
+             <button  type="button" id="genBtn" data-id="user" class="button btn cat signin">Signin / Signup </button>
+             <%} if(user){
+              if(user.account==="Creator"){
+              %>
+              <button  type="button" id="genBtn" data-id="bookForm" class="button btn cat signin">Add Book</button>
+              <%} } %>
            </div>
 
          </div>
 
+
           <div class="container centered" id="category">
-            <button type="button" class="button cat">Sports </button>
-            <button type="button" class="button cat">Education</button>
-            <button type="button" class="button cat">Real Estate</button>
+            <button type="button" id="genBtn" data-id="cat" data-target="sports" class="button cat">Sports </button>
+            <button type="button" id="genBtn" data-id="cat" data-target="Education" class="button cat">Education</button>
+            <button type="button" id="genBtn" data-id="cat" data-target="Real-Estate" class="button cat">Real Estate</button>
             <button type="button" class="button cat">Mortgage</button>
             <button type="button" class="button cat">Finance</button>
             <button type="button" class="button cat">Music</button>
@@ -79,7 +87,7 @@
             <div class="card-body">
               <div class="container">
               <div class="">
-                <button ><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></button>
+                <button data-id="bookBtn" id="genBtn" data-target="1111111" ><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></button>
                 <button ><i class="fa fa-expand" aria-hidden="true"></i></button>
                 <button ><i class="fa fa-sign-in" aria-hidden="true"></i></button>
               </div>
@@ -152,3 +160,7 @@
       
       
 <%- include('partials/footer') %>
+<script defer type="text/javascript" src="js/home.js"></script>
+
+
+</html>

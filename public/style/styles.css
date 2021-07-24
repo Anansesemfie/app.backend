@@ -171,10 +171,15 @@ body{
     color: rgba(233, 229, 229, 0.842);
     
   }
+
   .books{
     transition-duration: 0.5s;
   }
 
+  .image_viewer{
+    max-width: -webkit-fill-available;
+    max-height: -webkit-fill-available;
+  }
   .books img{
     min-height: 300px;
     max-height: 400px;

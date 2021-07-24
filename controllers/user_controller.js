@@ -69,47 +69,16 @@ const createToken =(id)=>{
 }
 
 //decode JWT
-const decode_JWT= (code)=>{
 
-    const token = code;
-    //check token
-    if(token){
-        let back = {_id:""};
-
-        try{
-            jwt.verify(token,utils.service.secret,(err,decodedToken)=>{
-            if(err){
-                throw err;
-            }
-            else{
-               
-                back._id=decodedToken.id;
-            }
-            });
-
-            return back;
-        }
-        catch(err){
-            throw err;
-        }
-
-        }
-        
-        
-   
-}
 
 //signup page
-var signup_get = (req,res)=>{
-    res.render('signup');
-}
-//login page
-var login_get = (req,res)=>{
-    res.render('login');
-}
+
 
 //new User
 var signup_post = async (req,res)=>{
+    if(req.cookies.jwt){
+        res.redirect('/');
+    }
     const {email,password,username,account} = req.body;
     try{
         
@@ -194,12 +163,15 @@ var logout_get = async (req,res)=>{
 }
 
 var login_signup = async (req,res)=>{
+    if(req.cookies.jwt){
+        res.redirect('/');
+    }
     res.render('login_signup');
 }
 
 var verify_acct= async (req,res)=>{
   
-let JWT_back = await decode_JWT(req.params.id);
+let JWT_back = await utils.decode_JWT(req.params.id);
 
 if(JWT_back){
     let user = await User.findOne({_id:JWT_back._id});
@@ -230,12 +202,9 @@ if(JWT_back){
 //exports
 
 module.exports={
-    signup_get,
     signup_post,
-    login_get,
     login_post,
     logout_get,
     login_signup,
     verify_acct
-
 }
