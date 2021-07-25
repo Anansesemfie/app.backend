@@ -29,9 +29,8 @@ const bookSchema = new Schema({
     authors:[],
     category:[],
     cover:{
-        type:String,
-        required:true,
-        default:'images/default_cover.jpg'
+        type:Buffer,
+        required:false
     },
     uploader:{
         type:String,

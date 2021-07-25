@@ -1,6 +1,6 @@
 //Requires
 const express = require('express');
-// const upload = require('express-fileupload');
+
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -10,6 +10,7 @@ const utils = require('./util/utils');
 
 const user = require('./routes/user');
 const book = require('./routes/book');
+const category = require('./routes/category');
 
 //start express
 const app = express();
@@ -51,12 +52,14 @@ app.on('ready',()=>{
 
 
 //routes
+
 app.get('*',checkUser);
 app.post('/book',checkAccount);
 app.post('/user',checkUser)
 // app.get('/',requireAuth,(req,res)=>{res.render('index');});
 app.use('/user',user);
 app.use('/book',book);
+app.use('/category',category);
 
 app.get('/',(req,res)=>{
     res.render('index');

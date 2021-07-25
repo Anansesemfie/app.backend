@@ -43,13 +43,13 @@ const bookForm = async (loc)=>{
                           <!-- title and description -->
                           <div class="col-6">
                               <label for="title">Title</label>
-                           <input type="text"  name="title" id="title" class="form-control" required>
+                           <input type="text"  name="title" id="title" class="form-control" required placeholder="Title">
                            <label for="description">Description</label>
                            <textarea name="description" id="description" cols="30" class="form-control" rows="10"></textarea>
                           </div>
                           <!-- cover image here -->
                           <div class="col-6">
-                              <input type="file" name="file" class=""> 
+                              <input type="file" name="file" class="form-control"> 
                                <img id="file" class="image_viewer">
                           </div>
                       </div>
@@ -57,10 +57,17 @@ const bookForm = async (loc)=>{
                      
                       <div class="row">
                           <!-- category / genre -->
-                          <div class="col-10">
-                           <select name="" id=""></select>
+                          <div class="col-9">
+                           <select name="category" id="category" multiple="multiple" style="width: 75%" class="form-control"  >
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+
+                           </select>
+                           <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
                           </div>
-                          <div class="col-2">
+                          <div class="col-3">
                               <div class="row">
                                   <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning">Cancel</button></div>
                                   <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary">Post</button></div>

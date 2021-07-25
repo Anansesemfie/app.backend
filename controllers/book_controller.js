@@ -2,6 +2,8 @@ const { book,bookReact,bookComment} = require('../models/bookModel');
 // const {user} = require('../models/userModel');
 // const jwt = require('jsonwebtoken');
 const {mailer,decode_JWT,service,cover} = require('../util/utils'); 
+const fs = require('fs');
+const { Buffer } = require('buffer');
 
 
 
@@ -54,33 +56,64 @@ if(error.message==="Missing uploader"){
 
 //Add book
 const Up_book = async (req,res)=>{
-  let body = req.body;
-  let file = req.file;
-  if(file){
-    res.json({status:'Active',file:file,body});
-    //
+  try{
+
+      let body = req.body;//get body from request
+      let file = req.file;//get file details from request after being handled by multer
+      let authors = body.author.split('-');//split author strings into an array
+
+
+        console.log(body,file);
+    // book.create({})
+        
   }
-  else{
-res.status(403).json({status:'file not uploaded'});
+  catch(err){
+   const errors = handleError(err);
+   res.status(403).json(errors);
   }
+  
   
    
     
     
 }
 
-// const upFile = async (req,res)=>{
-//     let file = req.file;
-//   console.log(file);
-//   console.log(req.body);
-//     if(file){
-//       console.log(file.path)
-//       return res.json({status:'OK'})
-//     }
-//     else{
-//       res.status(404).json({status:'fileupload error'});
-//     }
-// }
+
+
+
+// for chapters
+'audio/mpeg','audio/wave','audio/mp4'
+let ext = (file)=>{
+  let mime;
+if(file ==='audio/mpeg'){
+  mime = '.mp3';
+}
+else if(file==='audio/wave'){
+  mime ='.wav';
+}
+else{
+  mime ='.mp4';
+}
+return mime;
+}
+
+const upFile = async (req,res)=>{
+    let file = req.file;
+  console.log(file);
+  console.log(req.body);
+    if(file){
+      console.log(file.path)
+      let buff = new Buffer.from(file.buffer, 'base64');
+     
+      
+let chap = await fs.writeFileSync(`uploads/audio/${req.body.title}${ext(file.mimetype)}`, buff);
+
+      return res.json({status:'OK',base64:chap})
+    }
+    else{
+      res.status(404).json({status:'fileupload error'});
+    }
+}
 
 module.exports={
     Up_book,

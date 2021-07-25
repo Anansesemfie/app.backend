@@ -177,13 +177,14 @@ body{
   }
 
   .image_viewer{
-    max-width: -webkit-fill-available;
-    max-height: -webkit-fill-available;
+    max-width: 100px;
+    max-height: 100px;
+    transition:1s;
   }
   .books img{
     min-height: 300px;
     max-height: 400px;
-    transition-duration: 0.5s;
+    transition: 0.5s;
   } button {
     border: none;
     color:black;

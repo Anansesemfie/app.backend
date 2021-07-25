@@ -47,6 +47,7 @@ const service={
     "secret":"symbiosis"
 }
 
+//JSON web Token 
 const decode_JWT=async (code)=>{
 
   const token = code;
@@ -79,36 +80,80 @@ const decode_JWT=async (code)=>{
 
 
 
-//multer upload cover
-const isImage = (mime)=>{
+//multer upload cover base64
+const isImage = (mime,size)=>{
   let imageTypes = ['image/jpeg','image/png','images/gif'];
-  return imageTypes.includes(mime);
+let back = true
+  if(!imageTypes.includes(mime)){
+    back=false
+  }
+  if(size>10718163){
+    back=false
+  }
+  // return imageTypes.includes(mime);
+  return back
 }
 //storage
-const storage = multer.diskStorage({
-  destination:(req,file,cb)=>{
-    cb(null,'uploads');
-  },
-  filename:(req,file,cb)=>{
-    const id = Date.now()+file.originalname;
-    const filePath = `cover/${id}`;
+const imgStorage = multer.memoryStorage()
+// diskStorage({
+//   destination:(req,file,cb)=>{
+//     cb(null,'uploads');
+//   },
+//   filename:(req,file,cb)=>{
+//     const id = Date.now()+file.originalname;
+//     const filePath = `cover/${id}`;
   
-       cb(null,filePath);
+//        cb(null,filePath);
      
-  }
-});
+//   }
+// });
 
-const uploadCover = multer({storage,
+const uploadCover = multer({imgStorage,
 fileFilter:(req,file,cb)=>{
 
-  cb(null,isImage(file.mimetype));
+  cb(null,isImage(file.mimetype,file.size));
 
 }
 });
 
 
-  module.exports = uploadCover;
  
+
+//multer upload audio files
+const isAudio = (mime,size)=>{
+  let audioTypes = ['audio/mpeg','audio/wave','audio/mp4'];
+let back = true
+  if(!audioTypes.includes(mime)){
+    back=false
+  }
+  if(size>30718163){
+    back=false
+  }
+  // return imageTypes.includes(mime);
+  return back
+}
+
+
+const audioStorage = multer.diskStorage({
+    destination:(req,file,cb)=>{
+      cb(null,'uploads');
+    },
+    filename:(req,file,cb)=>{
+      const id = Date.now()+file.originalname;
+      const filePath = `audio/${id}`;
+    
+         cb(null,filePath);
+       
+    }
+  });
+
+  const uploadAudio = multer({audioStorage,
+    fileFilter:(req,file,cb)=>{
+    
+      cb(null,isAudio(file.mimetype,file.size));
+    
+    }
+    });
 
 
 
@@ -120,5 +165,6 @@ module.exports={
   mailer,
   service,
   decode_JWT,
-  uploadCover
+  uploadCover,
+  uploadAudio
 }
