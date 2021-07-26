@@ -2,7 +2,7 @@
 
 const getCategory = async ()=>{
 try{
-        let result = await fetch("http://localhost:4000/category/");
+        let result = await fetch("/category/");
 
         let data = await result.json();
         // console.log(data.categories);
@@ -13,6 +13,7 @@ try{
 
 }
 catch(err){
+        alert(`Attention, we couldn't retrieve the Categories\n check your internet connect `)
 
 }
   

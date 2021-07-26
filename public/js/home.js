@@ -15,15 +15,6 @@ $(document).ready(async ()=>{
 })
 
 
-//upload book
-var cover;
-
-$('input[type=file]').on('change',function () {
-    cover=this.files[0];
-    console.log(cover);
-    // $('#name').text(this.files[0])
-})
-
 
 
 
@@ -73,10 +64,11 @@ $('button').on('click',async function(){
             //image view
 $("input[type=file]").change(function(e) {
     console.log('something')
-var img = document.getElementById("file");
+
     // img.attributes('src','');
+    // img.remove();
     for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
-        
+        var img = document.getElementById("file");
         var file = e.originalEvent.srcElement.files[i];
         
         

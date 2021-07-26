@@ -1,3 +1,4 @@
+const { ObjectId } = require('bson');
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema
@@ -8,7 +9,7 @@ const bookSchema = new Schema({
         type:String,
         required:[true,'This book needs a title!'],
         lowercase:true,
-        maxlength:[20,'This is a very long title']
+        maxlength:[50,'This is a very long title']
     },
     description:{
         type:String,
@@ -33,7 +34,7 @@ const bookSchema = new Schema({
         required:false
     },
     uploader:{
-        type:String,
+        type:ObjectId,
         required:[true,'Missing uploader']
     },
     likes:{

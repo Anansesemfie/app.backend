@@ -38,15 +38,16 @@ const bookForm = async (loc)=>{
                           </div>
                           <!-- cover image here -->
                           <div class="col-6">
+                          <img id="file" class="image_viewer">
                               <input type="file" name="file" class="form-control"> 
-                               <img id="file" class="image_viewer">
+                               
                           </div>
                       </div>
       
                      
                       <div class="row">
                           <!-- category / genre -->
-                          <div class="col-9">
+                          <div class="col-12">
                           <label for="category">Category</label>
                            <select name="category" id="bookcategory" multiple="multiple" style="width: 100%" class="form-control"  >
                           
@@ -54,14 +55,12 @@ const bookForm = async (loc)=>{
                            <label for="author">Author(s)</label>
                            <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
                           </div>
-                          <div class="col-3">
-                              <div class="row">
-                                  <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning">Cancel</button></div>
-                                  <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary">Post</button></div>
-                           </div>
-                             
-                          </div>
+                          
                       </div>
+                      <div class="row">
+                                  <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning btn-block">Cancel</button></div>
+                                  <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary btn-block">Post</button></div>
+                           </div>
       
                  </div>
                </form>`)

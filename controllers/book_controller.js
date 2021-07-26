@@ -22,7 +22,7 @@ err.title=error.message;
 
 if(error.message==="This is a very long title"){
     //title too long
-    err.title=error.message;
+    err.title="Book title too long";
     
     }
 
@@ -49,6 +49,8 @@ if(error.message==="Missing uploader"){
         err.user=error.message
         
         }
+
+        return err;
 }
 
 
@@ -57,14 +59,27 @@ if(error.message==="Missing uploader"){
 //Add book
 const Up_book = async (req,res)=>{
   try{
+      let newBook ={
+        title:"",
+        description:"",
+        authors:[],
+        category:[],
+        cover:"",
+        uploader:""
+      }
 
       let body = req.body;//get body from request
       let file = req.file;//get file details from request after being handled by multer
-      let authors = body.author.split('-');//split author strings into an array
+      newBook.title=body.title;
+      newBook.description=body.description;
+      newBook.category=body.category
+      newBook.uploader=await decode_JWT(req.cookies.jwt);
+      newBook.authors = body.author.split('-');//split author strings into an array
 
 
-        console.log(body,file);
-    // book.create({})
+      let response = await book.create({title:newBook.title,description:newBook.description,cover:file.buffer,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});
+      
+        res.redirect(`/book/${response._id}`);
         
   }
   catch(err){
