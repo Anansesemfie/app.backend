@@ -1,19 +1,6 @@
 
 //   <!-- Modal -->
-//   <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" aria-hidden="true">
-//       <div class="modal-dialog modal-lg">
-//         <div class="modal-content">
-//           <div class="modal-header headerColor">
-//             <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-//           </div>
-//           <div class="modal-body">
-//               
-            
-//           </div>
-         
-//         </div>
-//       </div>
-//     </div>
+
 
 
 const initModal = async ()=>{
@@ -36,6 +23,8 @@ const initModal = async ()=>{
      
 const bookForm = async (loc)=>{
     let position = $(loc);
+    //init category
+
 
     position.append(`<form action="/book/upload" enctype="multipart/form-data" method="POST">
                        <div class="container">
@@ -58,13 +47,11 @@ const bookForm = async (loc)=>{
                       <div class="row">
                           <!-- category / genre -->
                           <div class="col-9">
-                           <select name="category" id="category" multiple="multiple" style="width: 75%" class="form-control"  >
-                           <option value="1">1</option>
-                           <option value="2">2</option>
-                           <option value="3">3</option>
-                           <option value="4">4</option>
-
+                          <label for="category">Category</label>
+                           <select name="category" id="bookcategory" multiple="multiple" style="width: 100%" class="form-control"  >
+                          
                            </select>
+                           <label for="author">Author(s)</label>
                            <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
                           </div>
                           <div class="col-3">
@@ -78,6 +65,9 @@ const bookForm = async (loc)=>{
       
                  </div>
                </form>`)
+            
+                
+            
 }
 /*
   
@@ -133,11 +123,11 @@ function ad_card(ad_img,ad_id,location){
 }
 
 //category
-function category(cat_name,location){
+const category=(cat_name,location='category')=>{
     let loc= $('#'+location);
 
     loc.append(
-        $('<button/>',{'type':'button','class':'button cat ','value':cat_name}).append(cat_name)
+        $('<button/>',{'type':'button','class':'button cat ','id':'genBtn','data-id':'cat','data-target':cat_name}).append(cat_name)
     );
 
 }

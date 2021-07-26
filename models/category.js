@@ -4,12 +4,16 @@ const Schema = mongoose.Schema;
 
 const categorySchema=new Schema({
     title:{
-        type:String,
-        unique:[true,'Category name is required']
+        type:Array,
+        required:[true,'Category Title missing'],
+        unique:[true,'Category name is required'],
+        lowercase:false
     },
     active:{
         type:Boolean,
+        required:true,
         default:false
+
     }
    
 },{

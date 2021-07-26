@@ -4,9 +4,11 @@ const getCategories = async (req,res)=>{
     try{
         let categories = await cate.find({active:true});
         if(categories){
-            console.log(categories);
-            let cat = JSON.encode(categories);
-            // res.json({categories});
+            
+            res.json({categories});
+        }
+        else{
+            res.json({status:"No active categories"});
         }
         
     }

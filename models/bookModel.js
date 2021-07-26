@@ -35,6 +35,10 @@ const bookSchema = new Schema({
     uploader:{
         type:String,
         required:[true,'Missing uploader']
+    },
+    likes:{
+        type:Number,
+        required:false
     }
 
  },{

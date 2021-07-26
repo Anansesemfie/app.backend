@@ -1,6 +1,5 @@
 //init
 
-
 $(document).ready(async ()=>{
 
     let mod = await initModal();
@@ -8,73 +7,22 @@ $(document).ready(async ()=>{
         const myModal= $('#myModal');
 
     }
+    // init category
+    let cat = await getCategory();
+        cat.forEach(cate => {
+    category(cate.title[0]);
+});
 })
-// FilePond.registerPlugin(
-//     FilePondPluginImagePreview,
-//     FilePondPluginImageResize,
-//     FilePondPluginFileEncode
-    
-// )
 
-// FilePond.setOptions({
-// stylePanelAspectRatio:1/1,
-// imageResizeTargetWidth:1,
-// imageResizeTargetHeight:1
-// })
-
-// FilePond.parse(document.body);S
 
 //upload book
 var cover;
 
 $('input[type=file]').on('change',function () {
     cover=this.files[0];
-    
+    console.log(cover);
     // $('#name').text(this.files[0])
 })
-if(cover){
-    console.log(cover);
-}
-
-// const bookUp = ()=>{
-//     let title = $('title').value;
-//     let desc = $('description').value;
-//         let form = new FormData();//init form data
-
-//     if(title!=""){//check title
-//         form.append("title", title);
-//         if(desc!=""){//check desc
-//         form.append("description", desc);
-//             if(cover!=null){
-
-//                 form.append("cover", fileInput.files[0]);//file cover
-//                 return form;
-//             }
-//             else{
-//                 alert('Please select book cover');
-//             }
-//         }
-//         else{
-//             alert('Please Provide a description for this book');
-//         }
-
-
-
-//     }
-//     else{
-//         alert('Please Provide a title for your book');
-//     }
-// }
-
-
-//send new book
-// const PostBook = async(book)=>{
-//     let response = await fetch({
-
-//     });
-// }
-
-    
 
 
 
@@ -84,7 +32,7 @@ if(cover){
 $('button').on('click',async function(){
     switch ($(this).data("id")) {
         case'cat':
-            alert($(this).data("target"));
+            alert("any");
             
             break;
         case 'bookBtn':
@@ -100,7 +48,48 @@ $('button').on('click',async function(){
             
             $('.modal-body').html('');
             bookForm('.modal-body');
+
             
+
+            //multiselect
+            $('select').select2({
+                theme: 'classic',
+                placeholder: 'Select category',
+                maximumSelectionLength: 4
+            });
+
+            
+            //init category
+            let cat = await getCategory();
+            cat.forEach(cate => {
+               var newOption = new Option(cate.title[0], cate.title[0], false, false);
+            $('Select').append(newOption).trigger('change');
+            });
+            
+            
+
+            
+
+            //image view
+$("input[type=file]").change(function(e) {
+    console.log('something')
+var img = document.getElementById("file");
+    // img.attributes('src','');
+    for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
+        
+        var file = e.originalEvent.srcElement.files[i];
+        
+        
+        
+        var reader = new FileReader();
+        reader.onloadend = ()=>{
+             img.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+        $("input").after(img);
+    }
+    });
+
                 // alert('bookform');
                 $('#myModal').modal('toggle');
             
@@ -120,24 +109,7 @@ $('button').on('click',async function(){
 })
 
 
-//image view
-$("input[type=file]").change(function(e) {
-var img = document.getElementById("file");
-img.attributes('src','');
-    for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
-        
-        var file = e.originalEvent.srcElement.files[i];
-        
-        
-        
-        var reader = new FileReader();
-        reader.onloadend = ()=>{
-             img.src = reader.result;
-        }
-        reader.readAsDataURL(file);
-        $("input").after(img);
-    }
-    });
+
 
  
 
