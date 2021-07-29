@@ -269,6 +269,7 @@ body{
 #biggerPicture img{
 min-height: inherit;
     width:100%;
+    
     filter: brightness(50%);
     /* opacity: 0.5; */
 }
@@ -281,6 +282,8 @@ min-height: inherit;
     height:inherit;
     max-width:100%;
     min-width: 70%;
+    
+    
 }
 
 
@@ -448,59 +451,43 @@ min-height: inherit;
 }
 
 
-
-  blockquote {
-    font-size: 3rem;
-    text-align: center;
-  }
-  cite {
-    display: block;
-    text-align: right;
-    font-family: Verdana, Arial, sans-serif;
-    margin-top: 1rem;
-    font-size: .9rem;
-    color: #aaa;
-    font-style: normal;
-  }
-  blockquote q {
-    font-family: Georgia, serif;
-    font-style: italic;
-    letter-spacing: .1rem;
-  }
-  blockquote q span { 
-    will-change: opacity, filter;
-    opacity: 0;
-    filter: blur(0px);
-  }
-  q {
-    quotes: "“" "”" "‘" "’";
-  }
-  q:before {
-      content: open-quote;
-      margin-right: .8rem;
-  }
-  q:after {
-    content: close-quote;
-  }
-  q:before, q:after {
-    color: #ccc;
-    font-size: 4rem;
-  }
-
-
-
-/*2nd div*/
-.link-bg{
-background-color: inherit;
+/* Inside a book */
+.book{
+  max-height: 100%;
+}button{
+  background-color: #d1d9e609;
+}i{
+  color:rgba(0, 0, 0, 0.5);
 }
 
-.link-bg:hover{
-    background-color: smokewhite;
+.book_count{
+  font-size: 2em;
+  color: #394a5679;
+}
+.book_img{
+max-width: 100%;
+border-bottom-left-radius: 5px;
+border-bottom-right-radius: 21px;
+border-top-left-radius: 21px;
+border-top-right-radius: 5px;
 
-    transition-property: color;
-    transition-duration: 2s;
-    transition-timing-function: linear;
-    transition-delay: 1s;
+}
+
+.book_title{
+  font-size: -webkit-xxx-large;
+}
+
+.book_para{
+  max-height: 30%;
+  overflow-y: scroll;
+  font-size: larger;
+  font-family: 'Circular-Loom';
+}
+
+footer{
+  text-align: center;
+  margin-top: 120px;
+  color: #aaa;
 }
 
 
@@ -518,6 +505,15 @@ background-color: inherit;
 
 /* mobile view*/
 @media screen and (max-width: 767px){
+/* inside book */
+      .book_title{
+        font-size: xx-large;
+      }
+
+      .book_para{
+        max-height: 7%;
+        
+      }
 
     #com-menu {
         position: fixed;

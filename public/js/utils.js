@@ -13,7 +13,7 @@ try{
 
 }
 catch(err){
-        alert(`Attention, we couldn't retrieve the Categories\n check your internet connect `)
+        alert(`Attention, Connection to server broke\n check your internet connection `)
 
 }
   

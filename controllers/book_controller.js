@@ -57,7 +57,7 @@ if(error.message==="Missing uploader"){
 
 
 //Add book
-const Up_book = async (req,res)=>{
+const New_book = async (req,res)=>{
   try{
       let newBook ={
         title:"",
@@ -79,19 +79,37 @@ const Up_book = async (req,res)=>{
 
       let response = await book.create({title:newBook.title,description:newBook.description,cover:file.buffer,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});
       
-        res.redirect(`/book/${response._id}`);
+        res.redirect(`/book/Edit/${response._id}`);
         
   }
   catch(err){
    const errors = handleError(err);
    res.status(403).json(errors);
   }
-  
-  
-   
-    
-    
 }
+
+
+//update book pages
+const Update_book =(req,res)=>{
+  const action=req.params.action;
+  const bookID = req.params.book;
+  console.log(action,bookID);
+  switch (action) {
+    case "Edit":
+       res.render(`book`);
+      break;
+    case "Read":
+      res.render(`book`);
+      break;
+    default:
+      res.redirect('/');
+      break;
+  }
+  
+
+}
+
+
 
 
 
@@ -131,7 +149,8 @@ let chap = await fs.writeFileSync(`uploads/audio/${req.body.title}${ext(file.mim
 }
 
 module.exports={
-    Up_book,
+    New_book,
+    Update_book,
     upFile
 }
 

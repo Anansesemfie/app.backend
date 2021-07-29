@@ -10,7 +10,7 @@ $(document).ready(async ()=>{
     // init category
     let cat = await getCategory();
         cat.forEach(cate => {
-    category(cate.title[0]);
+    addCategory(cate.title[0]);
 });
 })
 

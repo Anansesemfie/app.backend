@@ -68,6 +68,63 @@ const bookForm = async (loc)=>{
                 
             
 }
+
+
+const bookDetail = (detail,loc=".book")=>{
+    let position = $(loc);
+
+    position.append(`
+    <div class="row">
+    <div class="col-6">
+        <!-- cover -->
+        <img src="${detail.cover}" alt="" id="file" class="book_img">
+        
+    </div>
+    <div class="col-6">
+        <!-- details -->
+                <div class="book_title">
+                    ${detail.title}
+                </div>
+                <hr>
+                <div class="container centered" id="bookCategory">
+                    ${detail.category.forEach(cate=>{ 
+                        console.log(cate)
+                        addCategory(cate,'bookCategory')})}
+                </div>
+                <hr>
+                <div class="book_para">
+                    <p id="description">
+                    ${detail.description}
+                    </p>
+                </div>
+
+                <div class="row">
+            <!-- reaction -->
+            <div class="col-4 ">
+                <button type="button" class="">
+                    <i class="fa fa-smile-o fa-3x"></i></i> <span class="badge book_count" id="liked">${detail.liked}</span>
+                  </button>
+            </div>
+            <div class="col-4">
+                <button type="button" class="">
+                    <i class="fa fa-frown-o fa-3x"></i></i> <span class="badge book_count" id="disliked">${detail.disliked}</span>
+                  </button>
+            </div>
+            
+            <div class="col-4">
+                <button type="button" class="">
+                    <i class="fa fa-headphones fa-3x"></i><span class="badge book_count" id="seen"></span>
+                  </button>
+            </div>
+            </div>
+    </div>
+        
+
+        </div>
+    
+    
+    `);
+}
 /*
   
 */
@@ -122,11 +179,11 @@ function ad_card(ad_img,ad_id,location){
 }
 
 //category
-const category=(cat_name,location='category')=>{
+const addCategory=(cat_name,location='category')=>{
     let loc= $('#'+location);
 
     loc.append(
-        $('<button/>',{'type':'button','class':'button cat ','id':'genBtn','data-id':'cat','data-target':cat_name}).append(cat_name)
+        $('<a/>',{'href':'/category/'+cat_name,'type':'button','class':'button cat ','id':'genBtn','data-id':'cat','data-target':cat_name}).append(cat_name)
     );
 
 }
