@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const fs = require('fs');
 
 const myMail = {"mail":"mancuniamoe@gmail.com","password":"moeis1995"};
 
@@ -155,7 +156,47 @@ const audioStorage = multer.diskStorage({
     }
     });
 
+    const Imgextention = (file)=>{
+      let mime;
+    if(file ==='image/jpeg'){
+      mime = '.jpg';
+    }
+    else if(file==='image/png'){
+      mime ='.png';
+    }
+    else{
+      mime ='.gif';
+    }
+    return mime;
+    }
+    
 
+
+    const createFileDIr = async (file,title)=>{
+      try{
+      let buff = new Buffer.from(file.buffer, 'base64');
+      let newTitle = title.split(' ');
+       newTitle = newTitle.join('-');
+       console.log(newTitle);
+     
+      const dir = `uploads/${Date.now()}-${newTitle}`;
+
+      if(!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+      
+      let filename =`${dir}/${newTitle}${Imgextention(file.mimetype)}`
+
+      fs.writeFileSync(filename, buff);
+      
+      return {location:dir.slice(7),cover:filename.slice(7)};
+      }
+      catch(err){
+        console.log(err);
+      }
+      
+
+    }
 
 
 
@@ -166,5 +207,6 @@ module.exports={
   service,
   decode_JWT,
   uploadCover,
-  uploadAudio
+  uploadAudio,
+  createFileDIr
 }

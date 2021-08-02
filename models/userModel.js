@@ -77,6 +77,14 @@ userSchema.statics.login=async function(email,password){
     throw Error('incorrect email');
 };
 
+userSchema.statics.info = async function(id){
+    const user = await this.findOne({_id:id,Active:true});
+    if(!user){
+        return null;
+    }
+    
+
+}
 // static method to follow user
 
 

@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded());
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.use(express.static('uploads'));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -74,7 +75,7 @@ app.get('/',(req,res)=>{
 // })
 
 app.use('',(req,res)=>{
-res.send("Page not found");
+res.status(404).send("Page not found");
 });
 
 

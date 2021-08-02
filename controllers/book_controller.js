@@ -1,7 +1,7 @@
 const { book,bookReact,bookComment} = require('../models/bookModel');
-// const {user} = require('../models/userModel');
-// const jwt = require('jsonwebtoken');
-const {mailer,decode_JWT,service,cover} = require('../util/utils'); 
+const files = require('../models/files');
+
+const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
 const fs = require('fs');
 const { Buffer } = require('buffer');
 
@@ -12,7 +12,8 @@ const handleError= (error)=>{
 let err = {
     title:'',
     description:'',
-    user:''
+    user:'',
+    file:''
 }
 
 if(error.message==="This book needs a title!"){
@@ -20,7 +21,7 @@ if(error.message==="This book needs a title!"){
 err.title=error.message;
 }
 
-if(error.message==="This is a very long title"){
+if(error._message==="This is a very long title"){
     //title too long
     err.title="Book title too long";
     
@@ -33,7 +34,7 @@ if(error.message==="Say something to tease your audience"){
         err.description=error.message;
         
         }
-if(error.message==="Express yourself much more than this"){
+if(error._message==="Express yourself much more than this"){
             //description not long enough
             err.description=error.message;
             
@@ -49,6 +50,9 @@ if(error.message==="Missing uploader"){
         err.user=error.message
         
         }
+if(error.message ==="No file was uploaded"){
+  error.file=error.message;
+}
 
         return err;
 }
@@ -70,19 +74,36 @@ const New_book = async (req,res)=>{
 
       let body = req.body;//get body from request
       let file = req.file;//get file details from request after being handled by multer
+     
+      if(!file){
+        throw 'No file was uploaded';
+      }
+      
+
       newBook.title=body.title;
       newBook.description=body.description;
       newBook.category=body.category
       newBook.uploader=await decode_JWT(req.cookies.jwt);
       newBook.authors = body.author.split('-');//split author strings into an array
+      // newBook.cover = {originalname:file.originalname,encoding:file.encoding,mimetype:file.mimetype,buffer:file.buffer};
 
+      // console.log(newBook.cover);
 
-      let response = await book.create({title:newBook.title,description:newBook.description,cover:file.buffer,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});
+        let fileBack = await createFileDIr(file,body.title);
+        console.log(fileBack);
+
+      let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});
       
-        res.redirect(`/book/Edit/${response._id}`);
+      if(!response){
+     throw 'Could not create book';
+      
+      }
+      res.redirect(`/book/${response._id}`);
+        
         
   }
   catch(err){
+    console.log(err);
    const errors = handleError(err);
    res.status(403).json(errors);
   }
@@ -90,7 +111,7 @@ const New_book = async (req,res)=>{
 
 
 //update book pages
-const Update_book =(req,res)=>{
+const Update_book = async (req,res)=>{
   const action=req.params.action;
   const bookID = req.params.book;
   console.log(action,bookID);
@@ -106,7 +127,67 @@ const Update_book =(req,res)=>{
       break;
   }
   
+}
 
+const Get_book = async (req,res)=>{
+  try{
+     let bookID = req.params.book;//get book id from request
+   let bookBack;
+  let creator=false;
+  
+  if(req.cookies.jwt){//logged in user 
+    bookBack= await book.findOne({_id:bookID});//get book from DB
+    let user = await decode_JWT(req.cookies.jwt);
+  
+
+  if(bookBack.uploader==user._id){
+    creator=true;
+  }
+  if(!creator){//if not the uploader kick out
+    res.redirect('/');
+  }
+  }
+
+  else{//not logged user koraa 
+    bookBack = await book.findOne({_id:bookID,status:'Active'});//get book from DB
+    if(!bookBack){
+    res.redirect('/');
+  }
+  }
+ 
+  res.json({bookBack,creator});
+  }
+  catch(err){
+    let erros = handleError(err);
+    res.send(erros);
+  }
+ 
+
+
+}
+
+const Get_books =async (req,res)=>{
+  try{
+    let books;
+
+     if(req.cookies.jwt){//if user is logged in
+    books = await book.find({status:'Active'});
+  }
+  else{
+    books = await book.find({status:'Active'});
+    console.log('no user');
+     //process file here 
+
+    
+  }
+
+ res.json({books});
+  }
+  catch(err){
+    console.log(err);
+
+  }
+ 
 }
 
 
@@ -138,8 +219,9 @@ const upFile = async (req,res)=>{
       console.log(file.path)
       let buff = new Buffer.from(file.buffer, 'base64');
      
-      
-let chap = await fs.writeFileSync(`uploads/audio/${req.body.title}${ext(file.mimetype)}`, buff);
+      // const dir = `uploads/${Date.now()}`
+      fs.mkdir(dir);
+let chap = await fs.writeFile(`${req.body.title}${ext(file.mimetype)}`, buff);
 
       return res.json({status:'OK',base64:chap})
     }
@@ -151,6 +233,8 @@ let chap = await fs.writeFileSync(`uploads/audio/${req.body.title}${ext(file.mim
 module.exports={
     New_book,
     Update_book,
-    upFile
+    upFile,
+    Get_book,
+    Get_books
 }
 

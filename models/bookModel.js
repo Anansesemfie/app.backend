@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema
 
+
 // book schema here
 const bookSchema = new Schema({
     title:{
@@ -14,8 +15,8 @@ const bookSchema = new Schema({
     description:{
         type:String,
         required:[true,'Say something to tease your audience'],
-        minlength:[20,'Express yourself much more than this'],
-        maxlength:[100,'Do not narrate the whole thing here'],
+        minlength:[10,'Express yourself much more than this'],
+        maxlength:[1500,'Do not narrate the whole thing here'],
         lowercase:true
     },
     status:{
@@ -29,9 +30,16 @@ const bookSchema = new Schema({
     },
     authors:[],
     category:[],
-    cover:{
-        type:Buffer,
+    folder:{
+        type:String,
+        unique:false,
         required:false
+    },
+    cover:{
+        type:String,
+        default:'/images/user_fire.jpg',
+        required:false,
+        unique:false
     },
     uploader:{
         type:ObjectId,

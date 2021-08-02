@@ -478,9 +478,10 @@ border-top-right-radius: 5px;
 }
 
 .book_para{
-  max-height: 30%;
+  max-height: 20%;
+
   overflow-y: scroll;
-  font-size: larger;
+  font-size: medium;
   font-family: 'Circular-Loom';
 }
 
@@ -511,7 +512,8 @@ footer{
       }
 
       .book_para{
-        max-height: 7%;
+            max-height: 300px;
+    margin-top: -90px;
         
       }
 

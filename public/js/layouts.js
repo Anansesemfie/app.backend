@@ -34,7 +34,7 @@ const bookForm = async (loc)=>{
                               <label for="title">Title</label>
                            <input type="text"  name="title" id="title" class="form-control" required placeholder="Title">
                            <label for="description">Description</label>
-                           <textarea name="description" id="description" cols="30" class="form-control" rows="10"></textarea>
+                           <textarea name="description" id="description" cols="30" maxlength=1000 class="form-control" rows="10"></textarea>
                           </div>
                           <!-- cover image here -->
                           <div class="col-6">
@@ -102,18 +102,18 @@ const bookDetail = (detail,loc=".book")=>{
             <!-- reaction -->
             <div class="col-4 ">
                 <button type="button" class="">
-                    <i class="fa fa-smile-o fa-3x"></i></i> <span class="badge book_count" id="liked">${detail.liked}</span>
+                    Liked<span class="badge book_count" id="liked">${detail.liked}</span>
                   </button>
             </div>
             <div class="col-4">
                 <button type="button" class="">
-                    <i class="fa fa-frown-o fa-3x"></i></i> <span class="badge book_count" id="disliked">${detail.disliked}</span>
+                    Disliked<span class="badge book_count" id="disliked">${detail.disliked}</span>
                   </button>
             </div>
             
             <div class="col-4">
                 <button type="button" class="">
-                    <i class="fa fa-headphones fa-3x"></i><span class="badge book_count" id="seen"></span>
+                    Listened<span class="badge book_count" id="seen"></span>
                   </button>
             </div>
             </div>
@@ -125,32 +125,6 @@ const bookDetail = (detail,loc=".book")=>{
     
     `);
 }
-/*
-  
-*/
-
-
-/*  
-<span class="badge badge-light">9</span>
-<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-           Dropdown
-
-         </a>
-         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-           <a class="dropdown-item" href="#">Action</a>
-           <a class="dropdown-item" href="#">Another action</a>
-           <div class="dropdown-divider"></div>
-           <a class="dropdown-item" href="#">Something else here</a>
-<div class="chip">
-  <img src="img_avatar.jpg" alt="Person" width="96" height="96">
-  John Doe
-</div>
-        </div>
-*/ 
-
-
-
-
 
 //card
 
@@ -189,6 +163,87 @@ const addCategory=(cat_name,location='category')=>{
 }
 
 
+const addBarner = (book,loc)=>{
+    let position = $(loc);
 
-// for trial sake, shouldn't accept arguements
-// navbar('me.jpg');
+    position.append(`
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+      <div class="carousel-inner">
+
+        <div class="carousel-item active">
+          <div class="ig_container " id="biggerPicture">
+              <img src="" alt="" id="bookCover">
+
+
+          </div>
+          <div class="top-top">
+            
+         <div class="pic_heading">
+           <span id="bookTitle"></span>
+           <span id="ifUser">
+           <button  type="button" id="genBtn" data-id="bookForm" class="button btn cat signin">Add Book</button>
+           </span>
+            
+            
+         </div>
+
+       </div>
+
+
+        <div class="container centered" id="category">
+          
+        </div>
+        <div class="container bottom-left" id="react">
+         
+        </div>
+
+</div>
+        
+       
+        
+       
+
+
+      </div>
+    </div>
+    `);
+}
+
+
+
+//functions
+const toBase64 = async (data)=>{//convert buffer to base64
+    try{
+         let mime = data.mimetype;
+    let buffer = btoa(data.buffer);
+        console.log(buffer);
+    let cover = `data:${mime};base64,${buffer}`;
+
+    return cover;
+    }
+    catch(err){
+        alert(err);
+    }
+   
+   
+}
+
+// function _arrayBufferToBase64( buffer ) {
+//     var binary = '';
+//     var bytes = new Uint8Array(buffer);
+//     var len = bytes.byteLength;
+//     for (var i = 0; i < len; i++) {
+//         console.log(bytes[i]);
+//         binary += String.fromCharCode( bytes[ i ] );
+//     }
+//     return btoa( binary );
+// }
+
+function str2ab(buf) {
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
+   
+  }
+
+const handleError = (err)=>{
+    console.log(err);
+}
