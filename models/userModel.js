@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
       },
       dp:{
         type:String,
-        default:'me.jpg',
+        default:'logo_d.png',
       },
      
       key:{

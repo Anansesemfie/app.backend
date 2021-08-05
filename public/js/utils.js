@@ -11,6 +11,7 @@ catch(err){
 }
 }
 
+
 const getBookdetails = async(book)=>{// a single book details
         try{
                 // console.log(book);
@@ -19,7 +20,7 @@ const getBookdetails = async(book)=>{// a single book details
                 throw 'check internet connection';
         }
         let data = await result.json();
-        // console.log(data);
+        // console.log(data.bookBack);
 
         return data;
 
@@ -29,7 +30,7 @@ const getBookdetails = async(book)=>{// a single book details
         }  
 }
 
-const getBooks = async ()=>{
+const getBooks = async ()=>{//all available books
         try{
         let result = await fetch(`/book/`,{
                 method: 'GET',
@@ -39,12 +40,36 @@ const getBooks = async ()=>{
                 throw 'Something went wrong whiles getting books';
         }
         let data = await result.json();
-        // console.log(data);
+        // console.log(data.books);
         
-        return data;
+        return data.books;
 
         }
         catch(err){
         console.log(err);
+        }
+}
+
+
+const getChapters = async(book)=>{
+        try{
+                let result = await fetch(`/chapter/${book}`,{
+                        method: 'GET',
+                        redirect: 'follow'}
+                      );
+
+                if(result.status==404){
+                        throw 'Something went wrong whiles getting books';
+                }
+
+                let data = await result.json();
+                // console.log(data.validChaps);
+                
+                return data.validChaps;
+                
+
+        }
+        catch(err){
+
         }
 }

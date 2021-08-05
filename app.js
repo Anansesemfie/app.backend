@@ -8,9 +8,12 @@ const {checkUser,checkAccount,requireAuth} = require('./middleware/authMiddlewar
 
 const utils = require('./util/utils');
 
+//routes
 const user = require('./routes/user');
 const book = require('./routes/book');
 const category = require('./routes/category');
+const files = require('./routes/files');
+const chapter = require('./routes/chapter');
 
 //start express
 const app = express();
@@ -20,10 +23,9 @@ const app = express();
 app.set('view engine','ejs');
 
 //uses
-app.use(bodyParser.urlencoded());
-// app.use(upload());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(express.static('uploads'));
 app.use(express.json());
@@ -61,6 +63,8 @@ app.post('/user',checkUser)
 app.use('/user',user);
 app.use('/book',book);
 app.use('/category',category);
+app.use('/file',files);
+app.use('/chapter',chapter);
 
 app.get('/',(req,res)=>{
     res.render('index');

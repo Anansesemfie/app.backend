@@ -12,6 +12,7 @@ const description = $('#description');
 const ifUser = $('#ifUser');
 
 
+
 //reactions
 const liked = $('.liked');
 const disliked = $('.disliked');
@@ -23,6 +24,9 @@ const seen = $('.seen');
 const loadBook = async ()=>{
     try{
         let details = await getBookdetails(book);
+        if(!details){
+            location.href="/";
+        }
 
     //fill the blanks
     cover.attr('src',details.bookBack.cover);
@@ -33,12 +37,16 @@ const loadBook = async ()=>{
         ifUser.append(
            
             $('<button/>',{'class':'button btn cat signin','id':'chapter'}).append('Add Chapter'),
-            $('<button/>',{'class':'button btn cat signin','id':'update'}).append('Update')
-        )
+            // $('<button/>',{'class':'button btn cat signin','id':'update'}).append('Update')
+        );
+        
     }
 
-    details.bookBack.category.forEach(cat => {
+    details.bookBack.category.forEach(cat => {//print categories
         addCategory(cat,'category');
+    });
+    details.bookBack.authors.forEach(author=>{//print authors
+        addAuthor(author,'Authors');
     });
     }
     catch(err){
@@ -49,21 +57,65 @@ const loadBook = async ()=>{
 
 }
 
+
+const loadChapters = async () =>{
+    try{
+       
+        let details = await getChapters(book);
+        //  console.log('in load',details);
+        if(details.length==0){
+            $('#Chapters').append(`
+            <center>
+            <a href="/" class="button cat btn-lg btn-block">Checkout other books</a>
+            </center>
+            `)
+        }
+        else{
+            details.forEach(chap=>{
+                console.log(chap);
+                addChapter(chap,'Chapters');
+            })
+        }
+
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 //main function
         $(document).ready(async ()=>{
 
          try{
+             $('.toast').toast('show',{"data-autohide":false});
+            
         const green = await loadBook();
+        const go =loadChapters(); 
+        if(go){
+            preventAudioDownload(); 
+        }
         const chapter = $('#chapter');
         const update = $('#update');
 
             if(green){
-                console.log('fetching chapters');
+                prevenImagetDownload();
+                
             }
+
+
+            let mod = await initModal();//start modal
+                if(mod){
+                    const myModal= $('#myModal');
+
+                }
 
             //actions
                 chapter.on('click',()=>{//new chapter
-                    alert('chapter clicked');
+                    $('.modal-body').html('');
+                    postChapter(book,'.modal-body');
+
+                    // call modal
+                    $('#myModal').modal('toggle');
                 })
 
                 update.on('click',()=>{//update

@@ -1,6 +1,31 @@
 
 //   <!-- Modal -->
+const handleError = (err)=>{
+    console.log(err);
+}
 
+
+const prevenImagetDownload = ()=>{
+    let image = document.querySelectorAll('img');
+
+    image.forEach(ele=>{
+        ele.addEventListener('contextmenu',(e)=>{
+            e.preventDefault();
+            });
+            
+    })
+}
+const preventAudioDownload = ()=>{
+    let aud = document.querySelectorAll('audio');
+
+    aud.forEach(ele=>{
+        ele.addEventListener('click',(e)=>{
+            alert(e);
+            });
+            console.log('disabled');
+    });
+
+}
 
 
 const initModal = async ()=>{
@@ -32,15 +57,14 @@ const bookForm = async (loc)=>{
                           <!-- title and description -->
                           <div class="col-6">
                               <label for="title">Title</label>
-                           <input type="text"  name="title" id="title" class="form-control" required placeholder="Title">
+                           <input type="text"  name="title" id="title" maxlength=50 class="form-control" required placeholder="Title">
                            <label for="description">Description</label>
                            <textarea name="description" id="description" cols="30" maxlength=1000 class="form-control" rows="10"></textarea>
                           </div>
                           <!-- cover image here -->
                           <div class="col-6">
-                          <img id="file" class="image_viewer">
                               <input type="file" name="file" class="form-control"> 
-                               
+                               <img id="file" class="image_viewer">
                           </div>
                       </div>
       
@@ -67,6 +91,43 @@ const bookForm = async (loc)=>{
             
                 
             
+}
+
+const postChapter = (id,loc)=>{
+    let position = $(loc);
+
+    position.append(`
+    <form action="/chapter/upload" enctype="multipart/form-data" method="POST">
+        <input type="text" name="book" value="${id}" hidden=true/>
+                       <div class="container">
+                      <div class="row">
+                      <div class="col-6">
+                      <label for="title">Chapter Title</label>
+                   <input type="text"  name="title" id="title" maxlength=50 class="form-control" required placeholder="Title">
+                  </div>
+                  <div class="col-6">
+                      <label for="title">Audio File</label>
+                   <input type="file"  name="file"  class="form-control" required>
+                  </div>
+
+                      </div>
+
+                      <div class="row">
+                        <div class="col-12">
+                <label for="description">Chapter Description</label>
+                <textarea name="description" id="description" cols="30" maxlength=100 class="form-control" rows="10"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                                  <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning btn-block">Cancel</button></div>
+                                  <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-info btn-block">Post</button></div>
+                           </div>
+
+                      </div>
+
+                      </form>
+    `);
 }
 
 
@@ -128,20 +189,21 @@ const bookDetail = (detail,loc=".book")=>{
 
 //card
 
-function ad_card(ad_img,ad_id,location){
+function ad_card(book,location){
     let loc= $('#'+location);
-    ad_img='images/'+ad_img;
+    
 
     loc.append(
         $('<div/>',{'class':'col mb-4'}).append(
             $('<div/>',{'class':'card'}).append(
-                $('<img/>',{'class':'card-img-top','alt':'webinar banner','src':ad_img}),
+                $('<img/>',{'class':'card-img-top','alt':'webinar banner','src':book.cover}),
                 $('<div/>',{'class':'card-body'}).append(
+                $('<div/>',{'class':'card-title'}).append(`#${book.title}`),
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
-                $('<button/>',{'class':'button','id':'signupBTN','value':ad_id}).append($('<i/>',{'class':'fa fa-calendar-plus-o','aria-hidden':'true'})),
-                $('<button/>',{'class':'button','id':'peekBTN','value':ad_id}).append($('<i/>',{'class':'fa fa-expand','aria-hidden':'true'})),
-                $('<button/>',{'class':'button','id':'enterBTN','value':ad_id}).append($('<i/>',{'class':'fa fa-sign-in','aria-hidden':'true'}))
+                // $('<button/>',{'class':'button','id':'uploaderBTN','data-target':book.uploader}).append($('<i/>',{'class':'fa fa-calendar-plus-o','aria-hidden':'true'})),
+                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fa fa-expand','aria-hidden':'true'})),
+                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fa fa-sign-in','aria-hidden':'true'}))
                 )
                 )
                 )
@@ -150,6 +212,16 @@ function ad_card(ad_img,ad_id,location){
 
     );
   
+}
+
+const addAuthor = (name,loc)=>{
+    let position = $(`#${loc}`);
+
+    position.append(
+        `<a href="#">
+        <h5 class=" badge bg-light text-dark">${name}</h5>
+        </a> `
+    )
 }
 
 //category
@@ -212,38 +284,35 @@ const addBarner = (book,loc)=>{
 
 
 //functions
-const toBase64 = async (data)=>{//convert buffer to base64
-    try{
-         let mime = data.mimetype;
-    let buffer = btoa(data.buffer);
-        console.log(buffer);
-    let cover = `data:${mime};base64,${buffer}`;
-
-    return cover;
-    }
-    catch(err){
-        alert(err);
-    }
-   
-   
+const addChapter = (data,loc)=>{
+    let position = $(`#${loc}`);
+    position.append(`
+    <div class="col mb-4">
+                <div class="card">
+                  
+                  <div class="card-body">
+                  <div class="row col-12">
+                  <div class="col-3">
+                  <div class="card-title" title="">${data.title}</div>
+                  </div>
+                  <div class="col-8">
+                  ${data.description}
+                  </div>
+                  </div>
+                    
+                    <div class="container">
+                    
+                      <audio oncontextmenu="return false;" controls="true" controlslist="nodownload" >
+                      <source src="${data.file.slice(1)}" type="${data.mimetype}">
+                      </audio>
+                    
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+    `);
 }
 
-// function _arrayBufferToBase64( buffer ) {
-//     var binary = '';
-//     var bytes = new Uint8Array(buffer);
-//     var len = bytes.byteLength;
-//     for (var i = 0; i < len; i++) {
-//         console.log(bytes[i]);
-//         binary += String.fromCharCode( bytes[ i ] );
-//     }
-//     return btoa( binary );
-// }
 
-function str2ab(buf) {
-    return String.fromCharCode.apply(null, new Uint8Array(buf));
-   
-  }
 
-const handleError = (err)=>{
-    console.log(err);
-}

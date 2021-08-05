@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
+const { response } = require('express');
 
 const myMail = {"mail":"mancuniamoe@gmail.com","password":"moeis1995"};
 
@@ -50,7 +51,6 @@ const service={
 
 //JSON web Token 
 const decode_JWT=async (code)=>{
-
   const token = code;
   //check token
   if(token){
@@ -156,6 +156,12 @@ const audioStorage = multer.diskStorage({
     }
     });
 
+
+
+
+
+
+
     const Imgextention = (file)=>{
       let mime;
     if(file ==='image/jpeg'){
@@ -172,7 +178,7 @@ const audioStorage = multer.diskStorage({
     
 
 
-    const createFileDIr = async (file,title)=>{
+    const createFolderDIr = async (file,title)=>{
       try{
       let buff = new Buffer.from(file.buffer, 'base64');
       let newTitle = title.split(' ');
@@ -202,11 +208,58 @@ const audioStorage = multer.diskStorage({
 
 
 
+    let Audioextention = (file)=>{
+      let mime;
+    if(file ==='audio/mpeg'){
+      mime = '.mp3';
+    }
+    else if(file==='audio/wave'){
+      mime ='.wav';
+    }
+    else if(file==='audio/mp4'){
+      mime ='.mp4';
+    }
+    else{
+      throw 'This is not a valid file';
+    }
+    return mime;
+    }
+
+
+    const createAudioDIr = async (direct,file,title)=>{
+        try{
+          let buff = new Buffer.from(file.buffer, 'base64');//to buffer from Base64
+          let newTitle = title.split(' ');
+          newTitle = newTitle.join('-');
+
+          let filename =`uploads/${direct}/${newTitle}${Audioextention(file.mimetype)}`
+          if (fs.existsSync(filename)) {
+            filename+=`uploads/${direct}/${newTitle}-${Audioextention(file.mimetype)}`;
+            // Do something
+        }
+
+          fs.writeFileSync(filename, buff);
+
+          return {filename:filename.slice(7),mimetype:file.mimetype};
+
+
+
+        }
+        catch(err){
+          res.json({Error:err});
+        }
+    }
+
+
+
+
+
 module.exports={
   mailer,
   service,
   decode_JWT,
   uploadCover,
   uploadAudio,
-  createFileDIr
+  createFolderDIr,
+  createAudioDIr
 }

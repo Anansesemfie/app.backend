@@ -9,7 +9,7 @@ const bookSchema = new Schema({
     title:{
         type:String,
         required:[true,'This book needs a title!'],
-        lowercase:true,
+        lowercase:false,
         maxlength:[50,'This is a very long title']
     },
     description:{
@@ -17,7 +17,7 @@ const bookSchema = new Schema({
         required:[true,'Say something to tease your audience'],
         minlength:[10,'Express yourself much more than this'],
         maxlength:[1500,'Do not narrate the whole thing here'],
-        lowercase:true
+        lowercase:false
     },
     status:{
         type:String,
@@ -45,9 +45,9 @@ const bookSchema = new Schema({
         type:ObjectId,
         required:[true,'Missing uploader']
     },
-    likes:{
+    seen:{
         type:Number,
-        required:false
+        default:0
     }
 
  },{

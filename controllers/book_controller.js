@@ -1,9 +1,7 @@
 const { book,bookReact,bookComment} = require('../models/bookModel');
-const files = require('../models/files');
 
 const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
-const fs = require('fs');
-const { Buffer } = require('buffer');
+
 
 
 
@@ -98,7 +96,7 @@ const New_book = async (req,res)=>{
      throw 'Could not create book';
       
       }
-      res.redirect(`/book/${response._id}`);
+      res.redirect(`/book/Read/${response._id}`);
         
         
   }
@@ -143,7 +141,7 @@ const Get_book = async (req,res)=>{
   if(bookBack.uploader==user._id){
     creator=true;
   }
-  if(!creator){//if not the uploader kick out
+  if(!creator&&bookBack.status=="Pending"){//if not the uploader kick out
     res.redirect('/');
   }
   }
@@ -195,45 +193,13 @@ const Get_books =async (req,res)=>{
 
 
 
-// for chapters
-'audio/mpeg','audio/wave','audio/mp4'
-let ext = (file)=>{
-  let mime;
-if(file ==='audio/mpeg'){
-  mime = '.mp3';
-}
-else if(file==='audio/wave'){
-  mime ='.wav';
-}
-else{
-  mime ='.mp4';
-}
-return mime;
-}
 
-const upFile = async (req,res)=>{
-    let file = req.file;
-  console.log(file);
-  console.log(req.body);
-    if(file){
-      console.log(file.path)
-      let buff = new Buffer.from(file.buffer, 'base64');
-     
-      // const dir = `uploads/${Date.now()}`
-      fs.mkdir(dir);
-let chap = await fs.writeFile(`${req.body.title}${ext(file.mimetype)}`, buff);
 
-      return res.json({status:'OK',base64:chap})
-    }
-    else{
-      res.status(404).json({status:'fileupload error'});
-    }
-}
+
 
 module.exports={
     New_book,
     Update_book,
-    upFile,
     Get_book,
     Get_books
 }
