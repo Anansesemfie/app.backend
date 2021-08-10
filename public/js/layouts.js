@@ -219,7 +219,7 @@ const addAuthor = (name,loc)=>{
 
     position.append(
         `<a href="#">
-        <h5 class=" badge bg-light text-dark">${name}</h5>
+        <h5 class=" badge bg-dark text-light">${name}</h5>
         </a> `
     )
 }
@@ -287,28 +287,23 @@ const addBarner = (book,loc)=>{
 const addChapter = (data,loc)=>{
     let position = $(`#${loc}`);
     position.append(`
-    <div class="col mb-4">
+    <div class="col mb-4 chapter">
                 <div class="card">
                   
                   <div class="card-body">
-                  <div class="row col-12">
-                  <div class="col-3">
-                  <div class="card-title" title="">${data.title}</div>
-                  </div>
-                  <div class="col-8">
+                  <div class="col-12">
+                  
+                  <div class="card-title" title="">#${data.title}</div>
+                  <hr>
+                  
                   ${data.description}
+                 
                   </div>
-                  </div>
-                    
-                    <div class="container">
-                    
-                      <audio oncontextmenu="return false;" controls="true" controlslist="nodownload" >
-                      <source src="${data.file.slice(1)}" type="${data.mimetype}">
-                      </audio>
-                    
-                    </div>
                     
                   </div>
+                  <button  class="btn cat chap_btn" data-id="chapter" data-target="${data._id}">
+                  <div class="card-footer">Play</div>
+                  </button>
                 </div>
               </div>
     `);

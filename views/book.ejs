@@ -33,10 +33,15 @@
       <div class="container centered" id="category">
         
       </div>
+      <div class="bottom-left">
+        <div class="container row" id="Authors">
+        
+        </div>
+      </div>
       
-      <div class="container bottom-right" id="react">
+      <div class="container bottom-right react" id="react">
 
-        <button type="button" class="btn cat position-relative">
+        <button type="button" class="simp_btn btn cat position-relative">
           Like
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
             99+
@@ -44,7 +49,7 @@
           </span>
         </button>
 
-        <button type="button" class="btn cat position-relative">
+        <button type="button" class="simp_btn btn cat position-relative">
           Dislike
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
             99+
@@ -52,7 +57,7 @@
           </span>
         </button>
 
-        <div type="button" class="btn position-relative">
+        <div type="button" class="simp_btn btn position-relative">
           Seen
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info">
             99+
@@ -87,9 +92,7 @@
         
         <div class="col-12 title">
          <div class="c0l-9">
-          <div class="container row" id="Authors">
-        
-          </div>
+          
           <div class="col-3">
            <h3>Chapters</h3>
          </div>
@@ -123,11 +126,47 @@
         
         </div>
 
-    
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Player here -->
+        <div class="container-fluid myPlayer">
+          <div class="card">
+            <div class="card-header headerColor">
+              #<span id="audioTitle" style="color:white;"> Title</span>
+            </div>
+            <div class="card-body">
+
+              <div class="row">
+            <div class="col-12">
+
+              <audio oncontextmenu="return false;" controls controlslist="nodownload" id="custPlayer">
+                <source src="" type="">
+              </audio>
+
+            </div>
+          </div>
+
+            </div>
+            
+          </div>
+          
+        </div>
+
+        
 
 
 
 
 <%- include('partials/footer') %>
 <script defer type="text/javascript" src="/js/book.js"></script>
+<script defer type="text/javascript" src="/js/player.js"></script>
+
 

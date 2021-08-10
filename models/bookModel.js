@@ -45,9 +45,9 @@ const bookSchema = new Schema({
         type:ObjectId,
         required:[true,'Missing uploader']
     },
-    seen:{
-        type:Number,
-        default:0
+    moment:{
+        type:Date,
+        default:mongoose.now()
     }
 
  },{
@@ -93,63 +93,12 @@ bookSchema.static.authorPop = async (user,book_id)=>{
     }
 }
 
-// Reactions schema.......................................................................
-const bookReactSchema = new Schema({
-    bookID:{
-        type:String,
-        required:[true,'Missing book to react']
-    },
-    user:{
-        type:String,
-        required:[true,'Missing to react to book']
-    },
-    action:{
-        type:String,
-        default:'Like'
-    },
-    moment:{
-        type:Date,
-        default:mongoose.now()
-    }
-});
-
-//like book
-
-
-//unlike book
-
-
-// Comments schema...............................................................................
-const bookCommentSchema = new Schema({
-    bookID:{
-        type:String,
-        required:[true,'Missing book to comment on']
-    },
-    user:{
-        type:String,
-        required:[true,'Missing user to comment on book']
-    },
-    comment:{
-        type:String,
-        required:[true,'Comment is empty'],
-        maxlength:[100,'Comment too long']
-    },
-    moment:{
-        type:Date,
-        default:mongoose.now()
-    }
-});
-
-//add comment
 
 
  const book = mongoose.model('Book',bookSchema);
- const bookReact = mongoose.model('BookReact',bookReactSchema);
- const bookComment = mongoose.model('BookComment',bookCommentSchema);
+ 
 
 module.exports={
-    book,
-    bookReact,
-    bookComment
+    book
 };
 

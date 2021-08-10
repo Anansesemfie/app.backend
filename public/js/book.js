@@ -60,7 +60,7 @@ const loadBook = async ()=>{
 
 const loadChapters = async () =>{
     try{
-       
+       let back;
         let details = await getChapters(book);
         //  console.log('in load',details);
         if(details.length==0){
@@ -69,14 +69,16 @@ const loadChapters = async () =>{
             <a href="/" class="button cat btn-lg btn-block">Checkout other books</a>
             </center>
             `)
+            back= false
         }
         else{
             details.forEach(chap=>{
                 console.log(chap);
                 addChapter(chap,'Chapters');
             })
+            back = true
         }
-
+        return true;
     }
     catch(err){
         console.log(err);
@@ -90,9 +92,17 @@ const loadChapters = async () =>{
              $('.toast').toast('show',{"data-autohide":false});
             
         const green = await loadBook();
-        const go =loadChapters(); 
+        const go =await loadChapters(); 
         if(go){
             preventAudioDownload(); 
+
+            const buttons = document.querySelectorAll('.chap_btn')
+            
+        // player stuff
+
+            
+
+            // player stuff
         }
         const chapter = $('#chapter');
         const update = $('#update');

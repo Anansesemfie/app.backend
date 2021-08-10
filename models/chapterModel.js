@@ -20,6 +20,10 @@ const chapterSchema = new Schema({
     book:{
         type:ObjectId,
         required:[true,'Missing Book']
+    },
+    moment:{
+        type:Date,
+        default:mongoose.now()
     }
 
 },{

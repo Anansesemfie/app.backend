@@ -1,4 +1,4 @@
-const { book,bookReact,bookComment} = require('../models/bookModel');
+const { book} = require('../models/bookModel');
 
 const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
 
