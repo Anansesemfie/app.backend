@@ -14,16 +14,16 @@ const ifUser = $('#ifUser');
 
 
 //reactions
-const liked = $('.liked');
-const disliked = $('.disliked');
+const likes = $('#like_count');
+const dislikes = $('#dislike_count');
 
 //stats
-const seen = $('.seen');
+const seens = $('#seen');
 
 
 const loadBook = async ()=>{
     try{
-        let details = await getBookdetails(book);
+        const details = await getBookdetails(book);
         if(!details){
             location.href="/";
         }
@@ -57,11 +57,53 @@ const loadBook = async ()=>{
 
 }
 
+const Liking = async ()=>{
+    const reacted = await postReaction(book,'Like');
+    if(reacted){
+       
+    }
 
-const loadChapters = async () =>{
+}
+
+const Disliking = async ()=>{
+    const reacted = await postReaction(book,'Dislike');
+    if(reacted){
+      
+    }
+
+}
+
+const reactions = async ()=>{//get all reactions...............................
+    const reacts = await getReaction(book);
+    if(reacts){
+        // console.log(reacts);
+        likes.text(reacts.likes);
+        dislikes.text(reacts.dislikes);
+
+    }
+}
+
+const post_seen = async ()=>{//post seen
+    const see = await postSeen(book);
+    if(see){
+        console.log(see);
+    }
+}
+
+const get_seen = async ()=>{
+    const saw = await getSeen(book);
+    if(saw){
+        
+        seens.text(saw.seen);
+    }
+}
+
+
+
+const loadChapters = async () =>{//load chapters if any..............................................
     try{
        let back;
-        let details = await getChapters(book);
+        const details = await getChapters(book);
         //  console.log('in load',details);
         if(details.length==0){
             $('#Chapters').append(`
@@ -73,7 +115,7 @@ const loadChapters = async () =>{
         }
         else{
             details.forEach(chap=>{
-                console.log(chap);
+                // console.log(chap);
                 addChapter(chap,'Chapters');
             })
             back = true
@@ -92,10 +134,18 @@ const loadChapters = async () =>{
              $('.toast').toast('show',{"data-autohide":false});
             
         const green = await loadBook();
+        post_seen();
+        setInterval(() => {
+            reactions();
+            get_seen();
+        }, 1000);
+        
+        
+
         const go =await loadChapters(); 
         if(go){
             preventAudioDownload(); 
-
+            
             const buttons = document.querySelectorAll('.chap_btn')
             
         // player stuff
@@ -106,6 +156,8 @@ const loadChapters = async () =>{
         }
         const chapter = $('#chapter');
         const update = $('#update');
+        
+        
 
             if(green){
                 prevenImagetDownload();
@@ -113,7 +165,7 @@ const loadChapters = async () =>{
             }
 
 
-            let mod = await initModal();//start modal
+            const mod = await initModal();//start modal
                 if(mod){
                     const myModal= $('#myModal');
 

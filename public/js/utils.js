@@ -2,7 +2,7 @@ const getCategory = async ()=>{//get all categories
 try{
         let result = await fetch("/category/");
         let data = await result.json();
-        // console.log(data.categories);
+        
         
         return data.categories;
 }
@@ -14,13 +14,13 @@ catch(err){
 
 const getBookdetails = async(book)=>{// a single book details
         try{
-                // console.log(book);
+                
         let result = await fetch(`/book/${book}`);
         if(result.status == 404){
                 throw 'check internet connection';
         }
         let data = await result.json();
-        // console.log(data.bookBack);
+        
 
         return data;
 
@@ -40,7 +40,7 @@ const getBooks = async ()=>{//all available books
                 throw 'Something went wrong whiles getting books';
         }
         let data = await result.json();
-        // console.log(data.books);
+       
         
         return data.books;
 
@@ -63,11 +63,99 @@ const getChapters = async(book)=>{
                 }
 
                 let data = await result.json();
-                // console.log(data.validChaps);
                 
                 return data.validChaps;
                 
 
+        }
+        catch(err){
+
+        }
+}
+
+const postReaction = async (book,action)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({
+                  book,
+                  action
+                });
+                console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/react/like',requestOptions);
+        if(respond){
+              let res= respond.json();
+              
+              // console.log(res);
+        // if(res.status===400){
+        //         throw 'Something went wrong';
+        // }
+        // else if(res.status===300){
+        //         alert('Be warned');
+        // }
+        // else{
+        //         alert('Action was successful');
+
+        // }
+        
+        return res;
+        }
+        
+        
+
+       
+
+        }
+        catch(err){
+
+        }
+}
+
+
+const getReaction = async (book)=>{
+        try{
+                const reacts = await fetch(`/react/${book}`,{method:'GET'});
+                //  console.log(reacts);
+                if(reacts){
+                        let res = reacts.json();
+                        return res;
+
+                }
+        }
+        catch(err){
+                console.log(err);
+        }
+}
+
+const postSeen = async (book)=>{
+        try{
+                const seen = await fetch(`/react/seen/${book}`,{method:'POST'});
+                if(seen){
+                        console.log(seen);
+                }
+        }
+        catch(err){
+
+        }
+}
+
+const getSeen = async (book)=>{
+        try{
+                const seen = await fetch(`/react/seen/${book}`,{method:'GET'});
+                if(seen){
+                        let res = seen.json();
+                        // console.log(res);
+                        return res;
+                }
         }
         catch(err){
 

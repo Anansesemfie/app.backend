@@ -55,7 +55,7 @@ const bookSeenSchema = new Schema({
         type:ObjectId,
         required:[true,'Book is required']
     },
-    account:{
+    user:{
         type:ObjectId,
         required:false
     },
@@ -65,12 +65,16 @@ const bookSeenSchema = new Schema({
     }
 })
 
+
+
 //add comment
 
 const bookReact = mongoose.model('BookReact',bookReactSchema);
 const bookComment = mongoose.model('BookComment',bookCommentSchema);
+const bookSeen = mongoose.model('BookSeen',bookSeenSchema);
 
  module.exports={
      bookReact,
-     bookComment
+     bookComment,
+     bookSeen
  }

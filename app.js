@@ -14,6 +14,8 @@ const book = require('./routes/book');
 const category = require('./routes/category');
 const files = require('./routes/files');
 const chapter = require('./routes/chapter');
+const reaction = require('./routes/reaction');
+
 
 //start express
 const app = express();
@@ -62,9 +64,12 @@ app.post('/user',checkUser)
 // app.get('/',requireAuth,(req,res)=>{res.render('index');});
 app.use('/user',user);
 app.use('/book',book);
+
 app.use('/category',category);
 app.use('/file',files);
 app.use('/chapter',chapter);
+app.use('/react',reaction);
+app.post('/react',requireAuth);
 
 app.get('/',(req,res)=>{
     res.render('index');

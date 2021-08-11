@@ -1,29 +1,41 @@
-const{ bookReact, bookComment} = require('../models/reactionModel');
+const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
 const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
 
 
-const likeDislike = async (req,res)=>{
+const postReaction = async (req,res)=>{
     try{
         const body = req.body;
+        console.log('here',body);
 
         if(!req.cookies.jwt){//no user
-            res.status(403).json({message:'Failed',status:'Error'});
+            res.json({message:'No User',status:'Error'});
         }
 
         const user = await decode_JWT(req.cookies.jwt);//get user id
 
         //check if reaction exists
         const reaction = await bookReact.findOne({user:user._id,bookID:body.book});
-
         if(reaction){
+
+            if(reaction.action===body.action){
+            // already exist
+            res.status(200).json({message:'Already Liked',status:'Warning'});
+
+        }
+        
+        if(reaction.action!==body.action){
+
             //update reaction
-            let action = await bookReact.findByIdAndUpdate({bookID:reaction._id},{action:body.action});
+            let action = await bookReact.findByIdAndUpdate({_id:reaction._id},{action:body.action});
             if(!action){
                 res.status(403).json({message:'Failed',status:'Error'});
             }
             res.status(200).json({message:'Success',status:'Success'});
         }
+        
+        }
         else{
+            console.log('new');
             //new reaction
             let action = await bookReact.create({bookID:body.book,user:user._id,action:body.action});
             if(!action){
@@ -40,14 +52,36 @@ const likeDislike = async (req,res)=>{
 }
 
 
+const getReactions = async (req,res)=>{
+    try{
+        const book = req.params.book;
+        if(!book){
+            res.status(400).json({message:'No book',status:'Error'});
+        }
+        const likes = await bookReact.find({bookID:book,action:'Like'});
+        const dislikes = await bookReact.find({bookID:book,action:'Dislike'});
+
+        res.json({
+            likes:likes.length,
+            dislikes:dislikes.length
+        });
+    }
+    catch(err){
+        console.log(err);
+
+    }
+}
+
+
 
 //new Comment
-const comment = async (req,res)=>{
+const postComment = async (req,res)=>{
     try{
         if(!req.cookies.jwt){//no user found
             res.status(403).json({message:'No User found',status:'Error'});
         }
-        const book = req.body;
+        const body = req.body;
+        console.log(body);
         const user = await decode_JWT(req.cookies.jwt);//get user id
 
 
@@ -64,7 +98,55 @@ const comment = async (req,res)=>{
     }
     catch(err){
 
-console.log(err);
+    console.log(err);
+
+    }
+}
+
+
+//Seen
+const postSeen = async (req,res)=>{
+    try{
+        if(!req.cookies.jwt){
+            res.status(200).json({message:'user not logged in',status:'Attention'});
+        }
+        const book = req.params.book;
+        const user = await decode_JWT(req.cookies.jwt);
+        console.log(book,user);
+
+        const see = await bookSeen.findOne({bookID:book,user:user});
+        if(!see){
+            //create new doc
+            const seen = await bookSeen.create({bookID:book,user:user});
+            if(seen){
+                res.end();
+            }
+            else{
+                throw Error('Seen was not created');
+            }
+        }
+
+        res.status(403).json({message:'Could not register seen',status:'Error'});
+
+    }
+    catch(err){
+
+    }
+}
+
+const getSeen = async (req,res)=>{
+    try{
+        const book = req.params.book;
+        const seen = await bookSeen.find({bookID:book});
+        // console.log(book,seen);
+        if(seen){
+            res.status(200).json({seen:seen.length});
+        }
+        
+
+    }
+    catch(err){
+        console.log(err);
 
     }
 }
@@ -76,8 +158,12 @@ console.log(err);
 
 
 
+
 module.exports={
-    likeDislike,
-    comment
+    postReaction,
+    postComment,
+    getReactions,
+    postSeen,
+    getSeen
 
 }

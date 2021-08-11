@@ -10,16 +10,16 @@ const requireAuth = (req,res,next)=>{
         jwt.verify(token,service.secret,(err,decodedToken)=>{
             if(err){
                 console.log(err.message);
-                res.redirect('/login');
+                res.redirect(`/user/?redirect=${req.body.book}`);
             }
             else{
-                console.log(decodedToken);
+                // console.log(decodedToken);
                 next();
             }
         })
     }
     else{
-        res.redirect('/login');
+        res.redirect(`/user/?redirect=${req.body.book}`);
     }
 
   
