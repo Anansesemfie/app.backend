@@ -1,6 +1,6 @@
 const { book} = require('../models/bookModel');
 
-const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
+const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
 
 
 
@@ -87,7 +87,7 @@ const New_book = async (req,res)=>{
 
       // console.log(newBook.cover);
 
-        let fileBack = await createFileDIr(file,body.title);
+        let fileBack = await createFolderDIr(file,body.title);
         console.log(fileBack);
 
       let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});

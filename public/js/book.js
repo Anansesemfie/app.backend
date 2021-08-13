@@ -83,19 +83,48 @@ const reactions = async ()=>{//get all reactions...............................
     }
 }
 
+//Seen
 const post_seen = async ()=>{//post seen
-    const see = await postSeen(book);
-    if(see){
-        console.log(see);
+    try{
+        const see = await postSeen(book);
+            if(see){
+                console.log(see);
+            }
     }
+    catch(err){
+
+    }
+   
 }
 
-const get_seen = async ()=>{
-    const saw = await getSeen(book);
-    if(saw){
-        
-        seens.text(saw.seen);
+const get_seen = async ()=>{//get seen
+    try{
+        const saw = await getSeen(book);
+            if(saw){
+                
+                seens.text(saw.seen);
+            }
     }
+    catch(err){
+
+    }
+    
+}
+
+const get_comments = async ()=>{//get all comments
+    try {
+        const coms = await getComments(book);
+        if(coms){
+            console.log(coms.comments);
+        }
+        else{
+
+        }
+    } 
+    catch (error) {
+        
+    }
+
 }
 
 
@@ -127,7 +156,14 @@ const loadChapters = async () =>{//load chapters if any.........................
     }
 }
 
-//main function
+
+
+/*main function        __
+        \\\_|\\   /\  | |  
+        \\\_|\\  /_\  | |
+        \\   \\ /  \  |_|
+
+*/
         $(document).ready(async ()=>{
 
          try{
@@ -138,6 +174,7 @@ const loadChapters = async () =>{//load chapters if any.........................
         setInterval(() => {
             reactions();
             get_seen();
+            get_comments();
         }, 1000);
         
         

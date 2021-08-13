@@ -57,7 +57,7 @@ const bookSeenSchema = new Schema({
     },
     user:{
         type:ObjectId,
-        required:false
+        required:[true,'User required'],
     },
     moment:{
         type:Date,

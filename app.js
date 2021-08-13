@@ -68,8 +68,11 @@ app.use('/book',book);
 app.use('/category',category);
 app.use('/file',files);
 app.use('/chapter',chapter);
+
 app.use('/react',reaction);
 app.post('/react',requireAuth);
+
+
 
 app.get('/',(req,res)=>{
     res.render('index');

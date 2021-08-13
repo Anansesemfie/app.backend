@@ -1,11 +1,13 @@
 const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
+const { book} = require('../models/bookModel');
 const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
+const { ObjectId } = require('bson');
 
 
 const postReaction = async (req,res)=>{
     try{
         const body = req.body;
-        console.log('here',body);
+        // console.log('here',body);
 
         if(!req.cookies.jwt){//no user
             res.json({message:'No User',status:'Error'});
@@ -84,9 +86,15 @@ const postComment = async (req,res)=>{
         console.log(body);
         const user = await decode_JWT(req.cookies.jwt);//get user id
 
+        const thisBook = await book.findOne({_id:body.book,status:"Active"});
+        console.log(thisBook);
+
+        if(!thisBook){//check if book is active
+            res.status(403).json({message:'Book not found',status:'Error'});
+        }
 
         //add new comment 
-        let action = await bookComment.create({bookID:book.book,user:user._id,comment:body.comment});
+        let action = await bookComment.create({bookID:body.book,user:user._id,comment:body.comment});
 
         if(!action){
             res.status(403).json({message:'Failed',status:'Error'});
@@ -103,6 +111,31 @@ const postComment = async (req,res)=>{
     }
 }
 
+//get Comments
+const getComments = async (req,res)=>{
+    try{ //attempt to get comment
+        const thisBook = req.params.book;
+        // console.log(thisBook);
+        if(!thisBook){//no book was in request
+            res.status(403).json({message:'No specific book to check',status:'Attention'});
+        }
+
+        //get comments
+        const comments = await bookComment.aggregate([{$match:{bookID:ObjectId(thisBook)}},{$lookup:{
+            from:"users",
+            localField:"user",
+            foreignField:"_id",
+            as:"commenter"
+        }}]);
+
+        res.json({comments})
+;
+        // db.users.aggregate([{$match:{"_id":"60def21ef6b0386590386672"}},{$lookup:{from:"books", localField:"_id", foreignField:"uploader", as:"User_books"}}]).pretty()
+        }
+    catch(err){
+        console.log(err);
+    }
+}
 
 //Seen
 const postSeen = async (req,res)=>{
@@ -112,7 +145,7 @@ const postSeen = async (req,res)=>{
         }
         const book = req.params.book;
         const user = await decode_JWT(req.cookies.jwt);
-        console.log(book,user);
+        // console.log(book,user);
 
         const see = await bookSeen.findOne({bookID:book,user:user});
         if(!see){
@@ -162,6 +195,7 @@ const getSeen = async (req,res)=>{
 module.exports={
     postReaction,
     postComment,
+    getComments,
     getReactions,
     postSeen,
     getSeen

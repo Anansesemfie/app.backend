@@ -69,7 +69,7 @@ const getChapters = async(book)=>{
 
         }
         catch(err){
-
+                console.log(err);
         }
 }
 
@@ -116,7 +116,7 @@ const postReaction = async (book,action)=>{
 
         }
         catch(err){
-
+                console.log(err);
         }
 }
 
@@ -144,7 +144,7 @@ const postSeen = async (book)=>{
                 }
         }
         catch(err){
-
+                console.log(err);
         }
 }
 
@@ -156,6 +156,54 @@ const getSeen = async (book)=>{
                         // console.log(res);
                         return res;
                 }
+        }
+        catch(err){
+                console.log(err);
+        }
+}
+
+
+//comments
+const postComment = async (book,comment)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({
+                  book,
+                  comment
+                });
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/react/comment',requestOptions);
+        if(respond.status==200){
+                alert('Comment sent');
+        }
+        }
+        catch(err){
+                console.log(err);
+        }
+}
+
+const getComments = async (book)=>{
+        try{
+                
+
+                
+      
+              let respond = await fetch(`/react/comment/${book}`,{ method: 'GET' });
+              if(respond.status==200){
+                      let res = respond.json();
+
+                      return res;
+              }
         }
         catch(err){
 

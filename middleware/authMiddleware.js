@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const{service} = require('../util/utils');
 
 const requireAuth = (req,res,next)=>{
-    const token = req.cookies.jwt
+    const token = req.cookies.jwt;
 
     //check token
     if(token){
@@ -11,9 +11,10 @@ const requireAuth = (req,res,next)=>{
             if(err){
                 console.log(err.message);
                 res.redirect(`/user/?redirect=${req.body.book}`);
+                // next();
             }
             else{
-                // console.log(decodedToken);
+                console.log(decodedToken);
                 next();
             }
         })
