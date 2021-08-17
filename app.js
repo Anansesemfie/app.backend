@@ -35,7 +35,9 @@ app.use(cookieParser());
 
 mongoose.Promise=global.Promise;
 //establish connection
-mongoose.connect(utils.service.DB,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true });
+mongoose.connect(utils.service.DB,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
+
+
 
 //open connection and start server from here
 mongoose.connection.once('open',()=>{

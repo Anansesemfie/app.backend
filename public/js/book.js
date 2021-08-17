@@ -4,12 +4,16 @@ const params = link.split('/');
 const action=params[4];
 const book = params[5];
 
+//check cookies
+
+
 
 //page elements
 const cover = $('#bookCover');
 const title = $('#bookTitle');
 const description = $('#description');
 const ifUser = $('#ifUser');
+const comment = $('#comment');
 
 
 
@@ -50,7 +54,7 @@ const loadBook = async ()=>{
     });
     }
     catch(err){
-        console.log(err);
+        toast({message:err,title:'Could not get books',bg:'bg-warning'});
     }
 
 
@@ -92,7 +96,7 @@ const post_seen = async ()=>{//post seen
             }
     }
     catch(err){
-
+        toast({message:err,title:'Could not post seen',bg:'bg-warning'});
     }
    
 }
@@ -106,25 +110,66 @@ const get_seen = async ()=>{//get seen
             }
     }
     catch(err){
-
+        toast({message:err,title:'could not get seen',bg:'bg-warning'});
     }
     
 }
+
+
 
 const get_comments = async ()=>{//get all comments
     try {
         const coms = await getComments(book);
         if(coms){
-            console.log(coms.comments);
+            $('#comments').text('');
+            coms.comments.forEach(comet=>{
+                let msg ={
+                    dp:comet.commenter[0].dp,
+                    username:comet.commenter[0].username,
+                    time:comet.moment,
+                    comment:comet.comment
+                }
+
+                addCommentOut('comments',msg);
+
+                // console.log(msg);
+            })
+
         }
         else{
+
 
         }
     } 
     catch (error) {
-        
+        toast({message:error,title:'Could not retrieve comments',bg:'bg-warning'});
     }
 
+}
+
+const post_comment = async()=>{
+    try {
+        let msg = comment.val();
+        console.log(msg);
+        if(!msg){
+            throw 'Type something first'
+        }
+        let comment_gone = await postComment(book,msg);
+        if(!comment_gone){
+            alert('Comment did not go through!');
+            return false
+        }
+        else{
+            comment.val('');
+            return true;
+        }
+
+        
+    } catch (error) {
+        let msg = error;
+        console.log(msg);
+        toast({message:msg,title:'Comment Problem',bg:'bg-warning'});
+    }
 }
 
 
@@ -157,6 +202,14 @@ const loadChapters = async () =>{//load chapters if any.........................
 }
 
 
+//On Page conditions
+
+
+
+
+
+//On page conditions
+
 
 /*main function        __
         \\\_|\\   /\  | |  
@@ -175,9 +228,21 @@ const loadChapters = async () =>{//load chapters if any.........................
             reactions();
             get_seen();
             get_comments();
-        }, 1000);
+        }, 5000);
         
-        
+        $('#comment_go').on('click',async ()=>{
+            let state = await post_comment();
+            if(!state){
+                $(this).css('background-color','brown');
+            }
+            else{
+                $(this).css('background-color','green')
+            }
+
+        });
+
+       toastHolder(); // toast holder
+       $('.toast').toast('show');
 
         const go =await loadChapters(); 
         if(go){
@@ -186,8 +251,6 @@ const loadChapters = async () =>{//load chapters if any.........................
             const buttons = document.querySelectorAll('.chap_btn')
             
         // player stuff
-
-            
 
             // player stuff
         }

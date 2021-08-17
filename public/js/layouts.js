@@ -214,6 +214,8 @@ function ad_card(book,location){
   
 }
 
+
+
 const addAuthor = (name,loc)=>{
     let position = $(`#${loc}`);
 
@@ -281,6 +283,49 @@ const addBarner = (book,loc)=>{
     `);
 }
 
+const addCommentIN = ()=>{
+    let position = $('body');
+
+    position.append(`
+    <div id="commenting" class="floatingDiv mobile">
+          <!-- comment input here -->
+          <input type="text" name="" id="comment" class="myInput" placeholder="leave a comment">
+          <button class="btn btn-info">>></button>
+        </div>
+    `);
+}
+
+const addCommentOut = (loc,msg_details)=>{
+    let position = $(`#${loc}`);
+    // console.log(msg_details);
+
+    position.append(`
+
+    <div class="msg left-msg">
+      <div
+       class="msg-img"
+       style="background-image: url(/images/${msg_details.dp})"
+      ></div>
+
+      <div class="msg-bubble">
+        <div class="msg-info">
+          <div class="msg-info-name">${msg_details.username}</div>
+          <div class="msg-info-time">${msg_details.time}</div>
+        </div>
+
+        <div class="msg-text">
+         ${msg_details.comment}
+        </div>
+      </div>
+    </div>
+    <hr>
+
+    `);
+
+}
+
+
+
 
 
 //functions
@@ -311,3 +356,37 @@ const addChapter = (data,loc)=>{
 
 
 
+
+
+//Error and feedback handling
+
+//toasts holder
+const toastHolder = ()=>{
+    $('body').append(`
+    <!-- notifications -->
+    <div class="floatingDivToasts" id="toasting">
+
+      
+
+    </div>
+    `);
+}
+
+//toasts
+const toast = (msg)=>{
+    console.log(msg.bg)
+    $('#toasting').append(`
+    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast ${msg.bg}" data-bs-autohide="true">
+    <div class="toast-header">
+     
+      <strong class="me-auto">${msg.title}</strong>
+      
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close">X</button>
+    </div>
+    <div class="toast-body">
+      ${msg.message}
+    </div>
+  </div>
+
+    `);
+}

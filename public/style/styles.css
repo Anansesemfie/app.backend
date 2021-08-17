@@ -524,22 +524,42 @@ footer{
   width: fit-content;
 }
 
+.floatingComments{
+  position: fixed;
+  /* background-color: #e2e4e69c; */
+  padding: 12px 20px;
+  text-decoration: none;
+  overflow-y: auto;
+  /* color: #fff; */
+  bottom: 11%;
+  right: 15px;
+  z-index: 1;
+  width: 25%;
+  max-height: 82%;
+  border-radius: 4px;
+  /* box-shadow: 0 3px 10px rgb(0 0 0 / 30%); */
+  /* transition: all .3s ease-in-out; */
+  transition: 0.5;
+}
+
 .floatingDiv{
   position: fixed;
   /* background: #0c8176; */
   padding: 12px 20px;
   text-decoration: none;
   /* color: #fff; */
-  bottom: 15px;
+  bottom: 2%;
   right: 15px;
   z-index: 1;
   /* width: 100%; */
   border-radius: 4px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
   /* transition: all .3s ease-in-out; */
+  transition: 0.5;
 }
+
 .mobile:hover{
-  width: 350px;
+  width: 400px;
   transition: 0.5;
 }
 
@@ -548,15 +568,85 @@ footer{
   /* transform:translate(-50%,-50%); */
   height:40px;
   border-radius:10px;
+  transition: 0.5;
 
 }
 
-/*  |
-    
 
+.floatingDivToasts{
+  position: fixed;
+  /* background: #0c8176; */
+  padding: 12px 20px;
+  text-decoration: none;
+  overflow-y: auto;
+  max-height: 82%;  
+  bottom: 15px;
+  left: 15px;
+  z-index: 1;
+  width: 18%;
+  border-radius: 4px;
+  /* box-shadow: 0 3px 10px rgb(0 0 0 / 30%); */
+  /* transition: all .3s ease-in-out; */
+  transition: 0.5;
+}
+.toast{
+  opacity: 1;
+}
 
+/*comments nkoa */
 
-*/
+.msg {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+  max-width: inherit;
+  border:1px solid black;
+  border-radius: 15px;
+  background-color: white;
+  transition: 0.5s;
+}
+.msg:hover{
+background-color:whitesmoke;
+}
+.msg:last-of-type {
+  margin: 0;
+}
+.msg-img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  background: #ddd;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;
+}
+.msg-bubble {
+  max-width: 450px;
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--left-msg-bg);
+}
+.msg-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.msg-info-name {
+  margin-right: 10px;
+  font-weight: bold;
+}
+.msg-info-time {
+  font-size: 0.85em;
+}
+
+.left-msg .msg-bubble {
+  border-bottom-left-radius: 0;
+}
+
+/* comments nkoaa ends here*/
+
 
 
 /* mobile view*/
@@ -574,6 +664,9 @@ footer{
       .mobile{
         width:10%;
         border-left: 10px thick cyan;
+      }
+      .floatingComments{
+        background-color: rgba(255, 255, 255, 0.89);
       }
 
     #com-menu {

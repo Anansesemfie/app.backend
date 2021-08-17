@@ -3,11 +3,13 @@ try{
         let result = await fetch("/category/");
         let data = await result.json();
         
-        
+        if(!data.categories){
+                throw 'Troublr getting categories';
+        }
         return data.categories;
 }
 catch(err){
-        alert(`Attention, Connection to server broke\n check your internet connection `);
+        throw err;
 }
 }
 
@@ -26,7 +28,7 @@ const getBookdetails = async(book)=>{// a single book details
 
         }
         catch(err){
-                console.log(err);
+                throw err;
         }  
 }
 
@@ -46,7 +48,7 @@ const getBooks = async ()=>{//all available books
 
         }
         catch(err){
-        console.log(err);
+                throw err;
         }
 }
 
@@ -69,7 +71,7 @@ const getChapters = async(book)=>{
 
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -116,7 +118,7 @@ const postReaction = async (book,action)=>{
 
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -132,7 +134,7 @@ const getReaction = async (book)=>{
                 }
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -144,7 +146,7 @@ const postSeen = async (book)=>{
                 }
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -158,7 +160,7 @@ const getSeen = async (book)=>{
                 }
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -183,12 +185,15 @@ const postComment = async (book,comment)=>{
                 };
 
         let respond = await fetch('/react/comment',requestOptions);
-        if(respond.status==200){
-                alert('Comment sent');
+        if(respond.status!=200){
+                throw 'Something went wrong';
+        }
+        else{
+                return true
         }
         }
         catch(err){
-                console.log(err);
+                throw err;
         }
 }
 
@@ -206,6 +211,6 @@ const getComments = async (book)=>{
               }
         }
         catch(err){
-
+                throw err;
         }
 }
