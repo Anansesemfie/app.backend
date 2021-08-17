@@ -1,3 +1,4 @@
+
 const getCategory = async ()=>{//get all categories
 try{
         let result = await fetch("/category/");
@@ -199,10 +200,7 @@ const postComment = async (book,comment)=>{
 
 const getComments = async (book)=>{
         try{
-                
 
-                
-      
               let respond = await fetch(`/react/comment/${book}`,{ method: 'GET' });
               if(respond.status==200){
                       let res = respond.json();
@@ -213,4 +211,26 @@ const getComments = async (book)=>{
         catch(err){
                 throw err;
         }
+}
+
+
+
+//media stuff
+const getFile = async (chapter)=>{
+        try{
+                let response = await fetch(`/file/${chapter}`, {method:'GET'});
+                if(response.status==404){
+                        throw 'Trouble Getting audio file'
+
+                }
+                else{
+                        return response;
+                }
+
+
+        }
+        catch(err){
+                throw err;
+        }
+
 }

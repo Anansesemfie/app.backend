@@ -3,11 +3,7 @@ const chapter = require('../models/chapterModel');
 
 const readFile = async (req,res)=>{
     const file = req.params.file;
-    const range = req.headers.range;
-
-    if(!range){
-      res.status(400).send("Requires range");
-    }
+    
 
     //file path
     const filePath = await chapter.findById({_id:file});
@@ -22,20 +18,17 @@ const readFile = async (req,res)=>{
 
     //start media processing
     const chunk_size = 10**6//1mb
-    const medStart = Number(range.replace(/\D/g,""));
-    const medEnd = Math.min(medStart+chunk_size,medSize-1);
 
     //headers
-    const content_length=medEnd-medStart+1;
+    // const content_length=medEnd-medStart+1;
     const headers={
-      "Content-Type":`bytes${medStart}-${medEnd}/${medSize}`,
+      "Content-Type":`bytes`,
       "Accpets-Range":"bytes",
-      "Content-Length":content_length,
       "Content-Type":medMime
     };
 
     //streaming now
- let readStream= fs.createReadStream(medPath,{medStart,medEnd});
+ let readStream= fs.createReadStream(medPath);
 
     
     res.writeHead(206,headers)
