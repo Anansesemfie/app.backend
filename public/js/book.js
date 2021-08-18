@@ -249,6 +249,13 @@ const loadChapters = async () =>{//load chapters if any.........................
             preventAudioDownload(); 
             
             const buttons = document.querySelectorAll('.chap_btn')
+
+            buttons.forEach(ele=>{
+                console.log(ele);
+                ele.on('click',()=>{
+                    alert('come on');
+                });
+            })
             
         // player stuff
 

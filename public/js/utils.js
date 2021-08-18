@@ -143,7 +143,7 @@ const postSeen = async (book)=>{
         try{
                 const seen = await fetch(`/react/seen/${book}`,{method:'POST'});
                 if(seen){
-                        console.log(seen);
+                        return 0;
                 }
         }
         catch(err){
@@ -224,7 +224,7 @@ const getFile = async (chapter)=>{
 
                 }
                 else{
-                        return response;
+                        return response.json();
                 }
 
 

@@ -150,12 +150,39 @@
             </div>
             <div class="card-body">
 
-              <div class="row">
-            <div class="col-12">
+              <div class="col-12">
+            <div class="row" id="player">
 
-              <audio oncontextmenu="return false;" controls controlslist="nodownload" id="custPlayer">
-                <source src="" type="">
-              </audio>
+              <div class="col-3">
+                <!--time  -->
+                <h5>
+                  <span id="curTime"></span>/
+                <span id="durTime"></span>
+                </h5>
+                
+              </div>
+              <div class="col-6">
+                <!-- controls -->
+                <div class="row">
+                  <button id="fstBack" title="-5s">
+                    <i class="fas fa-fast-backward"></i>
+                  </button>
+                  <button id="playPause" title="Play/Pause">
+                    <i class="fas fa-play fa-2x"></i>
+                  </button>
+                  <button id="fstForward" title="+5s">
+                    <i class="fas fa-fast-forward"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-3">
+                <!-- volume -->
+                <div class="row">
+                  <button id="muteBtn"><i class="fas fa-volume-up"></i></button>
+                  <input type="range" id="volumeRange" min="0" max="100" value="100">
+                </div>
+              </div>
 
             </div>
           </div>

@@ -281,6 +281,13 @@ body{
     padding-bottom:35px;
   }
   /* player */
+  #player button:hover{
+    background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
+  }
+
+  #player input[type=range]{
+    
+  }
 
 /*our own button*/
 
@@ -612,8 +619,8 @@ background-color:whitesmoke;
   margin: 0;
 }
 .msg-img {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
   background: #ddd;
   background-repeat: no-repeat;

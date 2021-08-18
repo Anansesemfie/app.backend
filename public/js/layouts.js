@@ -202,8 +202,8 @@ function ad_card(book,location){
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
                 // $('<button/>',{'class':'button','id':'uploaderBTN','data-target':book.uploader}).append($('<i/>',{'class':'fa fa-calendar-plus-o','aria-hidden':'true'})),
-                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fa fa-expand','aria-hidden':'true'})),
-                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fa fa-sign-in','aria-hidden':'true'}))
+                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-expand','aria-hidden':'true'})),
+                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-headphones','aria-hidden':'true'}))
                 )
                 )
                 )
@@ -389,4 +389,13 @@ const toast = (msg)=>{
   </div>
 
     `);
+}
+
+const myUrl = ()=>{
+    const link =window.location.href;
+    const params = link.split('/');
+
+    let url= `${params[0]}//${params[2]}`;
+
+    return url;
 }
