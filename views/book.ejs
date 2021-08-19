@@ -88,7 +88,7 @@
 
 
 
-      <div class="row container-fluid">
+      <div class="row container-fluid main">
         
         <div class="col-12 title">
          <div class="c0l-9">
@@ -144,21 +144,21 @@
 
         <!-- Player here -->
         <div class="container-fluid myPlayer">
-          <div class="card">
+          <div class="card colorful">
             <div class="card-header headerColor">
               #<span id="audioTitle" style="color:white;"> Title</span>
             </div>
             <div class="card-body">
 
               <div class="col-12">
-            <div class="row" id="player">
+            <div class="row">
 
               <div class="col-3">
                 <!--time  -->
-                <h5>
-                  <span id="curTime"></span>/
-                <span id="durTime"></span>
-                </h5>
+                <div>
+                  <span class="ETA" id="curTime"></span>/
+                <span class="ETA" id="durTime"></span>
+                </div>
                 
               </div>
               <div class="col-6">
@@ -176,7 +176,7 @@
                 </div>
               </div>
 
-              <div class="col-3">
+              <div class="col-3 playerMobile">
                 <!-- volume -->
                 <div class="row">
                   <button id="muteBtn"><i class="fas fa-volume-up"></i></button>
