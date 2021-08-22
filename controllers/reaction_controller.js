@@ -10,7 +10,7 @@ const postReaction = async (req,res)=>{
         // console.log('here',body);
 
         if(!req.cookies.jwt){//no user
-            res.json({message:'No User',status:'Error'});
+            res.status(403).json({message:'No User',status:'Error'});
         }
 
         const user = await decode_JWT(req.cookies.jwt);//get user id
@@ -83,11 +83,11 @@ const postComment = async (req,res)=>{
             res.status(403).json({message:'No User found',status:'Error'});
         }
         const body = req.body;
-        console.log(body);
+        // console.log(body);
         const user = await decode_JWT(req.cookies.jwt);//get user id
 
         const thisBook = await book.findOne({_id:body.book,status:"Active"});
-        console.log(thisBook);
+        // console.log(thisBook);
 
         if(!thisBook){//check if book is active
             res.status(403).json({message:'Book not found',status:'Error'});
@@ -159,7 +159,7 @@ const postSeen = async (req,res)=>{
             }
         }
 
-        res.status(403).json({message:'Could not register seen',status:'Error'});
+        res.end();
 
     }
     catch(err){

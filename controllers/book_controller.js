@@ -103,7 +103,7 @@ const New_book = async (req,res)=>{
   catch(err){
     console.log(err);
    const errors = handleError(err);
-   res.status(403).json(errors);
+   res.render('instruction');
   }
 }
 
@@ -157,7 +157,7 @@ const Get_book = async (req,res)=>{
   }
   catch(err){
     let erros = handleError(err);
-    res.send(erros);
+    res.render(erros);
   }
  
 

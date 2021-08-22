@@ -54,7 +54,7 @@ const loadBook = async ()=>{
     });
     }
     catch(err){
-        toast({message:err,title:'Could not get books',bg:'bg-warning'});
+        toast({message:err,title:'Could not get books',bg:'bg-danger'});
     }
 
 
@@ -62,18 +62,30 @@ const loadBook = async ()=>{
 }
 
 const Liking = async ()=>{
+    try{
     const reacted = await postReaction(book,'Like');
-    if(reacted){
-       
-    }
+        if(reacted){
+        
+        }
 
+    }
+    catch(error){
+        toast({message:err,title:'Could not register reaction',bg:'bg-warning'});
+    }
+    
 }
 
 const Disliking = async ()=>{
-    const reacted = await postReaction(book,'Dislike');
-    if(reacted){
-      
+    try{
+        const reacted = await postReaction(book,'Dislike');
+            if(reacted){
+            
+            }
     }
+    catch(error){
+        toast({message:err,title:'Could not register reaction',bg:'bg-warning'});
+    }
+    
 
 }
 
@@ -150,14 +162,14 @@ const get_comments = async ()=>{//get all comments
 const post_comment = async()=>{
     try {
         let msg = comment.val();
-        console.log(msg);
+        // console.log(msg);
         if(!msg){
             throw 'Type something first'
         }
         let comment_gone = await postComment(book,msg);
         if(!comment_gone){
-            alert('Comment did not go through!');
-            return false
+            throw 'Comment did not go through!';
+            // return false
         }
         else{
             comment.val('');
@@ -167,7 +179,10 @@ const post_comment = async()=>{
         
     } catch (error) {
         let msg = error;
-        console.log(msg);
+        if(msg=="Not logged in"){
+            msg +=` <a href="/user/" class="btn btn-info">Login</a>`;
+        }
+        
         toast({message:msg,title:'Comment Problem',bg:'bg-warning'});
     }
 }
@@ -196,12 +211,25 @@ const loadChapters = async () =>{//load chapters if any.........................
         }
         return true;
     }
-    catch(err){
-        console.log(err);
+    catch(error){
+        let msg = error;
+        toast({message:msg,title:'Chapter issues',bg:'bg-danger'});
     }
 }
 
 
+
+const playChapter = async (chapt)=>{
+   try{
+        let state = await newSong(chapt);
+        
+   }
+   catch(error){
+    let msg = error;
+    toast({message:msg,title:'Error Playing',bg:'bg-danger'});
+
+   }
+}
 //On Page conditions
 
 
@@ -219,8 +247,8 @@ const loadChapters = async () =>{//load chapters if any.........................
 */
         $(document).ready(async ()=>{
 
-         try{
-             $('.toast').toast('show',{"data-autohide":false});
+         try{        
+
             
         const green = await loadBook();
         post_seen();
@@ -251,9 +279,11 @@ const loadChapters = async () =>{//load chapters if any.........................
             const buttons = document.querySelectorAll('.chap_btn')
 
             buttons.forEach(ele=>{
-                console.log(ele);
-                ele.on('click',()=>{
-                    alert('come on');
+                // console.log(ele);
+                ele.addEventListener('click',()=>{
+                    let chapID = ele.getAttribute("data-target")
+                    playChapter(chapID);
+                    
                 });
             })
             

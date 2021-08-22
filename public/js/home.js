@@ -9,7 +9,7 @@ const categories = async ()=>{//get all categories
         });
     }
     catch(err){
-        alert(err)
+        toast({message:err,title:'Could not categories',bg:'bg-warning'});
     }
      
 }
@@ -129,7 +129,8 @@ $(document).ready(async ()=>{
 
     }
     catch(err){
-        alert(err);
+        
+        toast({message:err,title:'Could not get books',bg:'bg-warning'});
     }
     
    

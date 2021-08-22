@@ -59,7 +59,7 @@ const postChapter = async (req,res)=>{
 
     }
     catch(err){
-        console.log(err);
+        res.render('instruction');
     }
 
 }

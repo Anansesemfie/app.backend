@@ -19,16 +19,16 @@ const durTIme = $('#durTime');
 
 const newSong = async (chapter)=>{
     const newFile = await getFile(chapter); 
-    console.log(myUrl()+newFile.medPath);
+    // console.log(myUrl()+newFile.medPath);
 
 
     if(myUrl()+newFile.medPath != audio.src){
         audio.src=newFile.medPath;//set audio path
 
-        console.log(audio.nodeType=newFile.medMime);
+        // console.log(audio.nodeType=newFile.medMime);
 
         audio.load();//load audio
-        audtitle.text(newFile.title)
+        audtitle.text(`${newFile.title} playing.....`)
         playNow();
         
         
@@ -36,6 +36,7 @@ const newSong = async (chapter)=>{
     else{
         
         playNow()
+        
     }
 
 }
@@ -46,6 +47,7 @@ const playNow = ()=>{ //play and pause
     if(audio.paused){
         audio.play().then(()=>{
         playPauseButton.html(`<i class="fas fa-pause fa-2x"></i>`);
+        return true;
         }).catch((err)=>{
             throw 'Could not play';
         })
@@ -62,6 +64,10 @@ audio.addEventListener('play',()=>{
     player.find('*').attr('disabled', false);
     setInterval(() => {
         timeLeft();
+        if(done()){
+            audio.pause();
+            playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
+        }
     }, 1);
 })
 
@@ -98,11 +104,11 @@ volumeDrag.addEventListener('input',()=>{
 muteButton.on('click',()=>{
     // alert('mute click')
     if(audio.muted){
-        audio.volume+=0.05;
+        audio.volume=0.1;
         muteButton.html(`<i class="fas fa-volume-up"></i>`);
     }
     else{
-        audio.muted;
+        audio.volume=0;
         volumeDrag.value=0;
         muteButton.html(`<i class="fas fa-volume-mute"></i>`);
     }
@@ -150,6 +156,15 @@ const timeLeft = ()=>{
     curTIme.text(calculateTime(audio.currentTime));
 }
 
+//done
+const done = ()=>{
+    if(audio.currentTime == audio.duration){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
 // sec to minute
 const calculateTime = (secs) => {

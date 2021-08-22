@@ -3,12 +3,11 @@ body{
 
     background-color: rgb(255, 255, 255);
     font-family: 'Sofia', cursive;
-    
-
-    
 
    
 }
+
+
 
 .loaded {
    opacity : 1;
@@ -205,6 +204,9 @@ body{
     box-shadow: 5px 5px 5px 5px rgba(78, 55, 55, 0.2);
     transition: 0.5s;
   }
+
+ 
+
   .card:hover{
     box-shadow: 7px 7px 7px 7px rgba(58, 51, 51, 0.637);
     
@@ -271,22 +273,49 @@ body{
   /* player */
   .myPlayer{
     position:fixed;
-    bottom:0;
+    top:90%;
     padding-left: 30%;
     padding-right: 30%;
     transition: 0.5s;
     width:100%;
+    
   }
+
+  
   .myPlayer:hover{
-    padding-bottom:35px;
+    top:70%;
   }
   /* player */
-  #player button:hover{
+  #player{
+    width: auto;
+  }
+  .colorful::before{
+    content:'';
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:linear-gradient(#f00,#f0f);
+    clip-path: circle(20% at right 93%);
+  }
+  .colorful::after{
+    content:'';
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:linear-gradient(#f44336,#e8e40b);
+    clip-path: circle(10% at 5% 94%);
+  }
+  #player #playPause:hover{
     background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
   }
 
-  #player input[type=range]{
-    
+  #player .ETA{
+    font-size: 1em;
+    width: max-content;
   }
 
 /*our own button*/
@@ -546,7 +575,7 @@ footer{
   border-radius: 4px;
   /* box-shadow: 0 3px 10px rgb(0 0 0 / 30%); */
   /* transition: all .3s ease-in-out; */
-  transition: 0.5;
+  transition: 0.5s;
 }
 
 .floatingDiv{
@@ -562,20 +591,17 @@ footer{
   border-radius: 4px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
   /* transition: all .3s ease-in-out; */
-  transition: 0.5;
+  transition: 0.5s;
 }
 
-.mobile:hover{
-  width: 400px;
-  transition: 0.5;
-}
+
 
 .myInput{
   /* position:absolute; */
   /* transform:translate(-50%,-50%); */
   height:40px;
   border-radius:10px;
-  transition: 0.5;
+  transition: 0.5s;
 
 }
 
@@ -594,7 +620,7 @@ footer{
   border-radius: 4px;
   /* box-shadow: 0 3px 10px rgb(0 0 0 / 30%); */
   /* transition: all .3s ease-in-out; */
-  transition: 0.5;
+  transition: 0.5s;
 }
 .toast{
   opacity: 1;
@@ -621,7 +647,7 @@ background-color:whitesmoke;
 .msg-img {
   width: 40px;
   height: 40px;
-  margin-right: 10px;
+  margin-right: 8px;
   background: #ddd;
   background-repeat: no-repeat;
   background-position: center;
@@ -668,12 +694,28 @@ background-color:whitesmoke;
     margin-top: -90px;
         
       }
+      .myPlayer{
+        width:max-content;
+        padding-left: 0;
+        padding-right:0;
+      }
       .mobile{
-        width:10%;
+        left:95%;
         border-left: 10px thick cyan;
       }
+      .mobile:hover{
+        left: 0%;
+        width:400px;
+        transition: 0.5s;
+      }
       .floatingComments{
-        background-color: rgba(255, 255, 255, 0.89);
+        background-color: rgba(39, 38, 38, 0.466);
+      }
+      .floatingDivToasts{
+        width: 350px;
+      }
+      .playerMobile{
+        display: none;
       }
 
     #com-menu {

@@ -72,7 +72,7 @@ app.use('/file',files);
 app.use('/chapter',chapter);
 
 app.use('/react',reaction);
-app.post('/react',requireAuth);
+// app.post('/react',requireAuth);
 
 
 
@@ -89,7 +89,7 @@ app.get('/',(req,res)=>{
 // })
 
 app.use('',(req,res)=>{
-res.status(404).send("Page not found");
+res.render("notFound");
 });
 
 

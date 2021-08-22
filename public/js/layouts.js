@@ -374,14 +374,14 @@ const toastHolder = ()=>{
 
 //toasts
 const toast = (msg)=>{
-    console.log(msg.bg)
+    // console.log(msg.bg)
     $('#toasting').append(`
-    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast ${msg.bg}" data-bs-autohide="true">
+    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast ${msg.bg}" data-bs-autohide="false">
     <div class="toast-header">
      
       <strong class="me-auto">${msg.title}</strong>
       
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close">X</button>
+      <button type="button" class="btn-close" id="closeToast" onclick="closeToast(this)">X</button>
     </div>
     <div class="toast-body">
       ${msg.message}
@@ -390,6 +390,11 @@ const toast = (msg)=>{
 
     `);
 }
+const closeToast = (e)=>{
+    e.parentElement.parentElement.style.display='none';
+}
+
+
 
 const myUrl = ()=>{
     const link =window.location.href;

@@ -186,8 +186,9 @@ const postComment = async (book,comment)=>{
                 };
 
         let respond = await fetch('/react/comment',requestOptions);
-        if(respond.status!=200){
-                throw 'Something went wrong';
+        // console.log(respond.status);
+        if(respond.status==403){
+                throw 'Not logged in';
         }
         else{
                 return true
