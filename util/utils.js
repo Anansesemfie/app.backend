@@ -4,12 +4,12 @@ const multer = require('multer');
 const fs = require('fs');
 const { response } = require('express');
 
-const myMail = {"mail":"mancuniamoe@gmail.com","password":"moeis1995"};
+const myMail = {"mail":"anansesem.fie@thepostghana.com","password":"nanaasabere1992#"};
 
 const mailer=(mail)=>{
 
    var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'mail.thepostghana.com',
     port: 465,
     secure: true,
     // secureConnection: false, // TLS requires secureConnection to be false
@@ -18,8 +18,10 @@ const mailer=(mail)=>{
       pass: myMail.password
     },
     tls: {
-      ciphers:'SSLv3'
+      ciphers:'SSLv3', 
+      rejectUnauthorized: false,
   }
+  
   });
   
   var mailOptions = {
@@ -44,8 +46,8 @@ const mailer=(mail)=>{
 
 const service={
     "port":4000,
-    "host":"http://127.0.0.1:4000/",
-    "DB":"mongodb://localhost:27017/Ananse_fie",
+    "host":"http://127.0.0.1:40/",
+    "DB":"mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority",
     "secret":"symbiosis"
 }
 
