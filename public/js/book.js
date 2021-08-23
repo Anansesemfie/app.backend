@@ -23,6 +23,7 @@ const dislikes = $('#dislike_count');
 
 //stats
 const seens = $('#seen');
+const played =$('#played')
 
 
 const loadBook = async ()=>{
@@ -119,6 +120,7 @@ const get_seen = async ()=>{//get seen
             if(saw){
                 
                 seens.text(saw.seen);
+                played.text(saw.played);
             }
     }
     catch(err){

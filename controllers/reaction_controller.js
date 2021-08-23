@@ -171,9 +171,10 @@ const getSeen = async (req,res)=>{
     try{
         const book = req.params.book;
         const seen = await bookSeen.find({bookID:book});
+        const played = await bookSeen.find({bookID:book,played:true});
         // console.log(book,seen);
         if(seen){
-            res.status(200).json({seen:seen.length});
+            res.status(200).json({seen:seen.length,played:played.length});
         }
         
 

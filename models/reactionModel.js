@@ -59,6 +59,10 @@ const bookSeenSchema = new Schema({
         type:ObjectId,
         required:[true,'User required'],
     },
+    played:{
+        type:Boolean,
+        default:false
+    },
     moment:{
         type:Date,
         default:mongoose.now()

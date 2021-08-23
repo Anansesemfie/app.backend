@@ -387,6 +387,9 @@ min-height: inherit;
     max-height: inherit;
 }
 
+#react{
+  padding-right: 50%;
+}
 
 
 
@@ -716,6 +719,9 @@ background-color:whitesmoke;
       }
       .playerMobile{
         display: none;
+      }
+      #react{
+        padding-right: 0%;
       }
 
     #com-menu {
