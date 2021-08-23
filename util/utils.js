@@ -47,7 +47,10 @@ const mailer=(mail)=>{
 const service={
     "port":4000,
     "host":"http://127.0.0.1:40/",
-    "DB":"mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority",
+    "DB":{
+      "Dev":"mongodb://localhost:27017/Ananse_fie",
+      "Prod":""
+    },
     "secret":"symbiosis"
 }
 
