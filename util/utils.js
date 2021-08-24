@@ -46,7 +46,7 @@ const mailer=(mail)=>{
 
 const service={
     "port":process.env.PORT || 5000,
-    "host":"http://127.0.0.1:40/",
+    "host":"https://ananse-fie.herokuapp.com/",
     "DB":{
       "Dev":"mongodb://localhost:27017/Ananse_fie",
       "Prod":"mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority"
