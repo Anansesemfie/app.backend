@@ -15,6 +15,7 @@ const category = require('./routes/category');
 const files = require('./routes/files');
 const chapter = require('./routes/chapter');
 const reaction = require('./routes/reaction');
+const filter = require('./routes/filter');
 
 
 //start express
@@ -70,6 +71,7 @@ app.use('/book',book);
 app.use('/category',category);
 app.use('/file',files);
 app.use('/chapter',chapter);
+app.use('/filter',filter);
 
 app.use('/react',reaction);
 // app.post('/react',requireAuth);
