@@ -45,7 +45,7 @@ const mailer=(mail)=>{
 
 
 const service={
-    "port":"process.env.PORT || 5000",
+    "port":process.env.PORT || 5000,
     "host":"http://127.0.0.1:40/",
     "DB":{
       "Dev":"mongodb://localhost:27017/Ananse_fie",
