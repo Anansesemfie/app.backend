@@ -36,7 +36,7 @@ app.use(cookieParser());
 
 mongoose.Promise=global.Promise;
 //establish connection
-mongoose.connect(utils.service.DB.Dev,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
+mongoose.connect(utils.service.DB.Prod,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
 
 
 

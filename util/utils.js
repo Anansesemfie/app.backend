@@ -49,7 +49,7 @@ const service={
     "host":"http://127.0.0.1:40/",
     "DB":{
       "Dev":"mongodb://localhost:27017/Ananse_fie",
-      "Prod":""
+      "Prod":"mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority"
     },
     "secret":"symbiosis"
 }
