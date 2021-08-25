@@ -570,7 +570,7 @@ footer{
   text-decoration: none;
   overflow-y: auto;
   /* color: #fff; */
-  bottom: 20%;
+  bottom: 11%;
   right: 15px;
   z-index: 1;
   width: 25%;
@@ -587,7 +587,7 @@ footer{
   padding: 12px 20px;
   text-decoration: none;
   /* color: #fff; */
-  bottom: 10%;
+  bottom: 2%;
   right: 15px;
   z-index: 1;
   /* width: 100%; */
@@ -713,6 +713,12 @@ background-color:whitesmoke;
       }
       .floatingComments{
         background-color: rgba(39, 38, 38, 0.466);
+        bottom: 20%;
+      }
+      .floatingDiv{
+        bottom: 10%;
+        background-color: rgba(39, 38, 38, 0.466);
+
       }
       .floatingDivToasts{
         width: 350px;
