@@ -254,11 +254,14 @@ const playChapter = async (chapt)=>{
             
         const green = await loadBook();
         post_seen();
+        reactions();
+        get_seen();
+        get_comments();
         setInterval(() => {
             reactions();
             get_seen();
             get_comments();
-        }, 5000);
+        }, 10000);
         
         $('#comment_go').on('click',async ()=>{
             let state = await post_comment();

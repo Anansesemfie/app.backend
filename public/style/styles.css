@@ -570,7 +570,7 @@ footer{
   text-decoration: none;
   overflow-y: auto;
   /* color: #fff; */
-  bottom: 11%;
+  bottom: 20%;
   right: 15px;
   z-index: 1;
   width: 25%;
@@ -587,7 +587,7 @@ footer{
   padding: 12px 20px;
   text-decoration: none;
   /* color: #fff; */
-  bottom: 2%;
+  bottom: 10%;
   right: 15px;
   z-index: 1;
   /* width: 100%; */
