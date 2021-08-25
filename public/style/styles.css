@@ -280,8 +280,8 @@ body{
     width:100%;
     
   }
-  .myPlayer .card{
-    width: 700;
+  .myPlayer .card-body{
+    width: 100%;
     flex-direction: row;
   }
 
@@ -707,8 +707,8 @@ background-color:whitesmoke;
         padding-left: 0;
         padding-right:0;
       }
-      .myPlayer .card{
-        width: 350px;
+      .myPlayer .card-body{
+        width: 100%;
       }
       .mobile{
         left:83%;
