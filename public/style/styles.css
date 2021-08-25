@@ -280,6 +280,11 @@ body{
     width:100%;
     
   }
+  .myPlayer .card{
+    width: 700;
+    flex-direction: row;
+  }
+
 
   
   .myPlayer:hover{
@@ -701,6 +706,9 @@ background-color:whitesmoke;
         width:max-content;
         padding-left: 0;
         padding-right:0;
+      }
+      .myPlayer .card{
+        width: 350px;
       }
       .mobile{
         left:83%;
