@@ -15,7 +15,7 @@ const category = require('./routes/category');
 const files = require('./routes/files');
 const chapter = require('./routes/chapter');
 const reaction = require('./routes/reaction');
-// const filter = require('./routes/filter');
+const filter = require('./routes/filter');
 
 
 //start express
@@ -36,9 +36,9 @@ app.use(cookieParser());
 
 mongoose.Promise=global.Promise;
 //establish connection
-mongoose.connect(utils.service.DB.Prod,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
+mongoose.connect(utils.service.DB,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
 
-
+console.log(utils.service.DB)
 
 //open connection and start server from here
 mongoose.connection.once('open',()=>{
@@ -71,7 +71,7 @@ app.use('/book',book);
 app.use('/category',category);
 app.use('/file',files);
 app.use('/chapter',chapter);
-// app.use('/filter',filter);
+app.use('/filter',filter);
 
 app.use('/react',reaction);
 // app.post('/react',requireAuth);
