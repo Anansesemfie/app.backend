@@ -45,9 +45,6 @@ const mailer=(mail)=>{
 
 
       if(process.env.NODE_ENV=="production"){
-        process.env.DB="";
-      }
-      else if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
       }
       else{
