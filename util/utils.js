@@ -43,13 +43,13 @@ const mailer=(mail)=>{
 
 }
 
-
-      if(process.env.NODE_ENV=="production"){
-        process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
-      }
-      else{
-        process.env.DB="mongodb://localhost:27017/Ananse_fie";
-      }
+process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
+      // if(process.env.NODE_ENV=="production"){
+        
+      // }
+      // else{
+      //   process.env.DB="mongodb://localhost:27017/Ananse_fie";
+      // }
       
 
 const service={
