@@ -34,11 +34,13 @@ app.use(express.static('uploads'));
 app.use(express.json());
 app.use(cookieParser());
 
+console.log(utils.service.DB);
+
 mongoose.Promise=global.Promise;
 //establish connection
 mongoose.connect(utils.service.DB,{ useFindAndModify: false,useUnifiedTopology:true,useNewUrlParser:true,useCreateIndex: true,useFindAndModify: true });
 
-console.log(utils.service.DB)
+
 
 //open connection and start server from here
 mongoose.connection.once('open',()=>{

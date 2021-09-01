@@ -394,7 +394,12 @@ const closeToast = (e)=>{
     e.parentElement.parentElement.style.display='none';
 }
 
+const signUp=()=>{
+    let ref = window.location.href;
+    alert(ref);
 
+    window.location.href=`/user?redirect=${ref}`;
+}
 
 const myUrl = ()=>{
     const link =window.location.href;

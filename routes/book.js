@@ -1,7 +1,7 @@
 const { Router } = require('express');//destructure router from express
 const {New_book,Update_book,upFile,Get_book,Get_books} = require('../controllers/book_controller');
 
-const {uploadCover,uploadAudio} = require('../util/utils');
+const {uploadCover} = require('../util/utils');
 
 const router = Router(); // initialize router   //bookController.Up_book
 
