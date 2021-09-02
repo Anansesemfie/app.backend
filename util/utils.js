@@ -44,11 +44,11 @@ const mailer=(mail)=>{
 }
 
 process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
-      // if(process.env.NODE_ENV=="production"){
-        
-      // }
+      if(process.env.NODE_ENV=="development"){
+        process.env.DB="mongodb://localhost:27017/Ananse_fie";
+      }
       // else{
-      //   process.env.DB="mongodb://localhost:27017/Ananse_fie";
+      //   
       // }
       
 

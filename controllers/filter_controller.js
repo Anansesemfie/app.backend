@@ -22,7 +22,7 @@ const search = async (req,res)=>{
     try{
         const books =[];
         const keyword = req.query.keyword;//get keyword from request
-        console.log('Hello');
+        // console.log('Hello');
         if(keyword.length<2){
             throw 'Key word too short';
         }
@@ -44,22 +44,22 @@ const search = async (req,res)=>{
                 viaTitle.forEach(book1 => {
                     books.push(book1);
                 });
-                console.log('error')
+                // console.log('error')
             }
             else{
                 viaTitle.forEach(book1 => {
                 for(let i=0;i<=books.length;i++){
-                    console.log(books[i]._id==book1._id);
+                    // console.log(books[i]._id==book1._id);
                     if(books[i]._id!== book1._id){
                         books.push(book1);
                     }
                 }
             });
-            console.log('error1')
+            
             }
-            console.log('Enterd if')
+            
         }
-        console.log(books)
+        // console.log(books)
 
         res.json({books});
 

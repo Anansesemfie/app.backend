@@ -196,14 +196,14 @@ function ad_card(book,location){
     loc.append(
         $('<div/>',{'class':'col mb-4'}).append(
             $('<div/>',{'class':'card'}).append(
-                $('<img/>',{'class':'card-img-top','alt':'webinar banner','src':book.cover}),
+                $('<img/>',{'class':'card-img-top','alt':`${book.title}`,'src':book.cover}),
                 $('<div/>',{'class':'card-body'}).append(
                 $('<div/>',{'class':'card-title'}).append(`#${book.title}`),
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
                 // $('<button/>',{'class':'button','id':'uploaderBTN','data-target':book.uploader}).append($('<i/>',{'class':'fa fa-calendar-plus-o','aria-hidden':'true'})),
-                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-expand','aria-hidden':'true'})),
-                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-headphones','aria-hidden':'true'}))
+                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-window-maximize','aria-hidden':'true'})),
+                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-share-square','aria-hidden':'true'}))
                 )
                 )
                 )
