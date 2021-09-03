@@ -235,3 +235,32 @@ const getFile = async (chapter)=>{
         }
 
 }
+
+
+//search
+const search =async(keyword)=>{
+        try{
+                let response = await fetch(`/filter/find?keyword=${keyword}`, {method:'GET'}); 
+                // console.log(response.status);
+                if(response.status===404){
+                        
+                        throw 'Not found';
+
+                }
+                else if(response.status===403){
+                        let error =await response.json();
+                        if(error.error==''){
+                                error.error='Unknown Issues';
+                        }
+                        throw error.error;
+                }
+                else{
+                        return response.json();
+                }
+
+
+        }
+        catch(error){
+                throw error;
+        }
+}

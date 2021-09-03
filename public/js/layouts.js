@@ -409,3 +409,22 @@ const myUrl = ()=>{
 
     return url;
 }
+
+const searchDiv = (loc,data)=>{
+    let position = $(`#${loc}`);
+    // console.log(msg_details);
+
+    position.append(`
+
+    <div class="card" style="width:18rem;">
+    <div class="card-header">${data.title}</div>
+    <div class="card-body">
+    Details<a href="/book/Read/${data._id}" class="button cat">Open</a>
+    </div>
+
+    </div>
+    
+    <hr>
+
+    `);
+}

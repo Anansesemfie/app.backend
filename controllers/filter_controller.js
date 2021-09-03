@@ -23,8 +23,8 @@ const search = async (req,res)=>{
         const books =[];
         const keyword = req.query.keyword;//get keyword from request
         // console.log('Hello');
-        if(keyword.length<2){
-            throw 'Key word too short';
+        if(keyword.length<2||keyword.length<1){
+            throw 'Try a longer word';
         }
 
 

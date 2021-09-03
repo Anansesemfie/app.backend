@@ -141,7 +141,7 @@ const getComments = async (req,res)=>{
 const postSeen = async (req,res)=>{
     try{
         if(!req.cookies.jwt){
-            res.status(200).json({message:'user not logged in',status:'Attention'});
+            res.status(403).json({message:'user not logged in',status:'Attention'});
         }
         const book = req.params.book;
         const user = await decode_JWT(req.cookies.jwt);

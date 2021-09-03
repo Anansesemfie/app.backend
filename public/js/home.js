@@ -30,7 +30,7 @@ const Books = async()=>{
 
 $(document).ready(async ()=>{
     try{
-
+        toastHolder(); // toast holder
                 let mod = await initModal();
                 if(mod){
                     const myModal= $('#myModal');
