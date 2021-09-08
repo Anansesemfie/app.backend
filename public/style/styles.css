@@ -323,6 +323,9 @@ body{
     width:100%;
     
   }
+  .myPlayer .card{
+    width:31rem;
+  }
   .myPlayer .card-body{
     width: 100%;
     flex-direction: row;
@@ -749,6 +752,12 @@ background-color:whitesmoke;
         width:max-content;
         padding-left: 0;
         padding-right:0;
+      }
+      .myPlayer .card{
+        width:19rem;
+      }
+      .myPlayer .playPause{
+        width:max-content;
       }
       .myPlayer .card-body{
         width: 100%;

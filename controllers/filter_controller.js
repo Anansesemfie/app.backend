@@ -5,15 +5,42 @@ const category = require('../models/category');//categories
 
 //find all
 const filterThorough = async(req,res)=>{
-    const uploader = req.body.uploader
+    try{
+  //get values from body
     const played = req.body.played
-    // // const seen = req.body.seen
-console.log(uploader,played);
-    // //search
-    // const byCategories = await book.find({category:cate,title:title});
-    // console.log(byCategories);
+    const cate = req.body.category;
 
-    res.send('Cool');
+    console.log(played==0,cate !="");
+
+    let filtered; 
+    //search
+    if(cate !="" && played>0){//both are present
+        console.log('missing nothing');
+        filtered= await book.find({category:cate,played:{$gt:played},status:'Active'},'-_id'); 
+    }
+    else if(cate==""&& played>0){
+        console.log('missing a bit of something');
+        filtered= await book.find({played:{$gt:played},status:'Active'});
+    }
+    else if(cate!=""&& played==0){
+        console.log('missing a lil something');
+        filtered= await book.find({category:cate,status:'Active'},'-_id');
+    }
+    else{
+        console.log('missing something');
+        filtered= await book.find({status:'Active'});
+    }
+
+    //return something
+     res.status(200).json(filtered);
+    
+    }
+    catch(error){
+        throw error;
+    }
+    
+
+   
 }
 
 

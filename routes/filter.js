@@ -7,7 +7,12 @@ const router = Router(); // initialize router
 
 
 
-router.get('/',filterThorough);
+router.get('/',(req,res)=>{
+
+    res.render('filtering');
+});
+
+router.get('/speci',filterThorough);
 router.get('/find',search);
 
 module.exports=router;
