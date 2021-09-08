@@ -48,6 +48,10 @@ const bookSchema = new Schema({
     moment:{
         type:Date,
         default:mongoose.now()
+    },
+    played:{
+        type:Number,
+        default:0
     }
 
  },{

@@ -1,6 +1,6 @@
 const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
 const { book} = require('../models/bookModel');
-const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
+const {mailer,decode_JWT,service,createFileDIr,realDate} = require('../util/utils'); 
 const { ObjectId } = require('bson');
 
 
@@ -127,6 +127,11 @@ const getComments = async (req,res)=>{
             foreignField:"_id",
             as:"commenter"
         }}]);
+
+        // comments.forEach(com=>{
+        //     com.moment=realDate(com.moment);
+        // });
+
 
         res.json({comments})
 ;
