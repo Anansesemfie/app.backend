@@ -53,7 +53,7 @@ const getBooks = async ()=>{//all available books
         }
 }
 
-
+// CHapter
 const getChapters = async(book)=>{
         try{
                 let result = await fetch(`/chapter/${book}`,{
@@ -76,7 +76,8 @@ const getChapters = async(book)=>{
         }
 }
 
-const postReaction = async (book,action)=>{
+
+const postReaction = async (book,action)=>{//send reaction
         try{
                 const myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
@@ -124,7 +125,7 @@ const postReaction = async (book,action)=>{
 }
 
 
-const getReaction = async (book)=>{
+const getReaction = async (book)=>{//get reactions 
         try{
                 const reacts = await fetch(`/react/${book}`,{method:'GET'});
                 //  console.log(reacts);
@@ -234,4 +235,52 @@ const getFile = async (chapter)=>{
                 throw err;
         }
 
+}
+
+
+//search
+const search =async(keyword)=>{
+        try{
+                let response = await fetch(`/filter/find?keyword=${keyword}`, {method:'GET'}); 
+                // console.log(response.status);
+                if(response.status===404){
+                        
+                        throw 'Not found';
+
+                }
+                else if(response.status===403){
+                        let error =await response.json();
+                        if(error.error==''){
+                                error.error='Unknown Issues';
+                        }
+                        throw error.error;
+                }
+                else{
+                        return response.json();
+                }
+
+
+        }
+        catch(error){
+                throw error;
+        }
+}
+//filter
+const Filter = async (query)=>{
+        try{
+                query.played = parseInt(query.played);
+                console.log(query);
+
+
+        let respond = await fetch(`/filter/speci?played=${query.played}&category=${query.category}`,{method:"GET"});
+
+        if(respond.status==404||respond.status==403){
+                throw 'Something unexpected happened, check your connection'
+        }
+        return respond.json();
+
+        }
+        catch(error){           
+                throw error;
+        }
 }

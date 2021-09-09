@@ -117,7 +117,7 @@
 <div class="row">
   
     <div class="container col-9">
-        <div class="row row-cols-1 row-cols-md-1" id="Chapters">
+        <div class="row row-cols-1 row-cols-md-2" id="Chapters">
           
 
 
@@ -171,7 +171,7 @@
               </div>
               <div class="col-7">
                 <!-- controls -->
-                <div class="row">
+                <div class="row playPause">
                   <button id="fstBack" title="-5s">
                     <i class="fas fa-fast-backward"></i>
                   </button>
@@ -212,7 +212,7 @@
         <div id="commenting" class="floatingDiv mobile">
           <!-- comment input here -->
           <input type="text" name="" id="comment" class="myInput" placeholder="leave a comment">
-          <button class="btn btn-info" id="comment_go">>></button>
+          <button class="btn btn-info" id="comment_go"><i class="fas fa-paper-plane"></i></button>
         </div>
         
         
@@ -221,7 +221,10 @@
 
 
 <%- include('partials/footer') %>
+<script defer type="text/javascript" src="/js/search.js"></script>
 <script defer type="text/javascript" src="/js/book.js"></script>
+
 <script defer type="text/javascript" src="/js/player.js"></script>
+
 
 

@@ -2,7 +2,8 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
-const { response } = require('express');
+
+// const { isNull } = require('util');
 
 const myMail = {"mail":"anansesem.fie@thepostghana.com","password":"nanaasabere1992#"};
 
@@ -35,7 +36,7 @@ const mailer=(mail)=>{
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      console.log(error);
+      throw error;
     } else {
       console.log('Email sent: ' + info.response);
     }
@@ -44,11 +45,11 @@ const mailer=(mail)=>{
 }
 
 process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
-      // if(process.env.NODE_ENV=="production"){
-        
-      // }
+      if(process.env.NODE_ENV=="development"){
+        process.env.DB="mongodb://localhost:27017/Ananse_fie";
+      }
       // else{
-      //   process.env.DB="mongodb://localhost:27017/Ananse_fie";
+      //   
       // }
       
 
@@ -260,6 +261,19 @@ const audioStorage = multer.diskStorage({
         }
     }
 
+    const realDate= (date)=>{//luxon to get meaningful time
+      try{
+        
+        if(date==''||date==undefined||date==null){
+          throw 'Invalid Date';
+        }
+      
+      }
+      catch(error){
+        throw error;
+      }
+    }
+
 
 
 
@@ -271,5 +285,6 @@ module.exports={
   uploadCover,
   uploadAudio,
   createFolderDIr,
-  createAudioDIr
+  createAudioDIr,
+  realDate
 }

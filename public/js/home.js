@@ -30,7 +30,7 @@ const Books = async()=>{
 
 $(document).ready(async ()=>{
     try{
-
+        toastHolder(); // toast holder
                 let mod = await initModal();
                 if(mod){
                     const myModal= $('#myModal');
@@ -59,7 +59,7 @@ $(document).ready(async ()=>{
                 
                         case 'newBook':
                         let bookTails = bookUp();
-                        console.log(bookTails);
+                        // console.log(bookTails);
                 
                         break;
                         case 'bookForm':

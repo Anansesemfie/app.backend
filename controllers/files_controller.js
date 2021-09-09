@@ -1,4 +1,5 @@
-const fs = require('fs');
+// const fs = require('fs');
+const { book} = require('../models/bookModel');
 const chapter = require('../models/chapterModel');
 const {bookSeen} = require('../models/reactionModel');
 const {decode_JWT} =require('../util/utils');
@@ -20,7 +21,13 @@ const readFile = async (req,res)=>{
       if(!see.played){
         const seen = await bookSeen.findByIdAndUpdate({_id:see._id},{played:true});
         if(seen){
-          console.log('played');
+          let record= await book.findByIdAndUpdate({_id:seen.bookID},{$inc:{played:1}});
+                if(record){
+                   res.end(); 
+                }
+                else{
+                    throw 'Could not record seen';
+                }
         }
       }
 

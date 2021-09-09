@@ -1,19 +1,46 @@
 const {book} = require('../models/bookModel');//books
 const category = require('../models/category');//categories
 // const {bookSeen, bookComment, bookReact} = require('../models/reactionModel');//reactions
-
+const exempt = '-__v -status -folder -uploader';
 
 //find all
 const filterThorough = async(req,res)=>{
-    const uploader = req.body.uploader
-    const played = req.body.played
-    // // const seen = req.body.seen
-console.log(uploader,played);
-    // //search
-    // const byCategories = await book.find({category:cate,title:title});
-    // console.log(byCategories);
+    try{
+  //get values from body
+    const played = req.query.played
+    const cate = req.query.category;
 
-    res.send('Cool');
+    console.log(played==0,cate !="");
+    
+    let filtered; 
+    //search
+    if(cate !="" && played>0){//both are present
+        console.log('missing nothing');
+        filtered= await book.find({category:cate,played:{$gt:played},status:'Active'},exempt); 
+    }
+    else if(cate==""&& played>0){
+        console.log('missing a bit of something');
+        filtered= await book.find({played:{$gt:played},status:'Active'},exempt);
+    }
+    else if(cate!=""&& played==0){
+        console.log('missing a lil something');
+        filtered= await book.find({category:cate,status:'Active'},exempt);
+    }
+    else{
+        console.log('missing something');
+        filtered= await book.find({status:'Active'},exempt);
+    }
+
+    //return something
+     res.json({filtered});
+    
+    }
+    catch(error){
+        throw error;
+    }
+    
+
+   
 }
 
 
@@ -22,13 +49,13 @@ const search = async (req,res)=>{
     try{
         const books =[];
         const keyword = req.query.keyword;//get keyword from request
-        console.log('Hello');
-        if(keyword.length<2){
-            throw 'Key word too short';
+        // console.log('Hello');
+        if(keyword.length<2||keyword.length<1){
+            throw 'Try a longer word';
         }
 
 
-        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"});
+        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
         if(viaCate){ //if categories was a hit
             viaCate.forEach(book => {
                 books.push(book);
@@ -37,29 +64,29 @@ const search = async (req,res)=>{
         // console.log(books)
         let reg = `/.*${keyword}.*/`;
 
-    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"});
+    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
         if(viaTitle){ //if title was a hit
             
             if(books.length<=0){
                 viaTitle.forEach(book1 => {
                     books.push(book1);
                 });
-                console.log('error')
+                // console.log('error')
             }
             else{
                 viaTitle.forEach(book1 => {
                 for(let i=0;i<=books.length;i++){
-                    console.log(books[i]._id==book1._id);
+                    // console.log(books[i]._id==book1._id);
                     if(books[i]._id!== book1._id){
                         books.push(book1);
                     }
                 }
             });
-            console.log('error1')
+            
             }
-            console.log('Enterd if')
+            
         }
-        console.log(books)
+        // console.log(books)
 
         res.json({books});
 

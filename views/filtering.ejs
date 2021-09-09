@@ -1,0 +1,53 @@
+<%- include('partials/header'); %>
+<div class="filter_main row">
+
+<div class="container">
+    <div class="col-12">
+        <div class="row">
+             <div class="col-6">
+                <select name="category" id="category" class="form-control">
+                    <option disabled hidden selected> Select a category </option>
+                    
+
+                    
+                </select>
+             </div>
+              <div class="col-6">
+                <select name="played" id="played" class="form-control">
+                    <option disabled hidden selected>Select Played count</option>
+                <option value="1">1+</option>
+                <option value="10">10+</option>
+                <option value="50">50+</option>
+                <option value="100">100+</option>
+                <option value="500">500+</option>
+                <option value="1000">1000+</option>
+            </select>
+              </div>
+        </div>
+       
+    </div>
+    <button id="filterBtn" class="btn btn-dark btn-lg" style="float:right">
+        Filter
+    </button>
+</div>
+
+<div class="container">
+    <div >
+        <div class="row row-cols-1 row-cols-md-3" id="books">
+          
+        </div>
+      </div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+<%- include('partials/footer') %>
+<script defer type="text/javascript" src="/js/search.js"></script>
+<script defer type="text/javascript" src="/js/filter.js"></script>

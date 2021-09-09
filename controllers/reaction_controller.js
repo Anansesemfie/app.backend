@@ -1,6 +1,6 @@
 const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
 const { book} = require('../models/bookModel');
-const {mailer,decode_JWT,service,createFileDIr} = require('../util/utils'); 
+const {mailer,decode_JWT,service,createFileDIr,realDate} = require('../util/utils'); 
 const { ObjectId } = require('bson');
 
 
@@ -128,6 +128,11 @@ const getComments = async (req,res)=>{
             as:"commenter"
         }}]);
 
+        // comments.forEach(com=>{
+        //     com.moment=realDate(com.moment);
+        // });
+
+
         res.json({comments})
 ;
         // db.users.aggregate([{$match:{"_id":"60def21ef6b0386590386672"}},{$lookup:{from:"books", localField:"_id", foreignField:"uploader", as:"User_books"}}]).pretty()
@@ -141,7 +146,7 @@ const getComments = async (req,res)=>{
 const postSeen = async (req,res)=>{
     try{
         if(!req.cookies.jwt){
-            res.status(200).json({message:'user not logged in',status:'Attention'});
+            res.status(403).json({message:'user not logged in',status:'Attention'});
         }
         const book = req.params.book;
         const user = await decode_JWT(req.cookies.jwt);
