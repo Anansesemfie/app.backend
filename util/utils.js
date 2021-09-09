@@ -55,7 +55,7 @@ process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/A
 
 const service={
     "port":process.env.PORT || 5000,
-    "host":"https://ananse-fie.herokuapp.com/",
+    "host":"https://anansesemfie.com/",
     "DB":process.env.DB,
     "secret":"symbiosis"
 }
