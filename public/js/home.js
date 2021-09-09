@@ -59,7 +59,7 @@ $(document).ready(async ()=>{
                 
                         case 'newBook':
                         let bookTails = bookUp();
-                        console.log(bookTails);
+                        // console.log(bookTails);
                 
                         break;
                         case 'bookForm':

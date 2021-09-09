@@ -34,7 +34,7 @@ const searchResult = ()=>{
     searchArea.append(`
     <div class="card-footer">
     <a href="/filter">
-    click for a more precise filtering
+    <i class="fas fa-filter"></i>click for more filtering
     </a>
     </div>
     
@@ -72,6 +72,7 @@ $(document).ready(async ()=>{
             console.log('Btn clicked');
             const keyword = $('#searchSpace').val();
             searching(keyword);
+            toolTips();
 
         });
 
@@ -110,4 +111,12 @@ const searching = async (keyword)=>{
         
         toast({message:error,title:'Error While searching',bg:'bg-warning'});
     }
+}
+
+const toolTips = ()=>{
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+
 }

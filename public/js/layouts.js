@@ -191,7 +191,11 @@ const bookDetail = (detail,loc=".book")=>{
 
 function ad_card(book,location){
     let loc= $('#'+location);
-    
+    let categories="";
+
+    book.category.forEach(ele=>{
+        categories+=ele+' ';
+    })
 
     loc.append(
         $('<div/>',{'class':'col mb-4'}).append(
@@ -199,9 +203,9 @@ function ad_card(book,location){
                 $('<img/>',{'class':'card-img-top','alt':`${book.title}`,'src':book.cover}),
                 $('<div/>',{'class':'card-body'}).append(
                 $('<div/>',{'class':'card-title'}).append(`#${book.title}`),
+                $('<div/>',{'style':'font-weight:bolder'}).append($('<div/>').append('Categories:',categories),$('<div/>').append('Played:',book.played)),
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
-                // $('<button/>',{'class':'button','id':'uploaderBTN','data-target':book.uploader}).append($('<i/>',{'class':'fa fa-calendar-plus-o','aria-hidden':'true'})),
                 $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-window-maximize','aria-hidden':'true'})),
                 $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-share-square','aria-hidden':'true'}))
                 )
@@ -381,7 +385,7 @@ const toast = (msg)=>{
      
       <strong class="me-auto">${msg.title}</strong>
       
-      <button type="button" class="btn-close" id="closeToast" onclick="closeToast(this)">X</button>
+      <button type="button" class="btn btn-light" id="closeToast" onclick="closeToast(this)">X</button>
     </div>
     <div class="toast-body">
       ${msg.message}
@@ -416,10 +420,16 @@ const searchDiv = (loc,data)=>{
 
     position.append(`
 
-    <div class="card" style="width:18rem;">
-    <div class="card-header">${data.title}</div>
+    <div class="" style="width:18rem;" title="${data.description}">
+    <div class="card-header row">
+
+    <img src="${data.cover}">
+    ${data.title}
+    </div>
     <div class="card-body">
-    Details<a href="/book/Read/${data._id}" class="button cat">Open</a>
+    <div class="row">Categories:${data.category} </div>
+    <div class="row">Played:${data.played} </div>
+    <a href="/book/Read/${data._id}" class="btn btn-light"><i class="fas fa-share-square"></i></a>
     </div>
 
     </div>

@@ -42,7 +42,24 @@ body{
 #searchBody{
   overflow-y: auto;
 }
+#searchBody a{
+  float: right;
+}
+#searchBody img{
+  width: 35px;
+  border-radius: 6px;
+  
+}
+#searchBody .card-header{
+  font-weight: bolder;
+}
+#searchBody .card-body{
+  font-weight: bolder;
+}
 
+.filter_main{
+  margin-top: 10%;
+}
 
 .loaded {
    opacity : 1;

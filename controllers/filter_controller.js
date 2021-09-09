@@ -1,38 +1,38 @@
 const {book} = require('../models/bookModel');//books
 const category = require('../models/category');//categories
 // const {bookSeen, bookComment, bookReact} = require('../models/reactionModel');//reactions
-
+const exempt = '-__v -status -folder -uploader';
 
 //find all
 const filterThorough = async(req,res)=>{
     try{
   //get values from body
-    const played = req.body.played
-    const cate = req.body.category;
+    const played = req.query.played
+    const cate = req.query.category;
 
     console.log(played==0,cate !="");
-
+    
     let filtered; 
     //search
     if(cate !="" && played>0){//both are present
         console.log('missing nothing');
-        filtered= await book.find({category:cate,played:{$gt:played},status:'Active'},'-_id'); 
+        filtered= await book.find({category:cate,played:{$gt:played},status:'Active'},exempt); 
     }
     else if(cate==""&& played>0){
         console.log('missing a bit of something');
-        filtered= await book.find({played:{$gt:played},status:'Active'});
+        filtered= await book.find({played:{$gt:played},status:'Active'},exempt);
     }
     else if(cate!=""&& played==0){
         console.log('missing a lil something');
-        filtered= await book.find({category:cate,status:'Active'},'-_id');
+        filtered= await book.find({category:cate,status:'Active'},exempt);
     }
     else{
         console.log('missing something');
-        filtered= await book.find({status:'Active'});
+        filtered= await book.find({status:'Active'},exempt);
     }
 
     //return something
-     res.status(200).json(filtered);
+     res.json({filtered});
     
     }
     catch(error){
@@ -55,7 +55,7 @@ const search = async (req,res)=>{
         }
 
 
-        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"});
+        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
         if(viaCate){ //if categories was a hit
             viaCate.forEach(book => {
                 books.push(book);
@@ -64,7 +64,7 @@ const search = async (req,res)=>{
         // console.log(books)
         let reg = `/.*${keyword}.*/`;
 
-    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"});
+    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
         if(viaTitle){ //if title was a hit
             
             if(books.length<=0){
