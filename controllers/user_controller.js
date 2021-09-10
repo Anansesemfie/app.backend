@@ -75,7 +75,7 @@ const createToken =(id)=>{
 
 
 //new User
-var signup_post = async (req,res)=>{
+const signup_post = async (req,res)=>{
     if(req.cookies.jwt){
         res.redirect('/');
     }
@@ -138,7 +138,7 @@ var signup_post = async (req,res)=>{
 }
 
 //Signin user
-var login_post = async (req,res)=>{
+const login_post = async (req,res)=>{//login controller
     const {email,password} =req.body;
     try {
         
@@ -157,19 +157,19 @@ var login_post = async (req,res)=>{
     }
 }
 
-var logout_get = async (req,res)=>{
+const logout_get = async (req,res)=>{//logout 
     res.cookie('jwt','',{maxAge:1,httpOnly:true});
     res.redirect('/');
 }
 
-var login_signup = async (req,res)=>{
+const  login_signup = async (req,res)=>{//Login and signup page
     if(req.cookies.jwt){
         res.redirect('/');
     }
     res.render('login_signup');
 }
 
-var verify_acct= async (req,res)=>{
+const verify_acct= async (req,res)=>{//Verify Account
   
 let JWT_back = await utils.decode_JWT(req.params.id);
 

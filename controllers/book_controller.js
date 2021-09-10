@@ -1,7 +1,7 @@
 const { book} = require('../models/bookModel');
 
 const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
-
+const exempt = '-__v -status -folder -uploader';
 
 
 
@@ -134,7 +134,7 @@ const Get_book = async (req,res)=>{
   let creator=false;
   
   if(req.cookies.jwt){//logged in user 
-    bookBack= await book.findOne({_id:bookID});//get book from DB
+    bookBack= await book.findOne({_id:bookID},exempt);//get book from DB
     let user = await decode_JWT(req.cookies.jwt);
   
 
@@ -147,7 +147,7 @@ const Get_book = async (req,res)=>{
   }
 
   else{//not logged user koraa 
-    bookBack = await book.findOne({_id:bookID,status:'Active'});//get book from DB
+    bookBack = await book.findOne({_id:bookID,status:'Active'},exempt);//get book from DB
     if(!bookBack){
     res.redirect('/');
   }
@@ -169,10 +169,10 @@ const Get_books =async (req,res)=>{
     let books;
 
      if(req.cookies.jwt){//if user is logged in
-    books = await book.find({status:'Active'});
+    books = await book.find({status:'Active'},exempt);
   }
   else{
-    books = await book.find({status:'Active'});
+    books = await book.find({status:'Active'},exempt);
     console.log('no user');
      //process file here 
 

@@ -1,7 +1,7 @@
 const {mailer,decode_JWT,service,createAudioDIr} = require('../util/utils'); 
 const {book} = require('../models/bookModel');
 const chapter = require('../models/chapterModel');
-
+const exempt = '-__v -file -mimetype -book';
 
 const postChapter = async (req,res)=>{
     try{
@@ -72,7 +72,7 @@ const getChapters = async (req,res)=>{
             res.status(400).send("Invalid book");
         }
 
-        const chaps = await chapter.find({book:bookID});
+        const chaps = await chapter.find({book:bookID},exempt);
         let validChaps=[];
 
         if(!req.cookies.jwt){

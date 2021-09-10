@@ -2,6 +2,7 @@ const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
 const { book} = require('../models/bookModel');
 const {mailer,decode_JWT,service,createFileDIr,realDate} = require('../util/utils'); 
 const { ObjectId } = require('bson');
+const exempt = '-__v';
 
 
 const postReaction = async (req,res)=>{
