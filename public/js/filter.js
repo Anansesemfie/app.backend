@@ -3,7 +3,7 @@ const played_field = $('#played');
 const filtBtn = $('#filterBtn');
 
 
-const filter = async(butt)=>{
+const filter = async()=>{
     try{
         // console.log(butt);
         let category =cate_field.val();
@@ -24,14 +24,13 @@ const filter = async(butt)=>{
         //     console.log(i);
         //     i++;
         // } while (!filtering);
-
-        console.log(filtering);
-        if(filtering){
-            filtering.forEach((book) => {
+        
+        filtering.forEach(book=> {
             console.log(book);
             ad_card(book,'books');
         });
-        }
+
+        
         
 
     }
@@ -52,7 +51,7 @@ $(document).ready(async ()=>{
 
          $('#filterBtn').on('click',async ()=>{
             //  alert('hello');
-            await filter($(this));
+            await filter();
          });
     }
     catch(error){
