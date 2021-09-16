@@ -203,7 +203,7 @@ function ad_card(book,location){
                 $('<img/>',{'class':'card-img-top','alt':`${book.title}`,'src':book.cover}),
                 $('<div/>',{'class':'card-body'}).append(
                 $('<div/>',{'class':'card-title'}).append(`#${book.title}`),
-                $('<div/>',{'style':'font-weight:bolder'}).append($('<div/>').append('Categories:',categories),$('<div/>').append('Played:',book.played)),
+                $('<div/>',{'style':'font-weight:bolder','class':'p-4 rounded shadow-sm bg-light'}).append($('<div/>').append(categories),$('<div/>').append('<i class="fas fa-headphones"></i>',book.played)),
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
                 $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-window-maximize','aria-hidden':'true'})),

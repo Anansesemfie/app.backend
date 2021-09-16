@@ -1,4 +1,6 @@
 const { book} = require('../models/bookModel');
+const User = require('../models/userModel');
+const{ bookReact} = require('../models/reactionModel');
 
 const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
 const exempt = '-__v -status -folder -uploader';
@@ -188,6 +190,62 @@ const Get_books =async (req,res)=>{
  
 }
 
+const Get_mine= async (req,res)=>{
+  try{
+    let {user}=req.body;
+    const Books ={
+      liked:[],
+      created:[]
+    }
+    if(!user){//get user 
+      user=(await decode_JWT(req.cookies.jwt))._id;
+      if(!user){
+        throw 'User is Invalid';
+      }
+    }
+    const me = await User.findOne({_id:user});
+    if(me){
+        const liked = await bookReact.find({user:me._id});//search for all liked books
+
+        if(liked.length>0){//push liked books
+          let i=1;
+          liked.forEach(async bk=>{
+            let _book= await book.findOne({_id:bk.bookID},exempt);//get book by ID
+            console.log(i,_book);
+            if(_book){
+              Books.liked.push(_book);
+              console.log(Books.liked);
+            }
+            
+            i++;
+          });
+        }
+        if(me.Creator){
+          const allBooks = await book.find({uploader:me._id},exempt);//get all created books 
+          if(allBooks.length>0){
+            console.log('All books:',allBooks)
+            allBooks.forEach(bk=>{
+
+              Books.created.push(bk);//push books to OBj
+              console.log(Books.created);
+            });
+          }
+        }
+
+        res.json({Books});
+
+
+    }   
+    else{
+      throw 'User was not found';
+    }
+
+  }
+  catch(error){
+    res.status(403).send(error);
+  }
+}
+
 
 
 
@@ -201,6 +259,7 @@ module.exports={
     New_book,
     Update_book,
     Get_book,
-    Get_books
+    Get_books,
+    Get_mine
 }
 

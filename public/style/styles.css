@@ -1,7 +1,7 @@
 /* prefered styles */
 body{
 
-    background-color: rgb(255, 255, 255);
+    background-color: rgba(241, 237, 227, 0.822);
     /* font-family: 'Sofia', cursive; */
 
    
@@ -57,8 +57,8 @@ body{
   font-weight: bolder;
 }
 
-.filter_main{
-  margin-top: 10%;
+.main{
+  margin-top: 5%;
 }
 
 .loaded {
@@ -68,7 +68,11 @@ body{
 #pic_bac{
     background-color: rgba(0, 0, 0,0.767);
 }
+.user_details{
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: bold;
 
+}
 
 /*scroll bar*/
 
@@ -233,9 +237,9 @@ body{
     transition:1s;
   }
   .books img{
-    min-height: 300px;
-    height: 400px;
-    max-width: 400px;
+    height: 359px;
+    /* height: 100%; */
+    max-width: 100%;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     transition: 0.5s;
@@ -254,7 +258,7 @@ body{
   }.card{
     font-family: 'Circular-Loom';
     border-radius:10px;
-    width: 25rem;
+    width: 18rem;
     margin-left: 10px;
     box-shadow: 2.5px 2.5px 2.5px 2.5px rgba(78, 55, 55, 0.2);
     transition: 0.5s;
@@ -318,6 +322,19 @@ body{
   .user_nav{
       float:right;
   }
+  .in-image{
+    width: 50%;
+    height: max-content;
+    position: relative;
+    /* top: 104px;
+    left: 0px; */
+  
+  }
+
+  .user_info{
+
+  }
+  
 
   #my_name{
     color:black;
@@ -545,12 +562,15 @@ min-height: inherit;
 
 .top-left {
     position: absolute;
+    width:100%;
     top: 8px;
     left: 16px;
     color:black;
     border-bottom-style: solid;
     border-bottom-color: #f44336;
 }
+
+
 
 .top-right {
     position: absolute;
@@ -750,8 +770,22 @@ background-color:whitesmoke;
 }
 
 /* comments nkoaa ends here*/
+/* user */
+.cover {
+  background-image: linear-gradient(180deg, rgba(238, 194, 101, 0.562), rgba(236, 237, 243, 0.281));
+  background-size: cover;
+  background-repeat: no-repeat
+}
 
+.bio{
+  max-height:250px;
+  overflow-y: auto;
+}
 
+#user_edit,#user_fb,#user_ig,#user_twi,#user_tel{
+  display:none;
+}
+/* user */
 
 /* mobile view*/
 @media screen and (max-width: 767px){

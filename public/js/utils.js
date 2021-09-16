@@ -269,7 +269,7 @@ const search =async(keyword)=>{
 const Filter = async (query)=>{
         try{
                 query.played = parseInt(query.played);
-                console.log(query);
+                // console.log(query);
 
 
         let respond = await fetch(`/filter/speci?played=${query.played}&category=${query.category}`,{method:"GET"});
@@ -281,6 +281,45 @@ const Filter = async (query)=>{
 
         }
         catch(error){           
+                throw error;
+        }
+}
+
+
+
+
+
+//user 
+const getUser=async(user)=>{
+        try{ 
+                if(!user.user){
+                        throw `Don't try to me too smart`;
+                }
+
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify(user);
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/user/profile/fetch',requestOptions);
+        if(respond.status==404||respond.status==404){
+                throw '404';
+                location.assign('/');
+        }
+
+        return respond.json();
+
+
+        }
+        catch(error){
                 throw error;
         }
 }

@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
-
+const exempt = "-_id -__v -password -key";
 //handle errors
 const handleErrors=(err)=>{
     console.log(err.message,err.code);
@@ -194,7 +194,37 @@ if(JWT_back){
 }
 
 }
+const profile=async(req,res)=>{
+try{
+    res.render('profile');
+}
+catch(error){
+res.redirect('/');
+}
+}
 
+
+const getProfile = async (req,res)=>{
+    try{
+        let {user} = req.body;//get user id from link
+        console.log(user);
+        if(user=='me'){//myself or not 
+            user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
+            if(!user){
+                res.status(403).send('user invalid');
+            } 
+
+        }
+        console.log(user);
+        //get user details
+        const userBck = await User.find({_id:user},exempt);
+      
+        res.json({user:userBck,myself:user==(await utils.decode_JWT(req.cookies.jwt))._id});
+    }
+    catch(error){
+    console.log(error);
+    }
+}
 
 
 
@@ -206,5 +236,7 @@ module.exports={
     login_post,
     logout_get,
     login_signup,
-    verify_acct
+    verify_acct,
+    profile,
+    getProfile
 }

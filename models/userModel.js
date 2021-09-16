@@ -85,6 +85,7 @@ userSchema.statics.info = async function(id){
     
 
 }
+
 // static method to follow user
 
 
