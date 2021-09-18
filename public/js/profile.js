@@ -50,6 +50,12 @@ const setUser = (user)=>{
         cover.css('background-image',`url('${newDP}')`)
         nom.text(user.user[0].username);//username
         mail.text(user.user[0].email);//email
+        if(user.user[0].bio){
+            bio.text(user.user[0].bio);
+        }
+        else{
+            bio.text('This user is secretive');
+        }
 
 
 

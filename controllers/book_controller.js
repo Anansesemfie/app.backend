@@ -198,39 +198,44 @@ const Get_mine= async (req,res)=>{
       created:[]
     }
     if(!user){//get user 
-      user=(await decode_JWT(req.cookies.jwt))._id;
-      if(!user){
-        throw 'User is Invalid';
+      if(!req.cookies.jwt){
+        throw 'User not logged in'
       }
+      user=(await decode_JWT(req.cookies.jwt))._id;
     }
     const me = await User.findOne({_id:user});
     if(me){
-        const liked = await bookReact.find({user:me._id});//search for all liked books
+        const likes = await bookReact.find({user:me._id});//search for all liked books
 
-        if(liked.length>0){//push liked books
+        if(likes.length>=1){//push liked books
+          console.log(likes.length>=1);
           let i=1;
-          liked.forEach(async bk=>{
+          likes.forEach(async bk=>{
             let _book= await book.findOne({_id:bk.bookID},exempt);//get book by ID
             console.log(i,_book);
             if(_book){
               Books.liked.push(_book);
-              console.log(Books.liked);
+              // console.log(Books.liked);
             }
             
             i++;
           });
         }
-        if(me.Creator){
+        if(me.account ==='Creator'){
           const allBooks = await book.find({uploader:me._id},exempt);//get all created books 
           if(allBooks.length>0){
-            console.log('All books:',allBooks)
+            // console.log('All books:',allBooks)
             allBooks.forEach(bk=>{
 
               Books.created.push(bk);//push books to OBj
-              console.log(Books.created);
+              // console.log(Books.created);
             });
           }
         }
+        else{
+          Books.created.push('Not a creator');
+        }
+        // console.log(Books);
 
         res.json({Books});
 

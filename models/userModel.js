@@ -2,6 +2,23 @@ const mongoose = require('mongoose');
 const {isEmail} = require('validator');
 const bcrypt = require('bcrypt');
 
+const handleSchema = new mongoose.Schema({
+    linkType:{
+        type:String,
+        required:false
+    },
+    href:{
+        type:String,
+        required:false
+    },
+    moment:{
+        type:Date,
+        default:mongoose.now()
+    }
+},{
+    timestamp:true
+});
+
 
 const userSchema = new mongoose.Schema({
     email:{
@@ -36,7 +53,12 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:'logo_d.png',
       },
-     
+     bio:{
+        type:String,
+        required:false,
+        default:'This user is secretive'
+     },
+     handles:[handleSchema],
       key:{
           type:String,
           require:false
@@ -47,6 +69,7 @@ const userSchema = new mongoose.Schema({
           default:mongoose.now()
       }
 });
+
 
 
 //fire a function before a doc is save to DB
