@@ -200,9 +200,9 @@ function ad_card(book,location){
     loc.append(
         $('<div/>',{'class':'col mb-4'}).append(
             $('<div/>',{'class':'card'}).append(
-                $('<img/>',{'class':'card-img-top','alt':`${book.title}`,'src':book.cover}),
+                $('<img/>',{'class':'card-img-top proper_img','alt':`${book.title}`,'src':book.cover}),
                 $('<div/>',{'class':'card-body'}).append(
-                $('<div/>',{'class':'card-title'}).append(`#${book.title}`),
+                $('<div/>',{'class':'card-title','style':'font-family: fantasy;'}).append(`#${book.title}`),
                 $('<div/>',{'style':'font-weight:bolder','class':'p-4 rounded shadow-sm bg-light'}).append($('<div/>').append(categories),$('<div/>').append('<i class="fas fa-headphones"></i>',book.played)),
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
@@ -217,6 +217,7 @@ function ad_card(book,location){
     );
   
 }
+
 
 
 

@@ -159,7 +159,7 @@ const Get_book = async (req,res)=>{
   }
   catch(err){
     let erros = handleError(err);
-    res.render(erros);
+    res.send(erros);
   }
  
 
@@ -197,7 +197,7 @@ const Get_mine= async (req,res)=>{
       liked:[],
       created:[]
     }
-    if(!user){//get user 
+    if(!user||user=='me'){//get user 
       if(!req.cookies.jwt){
         throw 'User not logged in'
       }

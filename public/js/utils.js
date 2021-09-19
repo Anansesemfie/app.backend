@@ -293,7 +293,7 @@ const Filter = async (query)=>{
 const getUser=async(user)=>{
         try{ 
                 if(!user.user){
-                        throw `Don't try to me too smart`;
+                        throw `Don't try to be too smart`;
                 }
 
                 const myHeaders = new Headers();
@@ -322,4 +322,39 @@ const getUser=async(user)=>{
         catch(error){
                 throw error;
         }
+}
+
+const userBooks = async (user)=>{
+        try{
+                if(!user.user){//if no user
+                        throw `Don't try to be too smart`;
+
+                }
+                 //there is a user 
+                 const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify(user);
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/book/user',requestOptions);
+        if(respond.status==404||respond.status==404){
+                throw '404';
+                location.assign('/');
+        }
+
+        return respond.json();
+
+        }
+        catch(error){
+
+        }
+
 }

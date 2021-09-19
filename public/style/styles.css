@@ -236,7 +236,7 @@ body{
     max-height: 100px;
     transition:1s;
   }
-  .books img{
+  .proper_img{
     height: 359px;
     /* height: 100%; */
     max-width: 100%;
@@ -776,13 +776,18 @@ background-color:whitesmoke;
   background-size: cover;
   background-repeat: no-repeat
 }
+.rowedUp{
+  position: relative;
+  overflow-x: auto;
+  width: 100%;
+}
 
 .bio{
   max-height:250px;
   overflow-y: auto;
 }
 
-#user_edit,#user_fb,#user_ig,#user_twi,#user_tel{
+#user_edit,#user_fb,#user_ig,#user_twi,#user_tel,#user_books{
   display:none;
 }
 /* user */

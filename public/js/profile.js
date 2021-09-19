@@ -9,7 +9,7 @@ const mail = $('#user_mail');//Email
 const loc =$('#user_loc');//location if any
 const bio = $('#user_bio');//user bio
 const Ubks = $('#user_books');//user books
-const books = $('#__books')//book count
+const __books = $('#__books')//book count
 const cover = $('.cover');
 
 //hidden
@@ -19,14 +19,15 @@ const ig = $('#user_ig')//instagram
 const twi = $('#user_twi')//twitter
 const tel = $('#user_tel')//phone
 
+const myLiked = $('#myLiked')//liked book container
+const myCreated = $('#myCreated')//liked book container
+
 //insert user details
-const setUser = (user)=>{
+const setUser = async (user)=>{
     try{
         if(user.myself){//this is my profile
             edit.css('display','block');
-            if(Ubks.css('display','block')){
-                books.text('500');
-            }
+            
         }
 
         //handles..................
@@ -44,7 +45,7 @@ const setUser = (user)=>{
         // }
 
         //handles...................
-        console.log(user.myself)
+        // console.log(user.myself)
         let newDP = `/images/${user.user[0].dp}`
         dp.attr('src',newDP);//dp
         cover.css('background-image',`url('${newDP}')`)
@@ -57,23 +58,67 @@ const setUser = (user)=>{
             bio.text('This user is secretive');
         }
 
+    }
+    catch(error){
+        throw error;
+    }   
+}
+
+const setBooks = async(books)=>{
+    try{
+        if(books.Books.liked.length>0){//have liked books
+            books.Books.liked.forEach(bk=>{
+                ad_card(bk,'myLiked');
+            });
+        }
+        else{
+            myLiked.append(`<center>
+            <a href="/" class="button cat btn-lg btn-block">Looks like No one has caught your eyes, guess again</a>
+            </center>`)
+        }
+
+        if(books.Books.created.length>0){//have Created books
+            Ubks.css('display','block');
+            if(Ubks.css('display','block')){//show number of books
+                __books.text(books.Books.created.length);
+            }
+
+            //set books
+            books.Books.created.forEach(bk=>{
+                ad_card(bk,'myCreated');
+            });
 
 
 
+        }
+        else{
+            myCreated.append(`<center>
+            <a href="/" class="button cat btn-lg btn-block">Try and upload your first Book</a>
+            </center>`)
+        }
 
         
     }
     catch(error){
-console.log(error);
-    }   
+        throw error;
+    }
 }
+
+
 
 //get User details
 const get_user = async()=>{
     try{
         const thisUser = await getUser({user});
+
         if(thisUser){
-            setUser(thisUser);
+            await setUser(thisUser);
+
+            //get user books
+                console.log('Done');
+                let user_books = await userBooks({user});
+                setBooks(user_books);
+            
            
         }
     }
@@ -83,15 +128,16 @@ const get_user = async()=>{
 }
 
 
+
 $(document).ready(async ()=>{
     try{
         toastHolder(); // toast holder
        $('.toast').toast('show');
 
         const readyUser=await get_user();
-        if(!readyUser){
-            throw 'There was an usual problem';
-        }
+        // if(!readyUser){
+        //     throw 'There was an usual problem';
+        // }
     }
     catch(error){
         toast({message:error,title:'Trouble with user',bg:'bg-danger'});
