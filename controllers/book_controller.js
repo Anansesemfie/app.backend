@@ -212,10 +212,10 @@ const Get_mine= async (req,res)=>{
           let i=1;
           likes.forEach(async bk=>{
             let _book= await book.findOne({_id:bk.bookID},exempt);//get book by ID
-            console.log(i,_book);
+            // console.log(i,_book);
             if(_book){
               Books.liked.push(_book);
-              // console.log(Books.liked);
+              console.log(Books.liked);
             }
             
             i++;

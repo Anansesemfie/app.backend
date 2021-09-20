@@ -207,7 +207,7 @@ function ad_card(book,location){
                 $('<div/>',{'class':'container'}).append(
                 $('<div/>').append(
                 $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-window-maximize','aria-hidden':'true'})),
-                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-share-square','aria-hidden':'true'}))
+                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-door-open','aria-hidden':'true'}))
                 )
                 )
                 )
@@ -430,7 +430,7 @@ const searchDiv = (loc,data)=>{
     <div class="card-body">
     <div class="row">Categories:${data.category} </div>
     <div class="row">Played:${data.played} </div>
-    <a href="/book/Read/${data._id}" class="btn btn-light"><i class="fas fa-share-square"></i></a>
+    <a href="/book/Read/${data._id}" class="btn btn-outline-dark"><i class="fas fa-door-open"></i></a>
     </div>
 
     </div>
