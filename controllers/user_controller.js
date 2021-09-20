@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
-
+const exempt = "-_id -__v -password -key";
 //handle errors
 const handleErrors=(err)=>{
     console.log(err.message,err.code);
@@ -75,7 +75,7 @@ const createToken =(id)=>{
 
 
 //new User
-var signup_post = async (req,res)=>{
+const signup_post = async (req,res)=>{
     if(req.cookies.jwt){
         res.redirect('/');
     }
@@ -138,7 +138,7 @@ var signup_post = async (req,res)=>{
 }
 
 //Signin user
-var login_post = async (req,res)=>{
+const login_post = async (req,res)=>{//login controller
     const {email,password} =req.body;
     try {
         
@@ -157,19 +157,19 @@ var login_post = async (req,res)=>{
     }
 }
 
-var logout_get = async (req,res)=>{
+const logout_get = async (req,res)=>{//logout 
     res.cookie('jwt','',{maxAge:1,httpOnly:true});
     res.redirect('/');
 }
 
-var login_signup = async (req,res)=>{
+const  login_signup = async (req,res)=>{//Login and signup page
     if(req.cookies.jwt){
         res.redirect('/');
     }
     res.render('login_signup');
 }
 
-var verify_acct= async (req,res)=>{
+const verify_acct= async (req,res)=>{//Verify Account
   
 let JWT_back = await utils.decode_JWT(req.params.id);
 
@@ -194,7 +194,37 @@ if(JWT_back){
 }
 
 }
+const profile=async(req,res)=>{
+try{
+    res.render('profile');
+}
+catch(error){
+res.redirect('/');
+}
+}
 
+
+const getProfile = async (req,res)=>{
+    try{
+        let {user} = req.body;//get user id from link
+        console.log(user);
+        if(user=='me'){//myself or not 
+            user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
+            if(!user){
+                res.status(403).send('user invalid');
+            } 
+
+        }
+        console.log(user);
+        //get user details
+        const userBck = await User.find({_id:user},exempt);
+      
+        res.json({user:userBck,myself:user==(await utils.decode_JWT(req.cookies.jwt))._id});
+    }
+    catch(error){
+    console.log(error);
+    }
+}
 
 
 
@@ -206,5 +236,7 @@ module.exports={
     login_post,
     logout_get,
     login_signup,
-    verify_acct
+    verify_acct,
+    profile,
+    getProfile
 }

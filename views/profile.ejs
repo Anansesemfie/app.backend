@@ -1,0 +1,93 @@
+<%- include('partials/header'); %>
+
+<div class="container main">
+
+  <div class="row py-5 px-4">
+    <div class="col-md-8 mx-auto">
+        <!-- Profile widget -->
+        <div class="bg-white shadow rounded overflow-hidden">
+            <div class="px-4 pt-0 pb-4 cover">
+                <div class="media align-items-end profile-head">
+                    <div class="profile mr-3"><img src="/images/loading.gif" id="user_pic" alt="..." width="200" class="rounded mb-2">
+                      <button id="user_edit" class="btn btn-light cat"><i class="fas fa-pen-fancy"></i></button>
+                    </div>
+                    <div class="media-body mb-5 text-black">
+                        <h4 class="mt-0 mb-0" id="user_name"></h4>
+                        <p class="small mb-4"><span id="user_mail"></span></p>
+                        <!-- <p class="small mb-4"> <i class="fas fa-map-marker-alt mr-2"></i> <span id="user_loc">New York</span></p> -->
+                    </div>
+                </div>
+            </div>
+            <div class="bg-light p-4 d-flex justify-content-end text-center">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item" id="user_books">
+                        <h5 class="font-weight-bold mb-0 d-block" id="__books">215</h5><small class="text-muted"> <i class="fas fa-book-open"></i>Books</small>
+                    </li>
+                    <!-- <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"> <i class="fas fa-user mr-1"></i>Followers</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">340</h5><small class="text-muted"> <i class="fas fa-user mr-1"></i>Following</small>
+                    </li> -->
+                </ul>
+            </div>
+            <div class="px-4 py-3">
+                <h5 class="mb-0">About</h5>
+                <div class="p-4 rounded shadow-sm bg-light">
+                    <p class="mb-0 bio" id="user_bio">
+                      
+                    </p>
+                    
+                </div>
+                <hr>
+                <div class="row handles">
+              <button id ="user_fb" href="https://facebook.com"><i class="fab fa-facebook-f"></i></button><!--facebook-->
+              <button id ="user_ig" href=""><i class="fab fa-instagram"></i></button><!--instagram-->
+              <button id ="user_twi" href=""><i class="fab fa-twitter"></i></button><!--twitter-->
+              <button id ="user_tel" href=""><i class="fas fa-phone-alt"></i></button><!--phone-->
+            </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+<div class="row container">
+  <div class="col-12 title">
+   
+      <h3>Liked books</h3>
+    
+  </div>
+</div>
+
+<div class="container">
+  <div class="rowedUp row row-cols-1 row-cols-md-3" id="myLiked">
+
+  </div>
+  <!-- liked books -->
+</div>
+
+<div class="row container">
+  <div class="col-12 title">
+   
+      <h3>Uploaded books</h3>
+    
+  </div>
+</div>
+
+<div class="container">
+  <!-- owned books -->
+  <div class="rowedUp row row-cols-1 row-cols-md-3" id="myCreated">
+
+  </div>
+</div>
+
+
+</div>
+
+
+
+<%- include('partials/footer') %>
+<script defer type="text/javascript" src="/js/profile.js"></script>
+<script defer type="text/javascript" src="/js/search.js"></script>

@@ -41,7 +41,7 @@
             <a class="nav-link dropdown-toggle user_nav" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <div class="chip"><img alt="username" src="/images/<%=user.dp%>" ></div></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <button href="user/profile" id="profile" class="dropdown-item">Profile</button>
+                    <a href="/user/profile/me" id="profile" class="dropdown-item">Profile</a>
                     <!-- <a class="dropdown-item">Settings</a>
                     <a class="dropdown-item">Events<span class="badge badge-primary">4</span></a> -->
                     <a href="/user/logout" class="dropdown-item">Logout</a>
@@ -51,7 +51,7 @@
                     
                 </div>
                    <% }else{%>
-                    <button  type="button" id="genBtn" data-id="user" onclick="signIn()" class=" btn cat signin">Signin / Signup </button>
+                    <button  type="button" id="genBtn" data-id="user" onclick="signUp()" class=" btn cat signin">Signin | Signup <i class="fas fa-sign-in-alt"></i></button>
                     <%}%>
 
                 </nav>

@@ -20,6 +20,7 @@ const Books = async()=>{
   _book.append($('<img/>',{'src':'/images/logo_d.png'}));
 
     }
+    _book.html('');
     book.forEach(story=>{
         ad_card(story,'top_books');
     });

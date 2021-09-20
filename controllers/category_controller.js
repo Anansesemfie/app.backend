@@ -1,8 +1,9 @@
 const cate = require('../models/category');
+const exempt = '-__v -status -active -_id';
 
 const getCategories = async (req,res)=>{
     try{
-        let categories = await cate.find({active:true});
+        let categories = await cate.find({active:true},exempt);
         if(categories){
             
             res.json({categories});

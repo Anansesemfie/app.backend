@@ -205,6 +205,7 @@ const loadChapters = async () =>{//load chapters if any.........................
             back= false
         }
         else{
+            $('#Chapters').html('');
             details.forEach(chap=>{
                 // console.log(chap);
                 addChapter(chap,'Chapters');

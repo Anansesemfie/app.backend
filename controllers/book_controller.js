@@ -1,7 +1,9 @@
 const { book} = require('../models/bookModel');
+const User = require('../models/userModel');
+const{ bookReact} = require('../models/reactionModel');
 
 const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
-
+const exempt = '-__v -status -folder -uploader';
 
 
 
@@ -134,7 +136,7 @@ const Get_book = async (req,res)=>{
   let creator=false;
   
   if(req.cookies.jwt){//logged in user 
-    bookBack= await book.findOne({_id:bookID});//get book from DB
+    bookBack= await book.findOne({_id:bookID},exempt);//get book from DB
     let user = await decode_JWT(req.cookies.jwt);
   
 
@@ -147,7 +149,7 @@ const Get_book = async (req,res)=>{
   }
 
   else{//not logged user koraa 
-    bookBack = await book.findOne({_id:bookID,status:'Active'});//get book from DB
+    bookBack = await book.findOne({_id:bookID,status:'Active'},exempt);//get book from DB
     if(!bookBack){
     res.redirect('/');
   }
@@ -157,7 +159,7 @@ const Get_book = async (req,res)=>{
   }
   catch(err){
     let erros = handleError(err);
-    res.render(erros);
+    res.send(erros);
   }
  
 
@@ -169,10 +171,10 @@ const Get_books =async (req,res)=>{
     let books;
 
      if(req.cookies.jwt){//if user is logged in
-    books = await book.find({status:'Active'});
+    books = await book.find({status:'Active'},exempt);
   }
   else{
-    books = await book.find({status:'Active'});
+    books = await book.find({status:'Active'},exempt);
     console.log('no user');
      //process file here 
 
@@ -188,6 +190,67 @@ const Get_books =async (req,res)=>{
  
 }
 
+const Get_mine= async (req,res)=>{
+  try{
+    let {user}=req.body;
+    const Books ={
+      liked:[],
+      created:[]
+    }
+    if(!user||user=='me'){//get user 
+      if(!req.cookies.jwt){
+        throw 'User not logged in'
+      }
+      user=(await decode_JWT(req.cookies.jwt))._id;
+    }
+    const me = await User.findOne({_id:user});
+    if(me){
+        const likes = await bookReact.find({user:me._id});//search for all liked books
+
+        if(likes.length>=1){//push liked books
+          console.log(likes.length>=1);
+          let i=1;
+          likes.forEach(async bk=>{
+            let _book= await book.findOne({_id:bk.bookID},exempt);//get book by ID
+            // console.log(i,_book);
+            if(_book){
+              Books.liked.push(_book);
+              console.log(Books.liked);
+            }
+            
+            i++;
+          });
+        }
+        if(me.account ==='Creator'){
+          const allBooks = await book.find({uploader:me._id},exempt);//get all created books 
+          if(allBooks.length>0){
+            // console.log('All books:',allBooks)
+            allBooks.forEach(bk=>{
+
+              Books.created.push(bk);//push books to OBj
+              // console.log(Books.created);
+            });
+          }
+        }
+        else{
+          Books.created.push('Not a creator');
+        }
+        // console.log(Books);
+
+        res.json({Books});
+
+
+    }   
+    else{
+      throw 'User was not found';
+    }
+
+  }
+  catch(error){
+    res.status(403).send(error);
+  }
+}
+
 
 
 
@@ -201,6 +264,7 @@ module.exports={
     New_book,
     Update_book,
     Get_book,
-    Get_books
+    Get_books,
+    Get_mine
 }
 
