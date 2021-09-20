@@ -401,7 +401,7 @@ const closeToast = (e)=>{
 
 const signUp=()=>{
     let ref = window.location.href;
-    alert(ref);
+    // alert(ref);
 
     window.location.href=`/user?redirect=${ref}`;
 }
