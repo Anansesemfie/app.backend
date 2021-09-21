@@ -76,6 +76,7 @@ loginBtn.on('click',()=>{
 
                         location.assign(redirect);
                     }
+                    //redirect here
                     location.assign('/');
                 }
     
