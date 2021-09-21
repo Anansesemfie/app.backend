@@ -307,10 +307,9 @@ const addCommentOut = (loc,msg_details)=>{
     position.append(`
 
     <div class="msg left-msg">
-      <div
-       class="msg-img"
-       style="background-image: url(/images/${msg_details.dp})"
-      ></div>
+      <a href="/user/profile/${msg_details.user}">
+       <img src="/images/${msg_details.dp}"  class="msg-img" alt="${msg_details.username}">
+      </a>
 
       <div class="msg-bubble">
         <div class="msg-info">

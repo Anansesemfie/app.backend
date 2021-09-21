@@ -139,6 +139,7 @@ const get_comments = async ()=>{//get all comments
             coms.comments.forEach(comet=>{
                 let msg ={
                     dp:comet.commenter[0].dp,
+                    user:comet.commenter[0]._id,
                     username:comet.commenter[0].username,
                     time:comet.moment,
                     comment:comet.comment
