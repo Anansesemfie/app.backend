@@ -66,8 +66,9 @@ loginBtn.on('click',()=>{
     
     
                 }
-                if()
+                
                 if(data.user){
+                    //redirect here
                     location.assign('/');
                 }
     
