@@ -10,7 +10,11 @@ const username_err = document.querySelector('.username.error');
 const password_err = document.querySelector('.password.error');
 const status_err = document.querySelector('.status.error');
 
-
+//query string from URL
+const queryString = window.location.search;
+const parameters = new URLSearchParams(queryString);
+const redirect = parameters.get('redirect');
+alert(redirect);
 
 
 _newAcct.on('click',async ()=>{
@@ -66,8 +70,12 @@ loginBtn.on('click',()=>{
     
     
                 }
-                if()
+                
                 if(data.user){
+                    if(redirect){
+
+                        location.assign(redirect);
+                    }
                     location.assign('/');
                 }
     

@@ -401,6 +401,14 @@ const closeToast = (e)=>{
 
 const signUp=()=>{
     let ref = window.location.href;
+    // let parts = ref.split('/');
+    // // alert(parts);
+    // let newLink="";
+    // for(let i = 3; i<=parts.length-1;i++){
+    //     alert(i);
+    //     newLink+=`/${parts[i]}`;
+
+    // }
     // alert(ref);
 
     window.location.href=`/user?redirect=${ref}`;
