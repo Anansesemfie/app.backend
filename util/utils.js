@@ -39,6 +39,7 @@ const mailer=(mail)=>{
       throw error;
     } else {
       console.log('Email sent: ' + info.response);
+      return true;
     }
   }); 
 
@@ -302,6 +303,17 @@ const audioStorage = multer.diskStorage({
     }
 
 
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$#%*&';
+const genRandCode= ()=>{
+    let result = ""
+    let charactersLength = characters.length;
+    for ( var i = 0; i < 16 ; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result
+}
+
+
 
 
 
@@ -314,5 +326,6 @@ module.exports={
   createFolderDIr,
   createAudioDIr,
   realDate,
-  updateUserDP
+  updateUserDP,
+  genRandCode
 }

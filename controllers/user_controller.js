@@ -90,10 +90,15 @@ const signup_post = async (req,res)=>{
             User.findByIdAndUpdate({_id:user._id},{key})
             .then(()=>{
 
-                 let html = `<a href='${utils.service.host}user/verify/${key}' style='
+                 let html = `
+                 <div style="background-color:smokewhite; width:inherit; height:auto;">
+                 <img src="${utils.service.host}/images/logo_l.png"
+                 </div>
+                 <a href='${utils.service.host}user/verify/${key}' style='
             background-color:#000;
             color:#fff;
             border-radius:2px;
+            font-size:16pt;
             '>Please verify your Account</a>
             
             `;
@@ -110,13 +115,13 @@ const signup_post = async (req,res)=>{
             res.status(201).json({user:'User Created'});
         }
         else{
-             res.status(300).json({user:'User Creation Attempted but email verification was not sent'});
+             throw 'User Creation Attempted but email verification was not sent';
         }
 
        
 
             }).catch((err)=>{
-                res.status(400).send('Key was not succesfully created');
+                res.status(400).json({err});
 
             });
            
@@ -295,6 +300,68 @@ const NewPassword =async(req,res)=>{
     }
 }
 
+const resetPassword = async(req,res)=>{
+    try{
+        if(req.cookies.jwt){//if user already logged in
+            throw 'This is not allowed'
+        }
+        const {email}=req.body;//get email from request
+
+        const user_name = await User.findOne({email});//look for email
+        if(!user_name){//user not found
+            throw 'email not found';
+        }
+
+        const newPass = utils.genRandCode()//generate new password
+
+        const salt = await bcrypt.genSalt();//gen salt
+        let password = await bcrypt.hash(newPass,salt);
+
+        console.log(password);
+        let passRes = await User.findByIdAndUpdate({_id:user_name._id},{password});
+
+        if(passRes){//successfully set new password
+
+            let html = `
+            <div style="background-color:smokewhite; width:inherit; height:auto;">
+            <img src="${utils.service.host}/images/logo_l.png"
+            </div>
+            <label>New Password</label>
+            <p><h3>${newPass}</h3></p>
+            <a href='${utils.service.host}user/' style='
+       background-color:#000;
+       color:#fff;
+       border-radius:2px;
+       font-size:16pt;
+       '>Login</a>
+       
+       `;
+       
+       let mail = {
+       "receiver":email,
+       "subject":"Reset Account",
+       "text":"Account Reset",
+       "html":html
+    }
+
+   
+    if(utils.mailer(mail)){
+       res.status(201).json({user:`Account reseted successfully, check email ${email} for details`});
+    }
+    else{
+        throw 'There was an issue sending mail, be on the lookout for an email from Us';
+    }
+        }
+
+
+
+        // res.json({newPass})
+
+    }
+    catch(error){
+        res.status(403).json({error});
+    }
+}
 
 
 
@@ -309,5 +376,6 @@ module.exports={
     profile,
     getProfile,
     updateProfile,
-    NewPassword
+    NewPassword,
+    resetPassword
 }

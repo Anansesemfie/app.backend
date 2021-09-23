@@ -97,12 +97,20 @@
                  <!-- password -->
                     <div class=" form-floating mb-3">
                         <div class="password error"></div>
-                      <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+                      <input type="password" name="password" id="pass_1" class="form-control" placeholder="Password" required="required">
                       <label for="password">Password</label>
                       
                   </div>
+                  
                     <!-- username -->
                      <div class=" form-floating mb-3" id="userNom">
+                      <div style="float:right;"><input type="checkbox" id="shwPass" value="">Show Password</div>
+                      <div class=" form-floating mb-3">
+                        <div class="password error"></div>
+                      <input type="password"  id="pass_2" class="form-control" placeholder="confirm Password">
+                      <label for="password">Confirm Password</label>
+                      
+                  </div>
                          <div class="username error"></div>
                       <input type="Text" name="userName" class="form-control" placeholder="User Name">
                       <label for="userName">User Name</label><br>
@@ -126,10 +134,10 @@
                   <div class="status error"></div>
                 </form>
         
-                <!-- <div class="text-center">
-                  <button class="cat cat_green" >Register an Account</button> -->
-                  <!-- <a class="d-block small" href="forgot-password.html">Forgot Password?</a> -->
-                <!-- </div> -->
+                <div class="text-center">
+                  <!-- <button class="cat cat_green" >Register an Account</button>  -->
+                  <button class="d-block small" id="forgot_password" type="button">Forgot Password?</button>
+                </div>
 
                 <label class="label">
                     <div class="toggle">

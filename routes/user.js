@@ -13,6 +13,7 @@ router.post('/profile/fetch',userController.getProfile);
 //updates
 router.post('/update',uploadCover.single('dp_cover'),userController.updateProfile);
 router.put('/',userController.NewPassword);
+router.put('/reset',userController.resetPassword);
 
 
 router.get('/logout',userController.logout_get);

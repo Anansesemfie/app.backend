@@ -534,3 +534,20 @@ const position = $(`${loc}`);
         throw error;
     }
  }
+
+ const forgotForm = (loc)=>{
+
+    const position = $(`${loc}`);
+     position.append(`
+     <div class=" form-floating mb-3">
+     <h3>Reset Password </h3>
+     <label for="email">Email</label><br>
+     <input type="Text" name="email" id="forgot_email" class="form-control" placeholder="Enter the Email for logining into your account" title="Changing username wiil make it difficult for your audience to locate you">
+     <div class="error" id="fgtEmail_error"></div>
+     <hr>
+     
+
+     <button type="submit" id="proceed_fgt" class="cat cat_green" >Proceed</button>
+     </div>
+     `);
+ }  
