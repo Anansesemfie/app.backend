@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
+const bcrypt = require('bcrypt');
 const exempt = "-_id -__v -password -key";
 //handle errors
 const handleErrors=(err)=>{
@@ -226,6 +227,74 @@ const getProfile = async (req,res)=>{
     }
 }
 
+const updateProfile = async(req,res)=>{//updating user profile
+    try{
+        if(!req.cookies.jwt){//if user is logged in
+            throw 'No user';
+        }
+        const user = (await utils.decode_JWT(req.cookies.jwt))._id;
+        let uploadValues={};
+        const body = req.body;//get body from request
+        const file = req.file;//get file details from request after being handled by multer
+
+
+        if(file){
+            let newDP = await utils.updateUserDP(file,user);
+            uploadValues.dp=newDP.cover;
+        }
+        if(body){
+            if(body.username){//if username is sent to updat
+                uploadValues.username=body.username;
+            }
+            if(body.bio){
+                 uploadValues.bio=body.bio;
+            }
+
+           
+        }
+
+        const updateRes=await User.findByIdAndUpdate({_id:user},uploadValues);
+        
+        if(!updateRes){
+            throw 'Could not update Profile';
+        }
+
+        res.redirect('/user/profile/me');
+    }
+    catch(error){
+        res.status(403).send(error);
+    }
+}
+
+const NewPassword =async(req,res)=>{
+    try{
+        if(!req.cookies.jwt){//if user is logged in
+            throw 'No user';
+        }
+        const user = (await utils.decode_JWT(req.cookies.jwt))._id;
+        // const user ='12334567';
+
+        let password = req.body.password;
+        if(password){
+            const salt = await bcrypt.genSalt();//gen salt
+            password = await bcrypt.hash(password,salt);
+
+            let passRes = await User.findByIdAndUpdate({_id:user},{password});
+
+            res.status(200).json({done:true});
+
+
+        }
+        else{
+            throw 'No password found'
+        }
+    }
+    catch(error){
+        console.log(error);
+        res.status(403).json({done:false});
+    }
+}
+
 
 
 
@@ -238,5 +307,7 @@ module.exports={
     login_signup,
     verify_acct,
     profile,
-    getProfile
+    getProfile,
+    updateProfile,
+    NewPassword
 }

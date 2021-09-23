@@ -770,14 +770,24 @@ background-color:whitesmoke;
 
 .left-msg .msg-bubble {
   border-bottom-left-radius: 0;
+  border-top-right-radius:-10px
 }
 
 /* comments nkoaa ends here*/
 /* user */
 .cover {
   background-image: linear-gradient(180deg, rgba(238, 194, 101, 0.562), rgba(236, 237, 243, 0.281));
-  background-size: cover;
-  background-repeat: no-repeat
+  /* background-size: cover; */
+  background-repeat: no-repeat;
+  object-fit: cover;
+}
+#user_pic{
+  background-color: rgba(255, 255, 255, 0.733);
+  max-width: 300px;
+  margin-top: 10px;
+}
+.text-black #user_name,#user_mail{
+  color:chocolate;
 }
 .rowedUp{
   position: relative;

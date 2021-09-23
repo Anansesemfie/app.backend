@@ -133,6 +133,15 @@ const getComments = async (req,res)=>{
         //     com.moment=realDate(com.moment);
         // });
 
+        comments.forEach(com=>{
+            if(!com.commenter.dp){
+                com.commenter.dp='/images/dp.png';
+                
+
+            }
+            // console.log(com.commenter.dp);
+        });
+
 
         res.json({comments})
 ;

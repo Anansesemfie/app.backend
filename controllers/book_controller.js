@@ -232,9 +232,9 @@ const Get_mine= async (req,res)=>{
             });
           }
         }
-        else{
-          Books.created.push('Not a creator');
-        }
+        // else{
+        //   Books.created.push('Not a creator');
+        // }
         // console.log(Books);
 
         res.json({Books});

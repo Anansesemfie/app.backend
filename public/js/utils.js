@@ -324,6 +324,36 @@ const getUser=async(user)=>{
         }
 }
 
+const updatePassword =async (password)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({password});
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'PUT',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                let respond = await fetch('/user/',requestOptions);
+                
+                if(respond.status==404||respond.status==404){
+                throw '404';
+                }
+                else{   
+                        return respond.json();
+                }
+
+        }
+        catch(error){
+
+        }
+}
+
 const userBooks = async (user)=>{
         try{
                 if(!user.user){//if no user

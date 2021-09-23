@@ -46,7 +46,7 @@ const setUser = async (user)=>{
 
         //handles...................
         // console.log(user.myself)
-        let newDP = `/images/${user.user[0].dp}`
+        let newDP = user.user[0].dp;
         dp.attr('src',newDP);//dp
         cover.css('background-image',`url('${newDP}')`)
         nom.text(user.user[0].username);//username
@@ -57,6 +57,8 @@ const setUser = async (user)=>{
         else{
             bio.text('This user is secretive');
         }
+
+        return {myself:user.myself};
 
     }
     catch(error){
@@ -112,14 +114,14 @@ const get_user = async()=>{
         const thisUser = await getUser({user});
 
         if(thisUser){
-            await setUser(thisUser);
+            let jstUser=await setUser(thisUser);
 
             //get user books
                 console.log('Done');
                 let user_books = await userBooks({user});
                 setBooks(user_books);
             
-           
+           return jstUser
         }
     }
     catch(error){
@@ -127,20 +129,145 @@ const get_user = async()=>{
     }
 }
 
-
+// Main start
 
 $(document).ready(async ()=>{
     try{
+        let mod = await initModal();
         toastHolder(); // toast holder
        $('.toast').toast('show');
 
         const readyUser=await get_user();
-        // if(!readyUser){
-        //     throw 'There was an usual problem';
-        // }
+        if(readyUser.myself){//this is my account
+
+            edit.on('click',()=>{
+                $('.modal-body').html('');
+                userForm('.modal-body');
+
+                $('#myModal').modal('toggle');
+
+                showEdit()
+                editEvents();
+            })
+           
+        }
     }
     catch(error){
         toast({message:error,title:'Trouble with user',bg:'bg-danger'});
     }
 
 })
+
+// Main end
+
+const showEdit= async()=>{
+    try{
+        $('#Uname').val($('#user_name').text());//user name
+        $('#Ubio').val($('#user_bio').text());//user name
+
+    }
+    catch(error){
+
+    }
+}
+
+
+const editEvents =()=>{
+
+    try{
+       $('#logDetails').on('click',async ()=>{//toggle login details
+            $('#userLog').slideToggle( "slow",()=>{
+
+            $('#shwPass').on('click',()=>{//show password
+                    // alert('checked')
+             if(document.getElementById('shwPass').checked){
+                $('#pass_1').attr('type','text');
+                $('#pass_2').attr('type','text');
+             }
+             else{
+                $('#pass_1').attr('type','password');
+                $('#pass_2').attr('type','password');
+             }
+            
+            })
+
+        $('#pass_1').on('blur',async ()=>{//leave first pass field
+            if($('#pass_1').val()){
+                let strength = await passStrenght($('#pass_1').val());
+            if(strength){
+                 $('#pass_1').css('border','2px green solid');
+            $('#pass_1').attr('title','Strong password');
+            }
+            else{
+                $('#pass_1').css('border','2px brown solid');
+                throw `<p>Password Must have atleast one <b>UPPERCASE alphabet</b></p>
+                <p>Password Must have atleast one <b>Special character</b></p>
+                <p>Password Must have atleast one <b>number</b></p>
+                <p>Password Must have atleast <b>eight(8) characters</b></p>
+                `;
+            }
+            }
+            
+            
+        })
+
+        $('#pass_2').on('blur',async ()=>{//leave first pass field
+           if($('#pass_2').val()===$('#pass_1').val()){
+            $('#pass_2').css('border','2px green solid');
+            $('#pass_2').attr('title','Passwords match');
+           }
+           else{
+            $('#pass_2').css('border','2px brown solid');
+            $('#pass_2').attr('title','Does not match');
+            throw`<p>Passwords <b>DO NOT MATCH</b></p>
+            <p>Tip: show passwords to be sure</p>
+            `;
+           }
+            
+            
+        })
+
+
+
+            });
+        })
+
+
+        //update password
+        $('#updateInfo').on('click',async ()=>{
+            alert('updatePass clicked');
+            const fstPass =$('#pass_2').val();
+            const scdPass =$('#pass_1').val();
+            if(!fstPass||!scdPass){
+                throw 'Enter your new password';
+            }
+            if(fstPass===scdPass){//check passwords
+                let passSent = await updatePassword(fstPass);
+                if(passSent.done){
+                    toast({message:'Password successfully Updated',title:'Update',bg:'bg-success'});
+                    fstPass.val('');
+                    scdPass.val('');
+                }
+                else{
+                    throw 'Could not update password';
+                }
+
+            }
+            else{//passwords don't matchS
+                throw `Passwords don't match`;
+            }
+        })
+         
+
+        
+
+
+
+
+    }
+    catch(error){
+        toast({message:error,title:'Update Issue',bg:'bg-danger'});
+    }
+}
+
+

@@ -27,6 +27,14 @@ const preventAudioDownload = ()=>{
 
 }
 
+const passStrenght = (pass)=>{
+    const reg = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+
+    return reg.test(pass);
+
+
+}
+
 
 const initModal = async ()=>{
     let position= $('body');
@@ -92,6 +100,8 @@ const bookForm = async (loc)=>{
                 
             
 }
+
+
 
 const postChapter = (id,loc)=>{
     let position = $(loc);
@@ -308,7 +318,7 @@ const addCommentOut = (loc,msg_details)=>{
 
     <div class="msg left-msg">
       <a href="/user/profile/${msg_details.user}">
-       <img src="/images/${msg_details.dp}"  class="msg-img" alt="${msg_details.username}">
+       <img src="${msg_details.dp}"  class="msg-img" alt="${msg_details.username} dp">
       </a>
 
       <div class="msg-bubble">
@@ -446,3 +456,81 @@ const searchDiv = (loc,data)=>{
 
     `);
 }
+
+ //user 
+ const userForm=(loc)=>{
+     
+    try{
+const position = $(`${loc}`);
+     position.append(`
+     
+                  
+                  
+     <div class=" form-floating mb-3">
+     <h3>Profile Details </h3>
+         <form action="/user/update" enctype="multipart/form-data" method="POST">
+       
+       <input type="file" name="dp_cover" class="form-control">
+       <label for="userName">Profile Photo</label><br>
+       <hr>
+       
+          <div class="username error"></div>
+       <input type="Text" name="username" id="Uname" class="form-control" placeholder="User Name" title="Changing username wiil make it difficult for your audience to locate you">
+       <label for="userName">User Name</label><br>
+       <hr>
+       
+       <textarea name="bio" id="Ubio" class="form-control" placeholder="biograph" >
+
+       </textarea>
+       <label for="bio">Biograph</label><br>
+
+       <button type="submit" class="cat cat_green" >Update Profile</button>
+       <div class="status error"></div>
+        </form>
+     </div>
+    
+   
+ 
+      <div class=" form-floating mb-3" id="userLog" style=" display: none;
+      transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+      <h3>Login Details </h3>
+      <!-- password_1 -->
+      <div class=" form-floating mb-3">
+          <div class="password error"></div>
+        <input type="password" name="password" class="form-control" id="pass_1" placeholder="New Password" required="required">
+        <label for="password">New Password</label>
+        <div style="float:right;"><input type="checkbox" id="shwPass" value="">Show Password</div>
+        
+    </div>
+
+    <!-- password_2 -->
+    <div class=" form-floating mb-3">
+        <div class="password error"></div>
+      <input type="password" name="password" id="pass_2" class="form-control" placeholder="confirm Password" required="required">
+      <label for="password">Confirm Password</label>
+      
+  </div>
+   <button type="button" class="cat cat_green" id="updateInfo" >Update Password</button>
+   <div class="status error"></div>
+
+      </div>
+      
+
+       <!--login details -->
+
+ <label class="label">
+     <div class="toggle">
+       <input class="toggle-state" type="checkbox" id="logDetails" name="check" value="check" />
+       <div class="indicator"></div>
+     </div>
+     <div class="label-text">Edit Login details</div>
+   </label>
+     `);
+    }
+    catch(error){
+        if(!error){
+            error="Couldn't bring update form";
+        }
+        throw error;
+    }
+ }

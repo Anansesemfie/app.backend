@@ -209,11 +209,38 @@ const audioStorage = multer.diskStorage({
       return {location:dir.slice(7),cover:filename.slice(7)};
       }
       catch(err){
-        console.log(err);
+        throw err;
       }
       
 
     }
+
+    const updateUserDP = async (file,title)=>{
+      try{
+      let buff = new Buffer.from(file.buffer, 'base64');
+      // let newTitle = title.split(' ');
+      //  newTitle = newTitle.join('-');
+      //  console.log(newTitle);
+     
+      const dir = `public/images/profile_display/`;
+
+      if(fs.existsSync(`${dir}${title}.${Imgextention(file.mimetype)}`)){
+        fs.rmdirSync(`${dir}${title}.${Imgextention(file.mimetype)}`);
+    }
+      
+      let filename =`${dir}/${title}${Imgextention(file.mimetype)}`
+
+      fs.writeFileSync(filename, buff);
+      
+      return {location:dir.slice(6),cover:filename.slice(6)};
+      }
+      catch(err){
+        throw err;
+      }
+      
+
+    }
+
 
 
 
@@ -286,5 +313,6 @@ module.exports={
   uploadAudio,
   createFolderDIr,
   createAudioDIr,
-  realDate
+  realDate,
+  updateUserDP
 }

@@ -16,11 +16,11 @@ const filterThorough = async(req,res)=>{
     //search
     if(cate !="" && played>0){//both are present
         console.log('missing nothing');
-        filtered= await book.find({category:cate,played:{$gt:played},status:'Active'},exempt); 
+        filtered= await book.find({category:cate,played:{$gt:played-1},status:'Active'},exempt); 
     }
     else if(cate==""&& played>0){
         console.log('missing a bit of something');
-        filtered= await book.find({played:{$gt:played},status:'Active'},exempt);
+        filtered= await book.find({played:{$gt:played-1},status:'Active'},exempt);
     }
     else if(cate!=""&& played==0){
         console.log('missing a lil something');
