@@ -804,6 +804,33 @@ background-color:whitesmoke;
   display:none;
 }
 /* user */
+.row_card_hor{
+    
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  
+
+}
+.card_les {
+  float: left;
+  max-width: 33.333%;
+  padding: .75rem;
+  margin-bottom: 2rem;
+  border: 0;
+  flex-basis: 33.333%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  height:90%;
+
+}
+
+.card_les > img {
+  margin-bottom: .75rem;
+}
 
 /* mobile view*/
 @media screen and (max-width: 767px){
@@ -871,6 +898,18 @@ background-color:whitesmoke;
       }
       .card{
         width: 100%;
+      }
+
+      .card_les{
+        max-width: 88%;
+        min-width: 88%;
+        width:100%;
+        }
+
+      .card_les img{
+      /* height:inherit; */
+      width:100%;
+
       }
 
       .books img{

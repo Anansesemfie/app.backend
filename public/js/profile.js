@@ -244,10 +244,11 @@ const editEvents =()=>{
             if(fstPass===scdPass){//check passwords
                 let passSent = await updatePassword(fstPass);
                 if(passSent.done){
-                    toast({message:'Password successfully Updated',title:'Update',bg:'bg-success'});
-                    fstPass.val('');
+                     fstPass.val('');
                     scdPass.val('');
-                }
+               
+                    toast({message:'Password successfully Updated',title:'Update',bg:'bg-success'});
+                 }   
                 else{
                     throw 'Could not update password';
                 }
