@@ -350,7 +350,7 @@ const updatePassword =async (password)=>{
 
         }
         catch(error){
-
+                throw error;
         }
 }
 

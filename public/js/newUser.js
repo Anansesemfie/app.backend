@@ -205,6 +205,8 @@ loginBtn.on('click',()=>{
 })
 
 $(document).ready(async()=>{
+    try{
+
     let mod = await initModal();
         toastHolder(); // toast holder
        $('.toast').toast('show');
@@ -216,10 +218,55 @@ $(document).ready(async()=>{
         $('#myModal').modal('toggle');
 
         $('#proceed_fgt').on('click',async ()=>{
-        console.log('proceed btn clicked');
+        let resetted = await forgotPassword();
+        if(resetted){
+            toast({message:resetted.user,title:'Account status',bg:'bg-success'});
+            $('#forgot_email').text('')
+        }
+        else{
+            throw 'Something went wrong';
+        }
        })
 
        })
+
+    }
+    catch(error){
+        toast({message:error,title:'OOOPS',bg:'bg-warning'});
+    }
 
        
 })
+
+
+const forgotPassword = async ()=>{
+    try{    
+        const myEmail = $('#forgot_email').val();
+
+        const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({email:myEmail});
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'PUT',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                let respond = await fetch('/user/reset',requestOptions);
+                
+                if(respond.status==404||respond.status==403){
+                throw respond.json().error;
+                }
+                else{   
+                        return respond.json();
+                }
+
+    }
+    catch(error){
+        throw error;
+    }
+}

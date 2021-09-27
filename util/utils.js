@@ -8,7 +8,7 @@ const fs = require('fs');
 const myMail = {"mail":"anansesem.fie@thepostghana.com","password":"nanaasabere1992#"};
 
 const mailer=(mail)=>{
-
+  let status;
    var transporter = nodemailer.createTransport({
     host: 'mail.thepostghana.com',
     port: 465,
@@ -36,12 +36,15 @@ const mailer=(mail)=>{
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      throw error;
+      status= false;
     } else {
-      console.log('Email sent: ' + info.response);
-      return true;
+      console.log('Email info: ' +info.response );
+      status=true;
+      // return {Email_info:,Email_sent:true};
     }
   }); 
+
+  return status;
 
 }
 

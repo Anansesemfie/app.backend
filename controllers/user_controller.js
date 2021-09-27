@@ -213,19 +213,25 @@ res.redirect('/');
 const getProfile = async (req,res)=>{
     try{
         let {user} = req.body;//get user id from link
+        let myself = false;
         console.log(user);
         if(user=='me'){//myself or not 
             user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
             if(!user){
                 res.status(403).send('user invalid');
+            }
+            else{
+                myself=user==(await utils.decode_JWT(req.cookies.jwt))._id;
+
             } 
+
 
         }
         console.log(user);
         //get user details
         const userBck = await User.find({_id:user},exempt);
       
-        res.json({user:userBck,myself:user==(await utils.decode_JWT(req.cookies.jwt))._id});
+        res.json({user:userBck,myself});
     }
     catch(error){
     console.log(error);
@@ -318,19 +324,18 @@ const resetPassword = async(req,res)=>{
         let password = await bcrypt.hash(newPass,salt);
 
         console.log(password);
-        let passRes = await User.findByIdAndUpdate({_id:user_name._id},{password});
+        let passRes = await User.findByIdAndUpdate({_id:user_name._id},{password},{useFindAndModify:false});
 
         if(passRes){//successfully set new password
 
             let html = `
-            <div style="background-color:smokewhite; width:inherit; height:auto;">
-            <img src="${utils.service.host}/images/logo_l.png"
-            </div>
+            <div style="background-color:white; width:100%; height:auto;">
+            <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+            </div><hr>
             <label>New Password</label>
             <p><h3>${newPass}</h3></p>
             <a href='${utils.service.host}user/' style='
-       background-color:#000;
-       color:#fff;
+       color:chocolate;
        border-radius:2px;
        font-size:16pt;
        '>Login</a>
@@ -345,12 +350,12 @@ const resetPassword = async(req,res)=>{
     }
 
    
-    if(utils.mailer(mail)){
-       res.status(201).json({user:`Account reseted successfully, check email ${email} for details`});
-    }
-    else{
-        throw 'There was an issue sending mail, be on the lookout for an email from Us';
-    }
+    await utils.mailer(mail);
+       res.status(201).json({user:`Account reseted successfully, check email ${email}`});
+    
+        }
+        else{
+            throw `Couldn't reset password`;
         }
 
 
