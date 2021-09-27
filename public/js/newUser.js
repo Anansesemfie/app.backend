@@ -118,12 +118,13 @@ loginBtn.on('click',()=>{
                 }
                 
                 if(data.user){
+                    let toHere = '/'
                     if(redirect){
 
                         location.assign(redirect);
                     }
                     //redirect here
-                    location.assign('/');
+                    location.assign(toHere);
                 }
     
             }

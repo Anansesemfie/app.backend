@@ -91,15 +91,18 @@ const signup_post = async (req,res)=>{
             .then(()=>{
 
                  let html = `
-                 <div style="background-color:smokewhite; width:inherit; height:auto;">
-                 <img src="${utils.service.host}/images/logo_l.png"
-                 </div>
+                 <div style="background-color:white; width:100%; height:auto;">
+                 <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+                 </div><hr>
                  <a href='${utils.service.host}user/verify/${key}' style='
             background-color:#000;
             color:#fff;
             border-radius:2px;
             font-size:16pt;
             '>Please verify your Account</a>
+            <div style="background-color:black; color:white">
+            copyright Anansesemfie
+       </div>
             
             `;
             
@@ -339,6 +342,9 @@ const resetPassword = async(req,res)=>{
        border-radius:2px;
        font-size:16pt;
        '>Login</a>
+       <div style="background-color:black; color:white">
+            copyright Anansesemfie
+       </div>
        
        `;
        
