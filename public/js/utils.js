@@ -36,7 +36,7 @@ const getBookdetails = async(book)=>{// a single book details
 const getBooks = async ()=>{//all available books
         try{
         let result = await fetch(`/book/`,{
-                method: 'GET',
+                method: 'POST',
                 redirect: 'follow'}
               );
         if(result.status==404){

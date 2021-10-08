@@ -168,23 +168,49 @@ const Get_book = async (req,res)=>{
 
 const Get_books =async (req,res)=>{
   try{
-    let books;
-
-     if(req.cookies.jwt){//if user is logged in
-    books = await book.find({status:'Active'},exempt);
-  }
-  else{
-    books = await book.find({status:'Active'},exempt);
-    console.log('no user');
-     //process file here 
-
-    
+    if(!req.body){
+      throw 'no body'
   }
 
- res.json({books});
+  console.log('books');
+  const reqBody={status:''};
+
+      if(req.body.active){//if there was an active 
+
+      switch (req.body.active) {//check param
+
+          case "all"://all subscriptions
+              delete reqBody.status;
+              break;
+
+          case "true"://just active subscription type
+
+                  reqBody.status="Active";
+          break;
+
+          case "false"://just inactive subscription type
+                  reqBody.status="Inactive";
+          break;
+      
+          default:
+              throw 'Keyword not recognized';
+          break;
+      }
+      
+      
+       }
+    else{
+      reqBody.status="Active";
+        }
+
+     
+    const books = await book.find(reqBody,exempt);
+
+      res.json({books});
+
   }
   catch(err){
-    console.log(err);
+    res.status(403).json({err});
 
   }
  
@@ -252,6 +278,17 @@ const Get_mine= async (req,res)=>{
 }
 
 
+const subscription = async(req,res)=>{
+    try{
+      res.send('subscribe');
+    }
+    catch(error){
+      // res.status(403).json({error});
+    }
+
+}
+
+
 
 
 
@@ -265,6 +302,7 @@ module.exports={
     Update_book,
     Get_book,
     Get_books,
-    Get_mine
+    Get_mine,
+    subscription
 }
 

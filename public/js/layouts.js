@@ -390,7 +390,7 @@ const toastHolder = ()=>{
 const toast = (msg)=>{
     // console.log(msg.bg)
     $('#toasting').append(`
-    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast ${msg.bg}" data-bs-autohide="false">
+    <div role="alert" aria-live="assertive" aria-atomic="true" onload="attemptClose(this)" class="toast ${msg.bg}" data-bs-autohide="false">
     <div class="toast-header">
      
       <strong class="me-auto">${msg.title}</strong>
@@ -406,6 +406,12 @@ const toast = (msg)=>{
 }
 const closeToast = (e)=>{
     e.parentElement.parentElement.style.display='none';
+}
+
+const attemptClose=(e)=>{
+    setTimeout(() => {
+        e.style.display = 'none';
+    }, 4000);
 }
 
 const signUp=()=>{
@@ -551,3 +557,20 @@ const position = $(`${loc}`);
      </div>
      `);
  }  
+
+
+ const addSubscription = (loc)=>{
+        const position = $(`${loc}`);
+     position.append(`
+     
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+     `);
+ }

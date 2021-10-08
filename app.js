@@ -16,6 +16,7 @@ const files = require('./routes/files');
 const chapter = require('./routes/chapter');
 const reaction = require('./routes/reaction');
 const filter = require('./routes/filter');
+const subscription = require('./routes/subscribe');
 
 
 //start express
@@ -64,7 +65,7 @@ app.on('ready',()=>{
 //routes
 
 app.get('*',checkUser);
-app.post('/book',checkAccount);
+// app.post('/book',checkAccount);
 app.post('/user',checkUser)
 // app.get('/',requireAuth,(req,res)=>{res.render('index');});
 app.use('/user',user);
@@ -76,6 +77,7 @@ app.use('/chapter',chapter);
 app.use('/filter',filter);
 
 app.use('/react',reaction);
+app.use('/subscribe',subscription);
 // app.post('/react',requireAuth);
 
 

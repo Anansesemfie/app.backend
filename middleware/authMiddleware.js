@@ -41,7 +41,7 @@ const checkUser = async (req,res,next)=>{
 
                 let user = await User.findById(decodedToken.id);
                 if(!user.active){
-                    res.redirect('/login');
+                    res.redirect('/user');
                 }
                 res.locals.user = user;
                 next();
