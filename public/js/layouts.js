@@ -208,24 +208,44 @@ function ad_card(book,location){
     })
 
     loc.append(
-        $('<div/>',{'class':'col mb-4'}).append(
-            $('<div/>',{'class':'card'}).append(
-                $('<img/>',{'class':'card-img-top proper_img','alt':`${book.title}`,'src':book.cover}),
-                $('<div/>',{'class':'card-body'}).append(
-                $('<div/>',{'class':'card-title','style':'font-family: fantasy;'}).append(`#${book.title}`),
-                $('<div/>',{'style':'font-weight:bolder','class':'p-4 rounded shadow-sm bg-light'}).append($('<div/>').append(categories),$('<div/>').append('<i class="fas fa-headphones"></i>',book.played)),
-                $('<div/>',{'class':'container'}).append(
-                $('<div/>').append(
-                $('<button/>',{'class':'button','id':'peekBTN','data-target':book._id}).append($('<i/>',{'class':'fas fa-window-maximize','aria-hidden':'true'})),
-                $('<a/>',{'class':'button','id':'enterBTN','href':`/book/Read/${book._id}`}).append($('<i/>',{'class':'fas fa-door-open','aria-hidden':'true'}))
-                )
-                )
-                )
-            )
-        )
+        `
+    <div class="col mb-4">
+        <div class="ig_container jstBook">
+            <img src="${book.cover}" alt="${book.title}">
+
+
+        </div>
+        <div class="delBook">
+
+          <div class="top-top">
+          <!-- book info -->
+          <h3>#${book.title}</h3><br>
+          Part of <span title="${categories}">${book.category[0]}</span> category<br>
+          Played <span>${book.played}</span> times
+        </div>
+
+        <div class="bottom-left">
+          <!-- peek btn -->
+          <button  class="btn btn-outline-primary btn-lg" id="peekBTN" data-target="${book._id}"><i class="fas fa-expand"></i>Peek</button>
+        </div>
+
+        <div class="bottom-right">
+          <a class="btn btn-outline-info btn-lg" href="/book/Read/${book._id}"><i class="fas fa-door-open"></i>Open</a>
+        </div>
+
+        </div>
+        
+
+
+      </div>
+
+    `
+
 
     );
-  
+
+    
+      
 }
 
 

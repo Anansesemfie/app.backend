@@ -195,6 +195,7 @@ const Subscribe = async (req,res)=>{
         }
 
         const payBack = await paywithPAYSTACK(sending);
+        console.log(payBack);
         if(!payBack){
             throw 'Error connecting to payStack';
         }

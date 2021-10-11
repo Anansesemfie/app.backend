@@ -198,6 +198,7 @@ const loadChapters = async () =>{//load chapters if any.........................
         const details = await getChapters(book);
         //  console.log('in load',details);
         if(details.length==0){
+            $('#Chapters').html('');
             $('#Chapters').append(`
             <center>
             <a href="/" class="button cat btn-lg btn-block">Checkout other books</a>
@@ -316,13 +317,7 @@ const playChapter = async (chapt)=>{
                 }
 
             //actions
-                chapter.on('click',()=>{//new chapter
-                    $('.modal-body').html('');
-                    postChapter(book,'.modal-body');
-
-                    // call modal
-                    $('#myModal').modal('toggle');
-                })
+                
 
                 update.on('click',()=>{//update
                     alert('update clicked');
@@ -338,6 +333,15 @@ const playChapter = async (chapt)=>{
         });
 
 
+        const Event = ()=>{
+            chapter.on('click',()=>{//new chapter
+                $('.modal-body').html('');
+                postChapter(book,'.modal-body');
+
+                // call modal
+                $('#myModal').modal('toggle');
+            })
+        }
 
 
 

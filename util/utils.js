@@ -332,17 +332,7 @@ const paystackOptions = {//paystack account info
   }
 }
 
-const paystackReq = https.request(paystackOptions, res => {
-  let data = ''
-  res.on('data', (chunk) => {
-    data += chunk
-  });
-  res.on('end', () => {
-    return JSON.parse(data);
-  })
-}).on('error', error => {
-  console.log(error);
-})
+
 
 
 const paywithPAYSTACK =async (params)=>{
@@ -351,14 +341,23 @@ const paywithPAYSTACK =async (params)=>{
     params.callback_URL =`${service.host}/`;
 
     const jstParams=JSON.stringify(params)
+    console.log(jstParams);
+
+    const paystackReq = https.request(paystackOptions, res => {
+      console.log(`statusCode: ${res.statusCode}`);
+      let data = ''
+      res.on('data', (chunk) => {
+        data += chunk
+      });
+      res.on('end', () => {
+        return JSON.parse(data);
+      })
+    }).on('error', error => {
+      console.log(error);
+    })
     
-    const paymentStat = await paystackReq.write(jstParams);
-    if(!paymentStat){
-      throw 'Something';
-    }
-    console.log('status:',paymentStat);
-    // return paymentStat;
-    // paystackReq.end()
+   paystackReq.write(jstParams);
+    paystackReq.end()
     
   }
   catch(error){

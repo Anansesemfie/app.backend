@@ -243,7 +243,7 @@ body{
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     transition: 0.5s;
-  } button {
+  } button{
     border: none;
     color:black;
     padding: 15px 32px;
@@ -331,10 +331,49 @@ body{
   
   }
 
-  .user_info{
+  /* .user_info{
 
-  }
-  
+  } */
+  /* New book layout */
+ .jstBook{
+  width: 100%;
+  border-radius: 26px;
+ }
+
+ .jstBook img{
+  width: inherit;
+  min-height: 300px;
+  border-radius: 10px;
+  transition: 1s;
+ }
+ 
+
+ .delBook{
+   font-size: medium;
+   font-weight: bolder;
+   display: none;
+   transition: 1s;
+   background-color: rgba(0, 0, 0, 0.5);
+ }
+
+ .jstBook:hover + .delBook{
+   display: block;
+   color:white;
+ }
+
+ .delBook:hover{
+  display: block;
+  color:white;
+}
+
+.delBook span{
+  text-decoration: underline;
+  color:chocolate;
+  font-size: larger;
+}
+
+
+  /* End of new book layout */
 
   #my_name{
     color:black;
@@ -915,6 +954,10 @@ background-color:whitesmoke;
       .books img{
         max-width: inherit;
     max-height: 800px;
+      }
+
+      .delBook{
+        display: block;
       }
 
     #com-menu {
