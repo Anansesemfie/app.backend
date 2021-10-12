@@ -239,11 +239,12 @@ const Get_mine= async (req,res)=>{
       }
       user=(await decode_JWT(req.cookies.jwt))._id;
     }
+
     const me = await User.findOne({_id:user});
     if(me){
         const likes = await bookReact.find({user:me._id});//search for all liked books
 
-        if(likes.length>=1){//push liked books
+        if(likes.length>=0){//push liked books
           console.log(likes.length>=1);
           let i=1;
           likes.forEach(async bk=>{
@@ -256,6 +257,7 @@ const Get_mine= async (req,res)=>{
             
             i++;
           });
+          
         }
         if(me.account ==='Creator'){
           const allBooks = await book.find({uploader:me._id},exempt);//get all created books 
@@ -268,9 +270,9 @@ const Get_mine= async (req,res)=>{
             });
           }
         }
-        // else{
-        //   Books.created.push('Not a creator');
-        // }
+        else{
+          delete Books.created;
+        }
         // console.log(Books);
 
         res.json({Books});

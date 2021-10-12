@@ -226,10 +226,10 @@ function ad_card(book,location){
 
         <div class="bottom-left">
           <!-- peek btn -->
-          <button  class="btn btn-outline-primary btn-lg" id="peekBTN" data-target="${book._id}"><i class="fas fa-expand"></i>Peek</button>
+          <!--<button  class="btn btn-outline-primary btn-lg" id="peekBTN" data-target="${book._id}"><i class="fas fa-expand"></i>Peek</button> -->
         </div>
 
-        <div class="bottom-right">
+        <div class="bottom-right"><!-- used to be bottom-right and btn-lg-->
           <a class="btn btn-outline-info btn-lg" href="/book/Read/${book._id}"><i class="fas fa-door-open"></i>Open</a>
         </div>
 

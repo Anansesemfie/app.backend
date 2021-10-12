@@ -335,7 +335,7 @@ const paystackOptions = {//paystack account info
 
 
 
-const paywithPAYSTACK =async (params)=>{
+const paywithPAYSTACK =async (params)=>{//paying with payStack
   try{
     params.currency="USD";
     params.callback_URL =`${service.host}/`;
