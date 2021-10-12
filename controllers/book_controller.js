@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const{ bookReact} = require('../models/reactionModel');
 
 const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
-const exempt = '-__v -status -folder -uploader';
+const exempt = '-__v -status -folder';
 
 
 
@@ -114,7 +114,7 @@ const New_book = async (req,res)=>{
 const Update_book = async (req,res)=>{
   const action=req.params.action;
   const bookID = req.params.book;
-  console.log(action,bookID);
+  // console.log(action,bookID);
   switch (action) {
     case "Edit":
        res.render(`book`);
@@ -133,15 +133,25 @@ const Get_book = async (req,res)=>{
   try{
      let bookID = req.params.book;//get book id from request
    let bookBack;
-  let creator=false;
+  let creator;
+
+  console.log('get_book');
   
   if(req.cookies.jwt){//logged in user 
     bookBack= await book.findOne({_id:bookID},exempt);//get book from DB
+    if(!bookBack){
+      throw 'Something happened'
+    }
+    
     let user = await decode_JWT(req.cookies.jwt);
   
-
+ console.log(bookBack);
   if(bookBack.uploader==user._id){
+   
     creator=true;
+  }
+  else{
+    creator=false;
   }
   if(!creator&&bookBack.status=="Pending"){//if not the uploader kick out
     res.redirect('/');
@@ -172,7 +182,7 @@ const Get_books =async (req,res)=>{
       throw 'no body'
   }
 
-  console.log('books');
+  // console.log('books');
   const reqBody={status:''};
 
       if(req.body.active){//if there was an active 

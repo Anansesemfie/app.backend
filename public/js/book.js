@@ -1,3 +1,5 @@
+// const { events } = require("../../models/userModel");
+
 const link =window.location.href;
 const params = link.split('/');
 
@@ -266,16 +268,7 @@ const playChapter = async (chapt)=>{
             get_comments();
         }, 10000);
         
-        $('#comment_go').on('click',async ()=>{
-            let state = await post_comment();
-            if(!state){
-                $(this).css('background-color','brown');
-            }
-            else{
-                $(this).css('background-color','green')
-            }
-
-        });
+        Event(); //register events 
 
        toastHolder(); // toast holder
        $('.toast').toast('show');
@@ -334,13 +327,25 @@ const playChapter = async (chapt)=>{
 
 
         const Event = ()=>{
-            chapter.on('click',()=>{//new chapter
+
+            $('#chapter').on('click',()=>{//new chapter
                 $('.modal-body').html('');
                 postChapter(book,'.modal-body');
 
                 // call modal
                 $('#myModal').modal('toggle');
             })
+
+            $('#comment_go').on('click',async ()=>{//add comment
+                let state = await post_comment();
+                if(!state){
+                    $(this).css('background-color','brown');
+                }
+                else{
+                    $(this).css('background-color','green')
+                }
+    
+            });
         }
 
 

@@ -204,7 +204,7 @@ function ad_card(book,location){
     let categories="";
 
     book.category.forEach(ele=>{
-        categories+=ele+' ';
+        categories+=ele+',';
     })
 
     loc.append(
