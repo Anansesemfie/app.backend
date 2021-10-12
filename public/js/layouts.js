@@ -202,10 +202,16 @@ const bookDetail = (detail,loc=".book")=>{
 function ad_card(book,location){
     let loc= $('#'+location);
     let categories="";
+    let category ="No"
 
-    book.category.forEach(ele=>{
+    if(book.category.length>0){
+    category=book.category[0];
+      book.category.forEach(ele=>{
         categories+=ele+',';
     })
+
+    }
+    
 
     loc.append(
         `
@@ -220,7 +226,7 @@ function ad_card(book,location){
           <div class="top-top">
           <!-- book info -->
           <h3>#${book.title}</h3><br>
-          Part of <span title="${categories}">${book.category[0]}</span> category<br>
+          Part of <span title="${categories}">${category}</span> category<br>
           Played <span>${book.played}</span> times
         </div>
 
