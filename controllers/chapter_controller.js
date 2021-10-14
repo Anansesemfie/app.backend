@@ -9,7 +9,7 @@ const postChapter = async (req,res)=>{
         let body = req.body;
         console.log(file,body);
         if(!file){
-            res.json({Status:'File not uploaded'});
+           throw 'File not uploaded';
         }
         const thisBook = await book.findOne({_id:body.book});
         if(!thisBook){
@@ -23,13 +23,13 @@ const postChapter = async (req,res)=>{
         if(thisBook.uploader != thisUser._id){//check for user and uploader
              throw `You don't own this book`;
         }
-        else{
+        
                 console.log('attempt chapter'); 
 
             let createdChapter =await chapter.create({title:body.title,description:body.description,book:thisBook._id});
 
             if(!createdChapter){
-                res.json({Status:`Chapter was not succesfully created`});
+                throw 'Chapter was not succesfully created';
             }
             else{
                 const thisFile = await createAudioDIr(thisBook.folder,file,body.title);
@@ -43,7 +43,7 @@ const postChapter = async (req,res)=>{
                     });
                 }
                 else{
-                    res.json({Status:'failed'});
+                    throw 'Could not upload';
                 }
 
                 
@@ -53,13 +53,13 @@ const postChapter = async (req,res)=>{
               
 
 
-        }
+        
 
         }
 
     }
     catch(err){
-        res.render('instruction');
+        res.json({err});
     }
 
 }

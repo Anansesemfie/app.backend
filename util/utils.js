@@ -140,10 +140,12 @@ fileFilter:(req,file,cb)=>{
 const isAudio = (mime,size)=>{
   let audioTypes = ['audio/mpeg','audio/wave','audio/mp4'];
 let back = true
+  console.log('mime is ',audioTypes.includes(mime))
   if(!audioTypes.includes(mime)){
     back=false
   }
-  if(size>30718163){
+  console.log('Size is ',size>1830718163)
+  if(size>1830718163){
     back=false
   }
   // return imageTypes.includes(mime);
@@ -151,21 +153,11 @@ let back = true
 }
 
 
-const audioStorage = multer.diskStorage({
-    destination:(req,file,cb)=>{
-      cb(null,'uploads');
-    },
-    filename:(req,file,cb)=>{
-      const id = Date.now()+file.originalname;
-      const filePath = `audio/${id}`;
-    
-         cb(null,filePath);
-       
-    }
-  });
+const audioStorage = multer.memoryStorage();
 
   const uploadAudio = multer({audioStorage,
     fileFilter:(req,file,cb)=>{
+      console.log(file.mimetype,file.size)
     
       cb(null,isAudio(file.mimetype,file.size));
     
@@ -289,7 +281,7 @@ const audioStorage = multer.diskStorage({
 
         }
         catch(err){
-          res.json({Error:err});
+          throw err;
         }
     }
 
@@ -337,11 +329,11 @@ const paystackOptions = {//paystack account info
 
 const paywithPAYSTACK =async (params)=>{//paying with payStack
   try{
-    params.currency="USD";
+    // params.currency="GHS";
     params.callback_URL =`${service.host}/`;
 
     const jstParams=JSON.stringify(params)
-    console.log(jstParams);
+    console.log(jstParams,params);
 
     const paystackReq = https.request(paystackOptions, res => {
       console.log(`statusCode: ${res.statusCode}`);

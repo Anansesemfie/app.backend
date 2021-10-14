@@ -184,7 +184,7 @@ const Subscribe = async (req,res)=>{
         if(Amnt>0){
             realAmnt = Amnt.toString();
         }
-         console.log(realAmnt);
+        //  console.log(realAmnt);
 
 
         const sending = {
@@ -195,12 +195,12 @@ const Subscribe = async (req,res)=>{
         }
 
         const payBack = await paywithPAYSTACK(sending);
-        console.log(payBack);
-        if(!payBack){
-            throw 'Error connecting to payStack';
-        }
+        // console.log(payBack);
+        // if(!payBack){
+        //     throw 'Error connecting to payStack';
+        // }
 
-        res.json({payBack});
+        // res.json({payBack});
 
 
 

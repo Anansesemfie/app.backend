@@ -752,11 +752,12 @@ footer{
   width: 18%;
   border-radius: 4px;
   /* box-shadow: 0 3px 10px rgb(0 0 0 / 30%); */
-  /* transition: all .3s ease-in-out; */
-  transition: 0.5s;
+  transition: all .3s ease-in-out;
+  /* transition: 0.5s; */
 }
 .toast{
   opacity: 1;
+  transition: 1.5s;
 }
 
 /*comments nkoa */
