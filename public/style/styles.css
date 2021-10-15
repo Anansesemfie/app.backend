@@ -335,16 +335,24 @@ body{
 
   } */
   /* New book layout */
+  
  .jstBook{
   width: 100%;
+  height: 50%;
   border-radius: 26px;
  }
 
+ /* .parentDiv{
+   height:500px;
+ } */
+
  .jstBook img{
   width: inherit;
-  min-height: 300px;
+  min-height: 400px;
+  max-height: 400px;
   border-radius: 10px;
   transition: 1s;
+  object-fit: cover;
  }
  
 
@@ -374,6 +382,26 @@ body{
 
 
   /* End of new book layout */
+
+  /* filtering */
+  .Filter{/*filter page flex-box layout*/
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    /* justify-content: space-between; */
+  }
+  .filterArea{/*filter params layout*/
+    /* flex:2;
+    order:1; */
+    width:30%;
+  }
+
+  .filterResult{/*filter result layout*/
+    /* flex:3;
+    order:2; */
+    width:60%;
+  }
+  /* End filtering */
 
   #my_name{
     color:black;
@@ -874,7 +902,24 @@ background-color:whitesmoke;
 
 /* mobile view*/
 @media screen and (max-width: 767px){
+  .main {
+    margin-top: 30%;
+}
+
+.Filter{/*filter page flex-box layout*/
+  flex-direction: column;
+  width: 100%;
+}
+
+.filterArea{
+  width: inherit;
+}
+
+.filterResult{
+  width:inherit;
+}
 /* inside book */
+
       .book_title{
         font-size: xx-large;
       }
@@ -916,6 +961,7 @@ background-color:whitesmoke;
       }
       .floatingComments{
         background-color: rgba(170, 170, 170, 0.466);
+        max-height: 600px;
         /* bottom: 20%; */
       }
 
@@ -960,6 +1006,8 @@ background-color:whitesmoke;
       .delBook{
         display: block;
       }
+
+
 
     #com-menu {
         position: fixed;

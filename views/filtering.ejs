@@ -1,19 +1,18 @@
 <%- include('partials/header'); %>
 <div class="main row">
 
-<div class="container">
-    <div class="col-12">
-        <div class="row">
-             <div class="col-6">
+    <div class="Filter">
+        <div class="filterArea">
+            <div class="card">
                 <select name="category" id="category" class="form-control">
                     <option disabled hidden selected> Select a category </option>
                     <img src="/images/loading.gif" alt="loading gif">
 
                     
                 </select>
-             </div>
-              <div class="col-6">
-                  
+            </div>
+
+            <div class="card">
                 <select name="played" id="played" class="form-control">
                     <option disabled hidden selected>Select Played count</option>
                 <option value="1">1+</option>
@@ -23,22 +22,34 @@
                 <option value="500">500+</option>
                 <option value="1000">1000+</option>
             </select>
-              </div>
+            </div>
+            <!-- action button to start search -->
+            <div class="card">
+                <button id="filterBtn" class="btn btn-dark btn-lg" style="float:right">
+            Filter
+        </button>
+            </div>
+        
         </div>
-       
-    </div>
-    <button id="filterBtn" class="btn btn-dark btn-lg" style="float:right">
-        Filter
-    </button>
-</div>
 
-<div class="container">
-    <div >
-        <div class="row row-cols-1 row-cols-md-3" id="books">
+
+        <div class="filterResult">
+
+            <div class="row row-cols-1 row-cols-md-3" id="books">
             <img src="/images/loading.gif" alt="loading gif">
         </div>
-      </div>
+
+        </div>
+    </div>
+
+
+
+<div class="container">
+   
+   
 </div>
+
+
 
 </div>
 

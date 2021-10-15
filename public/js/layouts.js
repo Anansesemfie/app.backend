@@ -215,7 +215,7 @@ function ad_card(book,location){
 
     loc.append(
         `
-    <div class="col mb-4">
+    <div class="col mb-4 parentDiv">
         <div class="ig_container jstBook">
             <img src="${book.cover}" alt="${book.title}">
 
