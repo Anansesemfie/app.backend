@@ -22,7 +22,7 @@ const bookSchema = new Schema({
     status:{
         type:String,
         required:true,
-        default:'Pending'
+        default:'Active'
     },
     snippet:{
         type:String
