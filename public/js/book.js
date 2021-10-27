@@ -348,8 +348,8 @@ const playChapter = async (chapt)=>{
     
             });
 
-            document.getElementById('comment').addEventListener("keyup", (event) => {
-                if (event.keyCode === 13) {
+            document.getElementById('comment').addEventListener("keypress", (event) => {
+                if (event.key=="Enter"||event.code=== 13 ||event.code=="Enter") {
                     // Cancel the default action, if needed
                     event.preventDefault();
                     // Trigger the button element with a click
