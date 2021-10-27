@@ -865,8 +865,13 @@ background-color:whitesmoke;
   max-width: 300px;
   margin-top: 10px;
 }
+.text-black{
+  float: left;
+  border-bottom: 3px solid rgba(77, 72, 72, 0.363);
+}
 .text-black #user_name,#user_mail{
-  color:chocolate;
+  color:rgb(0, 0, 0);
+  
 }
 .rowedUp{
   position: relative;
