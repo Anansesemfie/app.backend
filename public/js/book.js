@@ -349,7 +349,7 @@ const playChapter = async (chapt)=>{
             });
 
             document.getElementById('comment').addEventListener("keypress", (event) => {
-                if (event.key=="Enter"||event.code=== 13 ||event.code=="Enter") {
+                if (event.key=="Enter"||event.code== 13 ||event.code=="Enter") {
                     // Cancel the default action, if needed
                     event.preventDefault();
                     // Trigger the button element with a click
@@ -374,6 +374,7 @@ const playChapter = async (chapt)=>{
                 var code = event.code;
                 // Alert the key name and key code on keydown
                 alert(`Key pressed ${name} \r\n Key code value: ${code}`);
+                document.getElementById("comment_go").click();
               }, false);
 
         }
