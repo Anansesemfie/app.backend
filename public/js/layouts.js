@@ -272,7 +272,7 @@ const addCategory=(cat_name,location='category')=>{
     let loc= $('#'+location);
 
     loc.append(
-        $('<a/>',{'href':'/category/'+cat_name,'type':'button','class':'button cat ','id':'genBtn','data-id':'cat','data-target':cat_name}).append(cat_name)
+        $('<a/>',{'href':'/filter/category/'+cat_name,'type':'button','class':'button cat ','id':'genBtn','data-id':'cat','data-target':cat_name}).append(cat_name)
     );
 
 }
@@ -349,7 +349,7 @@ const addCommentOut = (loc,msg_details)=>{
 
       <div class="msg-bubble">
         <div class="msg-info">
-          <div class="msg-info-name">${msg_details.username}</div>
+          <a href="/user/profile/${msg_details.user}" class="msg-info-name">${msg_details.username}</a>
           <div class="msg-info-time">${msg_details.time}</div>
         </div>
 

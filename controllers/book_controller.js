@@ -214,7 +214,7 @@ const Get_books =async (req,res)=>{
         }
 
      
-    const books = await book.find(reqBody,exempt);
+    const books = await book.find(reqBody,exempt).sort({"_id":-1});;
 
       res.json({books});
 
@@ -242,7 +242,7 @@ const Get_mine= async (req,res)=>{
 
     const me = await User.findOne({_id:user});
     if(me){
-        const likes = await bookReact.find({user:me._id});//search for all liked books
+        const likes = await bookReact.find({user:me._id}).sort({"_id":-1});;//search for all liked books
 
         if(likes.length>=0){//push liked books
           console.log(likes.length>=1);
@@ -260,7 +260,7 @@ const Get_mine= async (req,res)=>{
           
         }
         if(me.account ==='Creator'){
-          const allBooks = await book.find({uploader:me._id},exempt);//get all created books 
+          const allBooks = await book.find({uploader:me._id},exempt).sort({"_id":-1});;//get all created books 
           if(allBooks.length>0){
             // console.log('All books:',allBooks)
             allBooks.forEach(bk=>{

@@ -285,6 +285,39 @@ const Filter = async (query)=>{
         }
 }
 
+const expandFilter = async(fstParam,lstParam)=>{//Expand Filtering
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({
+                  fstParam,
+                  lstParam
+                });
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+                let respond = await fetch('/filter',requestOptions);//fetch 
+
+
+                if(respond.status>=400){
+                        throw new Error(response.status);
+                }
+
+                return respond.json()
+
+        }
+
+        catch(error){
+                throw error;
+        }
+}
+
 
 
 

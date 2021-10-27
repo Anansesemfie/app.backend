@@ -310,6 +310,7 @@ const playChapter = async (chapt)=>{
                 }
 
             //actions
+            
                 
 
                 update.on('click',()=>{//update
@@ -336,7 +337,7 @@ const playChapter = async (chapt)=>{
                 $('#myModal').modal('toggle');
             })
 
-            $('#comment_go').on('click',async ()=>{//add comment
+            $('#comment_go').on('click touchstart',async ()=>{//add comment
                 let state = await post_comment();
                 if(!state){
                     $(this).css('background-color','brown');
@@ -346,6 +347,27 @@ const playChapter = async (chapt)=>{
                 }
     
             });
+
+            document.getElementById('comment').addEventListener("keyup", (event) => {
+                if (event.keyCode === 13) {
+                    // Cancel the default action, if needed
+                    event.preventDefault();
+                    // Trigger the button element with a click
+                    document.getElementById("comment_go").click();
+                }
+            });
+
+           $('#comment').on('click',()=>{
+                const width = screen.width;
+                // alert(width);
+                if(width<760){
+                    $("#comment_go").html("Hit <span class='btn btn-outline-light'>Enter</span> to Send Comment").css('background','#3b3838').attr('disabled','true');
+                }
+                else{
+                    $("#comment_go").html(`<i class="fas fa-paper-plane"></i>`).css('background','#17a2b8').removeAttr('disabled');
+                }
+            });
+
         }
 
 

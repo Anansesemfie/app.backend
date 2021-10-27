@@ -19,6 +19,9 @@ const filter = require('./routes/filter');
 const subscription = require('./routes/subscribe');
 
 
+// imports 
+
+
 //start express
 const app = express();
 
@@ -66,9 +69,9 @@ app.on('ready',()=>{
 
 app.get('*',checkUser);
 // app.post('/book',checkAccount);
-app.post('/user',checkUser)
+// app.post('/user',)
 // app.get('/',requireAuth,(req,res)=>{res.render('index');});
-app.use('/user',user);
+app.use('/user',checkUser,user);
 app.use('/book',book);
 
 app.use('/category',category);

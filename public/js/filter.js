@@ -1,3 +1,12 @@
+const link =window.location.href;
+const params = link.split('/');
+
+const fstParam =params[4];
+const lstParam =params[5];
+
+console.log(fstParam,lstParam);
+
+
 const cate_field = $('#category');
 const played_field = $('#played');
 const filtBtn = $('#filterBtn');
@@ -47,6 +56,30 @@ const filter = async()=>{
     }
 }
 
+//expandFilter
+
+const expand =async ()=>{
+    try{
+        const exp = await expandFilter(fstParam,lstParam);
+        if(!exp){
+            throw 'Something else happened';
+        }
+
+        if($('#books').html('')){//clear and check div has been emptied
+            exp.books.forEach(bk=> {
+            // console.log(bk);
+            ad_card(bk,'books');
+        });
+        }
+
+    }
+    catch(error){
+        throw error;
+    }
+}
+
+
+
 $(document).ready(async ()=>{
     try{
         // console.log('hello');
@@ -55,6 +88,9 @@ $(document).ready(async ()=>{
         $('#books').html('');
         let cat = await getCategory();
         // console.log(cat);
+        if(fstParam && lstParam){
+            let expd=await expand();
+        }
         cat.forEach(cat => {
             // console.log(cat.title[0]);
            cate_field.append($('<option/>',{'value':cat.title[0]}).append(cat.title[0]));                   

@@ -1,4 +1,4 @@
-const {filterThorough,search} = require('../controllers/filter_controller');
+const {filterThorough,search,expandFilter,page} = require('../controllers/filter_controller');
 
 const { Router } = require('express');//destructure router from express
 const router = Router(); // initialize router
@@ -7,12 +7,13 @@ const router = Router(); // initialize router
 
 
 
-router.get('/',(req,res)=>{
-
-    res.render('filtering');
-});
+router.get('/',page);
+router.get('/:fstParam/:lstParam',page)
 
 router.get('/speci',filterThorough);
 router.get('/find',search);
+
+
+router.post('/',expandFilter);
 
 module.exports=router;

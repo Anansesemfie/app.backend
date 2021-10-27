@@ -348,8 +348,8 @@ body{
 
  .jstBook img{
   width: inherit;
-  min-height: 400px;
-  max-height: 400px;
+  min-height: 300px;
+  max-height: 300px;
   border-radius: 10px;
   transition: 1s;
   object-fit: cover;
@@ -739,6 +739,11 @@ footer{
   overflow-y: auto;
 }
 
+#comment_go,#comment{
+  width:90%;
+}
+
+
 .floatingDiv{
   position: fixed;
   /* background: #0c8176; */
@@ -831,7 +836,13 @@ background-color:whitesmoke;
 .msg-info-name {
   margin-right: 10px;
   font-weight: bold;
+  color:black;
 }
+
+.msg-info-name:hover {
+  color:#394a56;
+}
+
 .msg-info-time {
   font-size: 0.85em;
 }
@@ -965,6 +976,7 @@ background-color:whitesmoke;
         /* bottom: 20%; */
       }
 
+      
       .floatingDiv{
         bottom: 10%;
         background-color: rgba(39, 38, 38, 0.466);

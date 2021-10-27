@@ -16,19 +16,19 @@ const filterThorough = async(req,res)=>{
     //search
     if(cate !="" && played>0){//both are present
         console.log('missing nothing');
-        filtered= await book.find({category:cate,played:{$gt:played-1},status:'Active'},exempt); 
+        filtered= await book.find({category:cate,played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});; 
     }
     else if(cate==""&& played>0){
         console.log('missing a bit of something');
-        filtered= await book.find({played:{$gt:played-1},status:'Active'},exempt);
+        filtered= await book.find({played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});;
     }
     else if(cate!=""&& played==0){
         console.log('missing a lil something');
-        filtered= await book.find({category:cate,status:'Active'},exempt);
+        filtered= await book.find({category:cate,status:'Active'},exempt).sort({"_id":-1});;
     }
     else{
         console.log('missing something');
-        filtered= await book.find({status:'Active'},exempt);
+        filtered= await book.find({status:'Active'},exempt).sort({"_id":-1});;
     }
 
     //return something
@@ -55,7 +55,7 @@ const search = async (req,res)=>{
         }
 
 
-        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
+        const viaCate = await book.find({category:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt).sort({"_id":-1});;
         if(viaCate){ //if categories was a hit
             viaCate.forEach(book => {
                 books.push(book);
@@ -64,7 +64,7 @@ const search = async (req,res)=>{
         // console.log(books)
         let reg = `/.*${keyword}.*/`;
 
-    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt);
+    const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt).sort({"_id":-1});;
         if(viaTitle){ //if title was a hit
             
             if(books.length<=0){
@@ -102,11 +102,75 @@ const search = async (req,res)=>{
 
 }
 
+const expandFilter = async(req,res)=>{
+    try{
+        // get params from request
+        const fstParam = req.body.fstParam;
+        const lstParam = req.body.lstParam;
+        const books=[];
 
+        console.log(fstParam,lstParam);
+        
+        
+
+        switch(fstParam){
+            case "category"://if category is the first param 
+
+                let newLast = lstParam.split("%20");
+               const finalParam = newLast.join(" ")
+                console.log(finalParam);
+            
+                const catBooks = await book.find({ category:finalParam},exempt).sort({"_id":-1}); ;
+                 if(!catBooks){
+                    throw `Failed to find category`;
+                }
+                catBooks.forEach(bk=>{
+                      
+                    books.push(bk);
+                })
+              
+               
+            break;
+
+            case "user"://if user is the first param
+                const usrBooks = await book.find({uploader:lstParam},exempt).sort({"_id":-1});;
+                if(!usrBooks){
+                    throw new Error(`Failed to find category`);
+                }
+                usrBooks.forEach(bk=>{
+                    books.push(bk);
+                })
+
+            break;
+
+            default:
+                books = `Invalid request`;
+
+                break;
+        }
+
+        // console.log(books);
+
+        res.json({books});
+        
+    }
+    catch(error){
+        res.status(403).json({error});
+    }
+}
+
+
+
+const page = async(req,res)=>{
+
+    res.render('filtering');
+}
 
 
 
 module.exports={
     filterThorough,
-    search
+    search,
+    expandFilter,
+    page
 }
