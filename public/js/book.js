@@ -7,7 +7,7 @@ const action=params[4];
 const book = params[5];
 
 //check cookies
-
+const width = screen.width;
 
 
 //page elements
@@ -348,19 +348,31 @@ const playChapter = async (chapt)=>{
     
             });
 
-            document.getElementById('comment').addEventListener("keypress", (event) => {
+            document.getElementById('comment').addEventListener("keypress", async (event) => {
                 if (event.key=="Enter"||event.code== 13 ||event.code=="Enter") {
                     // Cancel the default action, if needed
                     event.preventDefault();
                     // Trigger the button element with a click
-                    document.getElementById("comment_go").click();
+                    if(width<=760){
+                        let state = await post_comment();
+                    if(!state){
+                        $(this).css('background-color','brown');
+                    }
+                    else{
+                        $(this).css('background-color','green')
+                    }
+                    }
+
+                    document.getElementById("comment_go").click();//not mobile
+
+                    
                 }
             });
 
            $('#comment').on('click',()=>{
-                const width = screen.width;
+               
                 // alert(width);
-                if(width<760){
+                if(width<=760){
                     $("#comment_go").html("Hit <span class='btn btn-outline-light'>Enter</span> to Send Comment").css('background','#3b3838').attr('disabled','true');
                 }
                 else{
@@ -369,13 +381,13 @@ const playChapter = async (chapt)=>{
             });
 
 
-            document.addEventListener('keypress', (event) => {
-                var name = event.key;
-                var code = event.code;
-                // Alert the key name and key code on keydown
-                alert(`Key pressed ${name} \r\n Key code value: ${code}`);
-                document.getElementById("comment_go").click();
-              }, false);
+            // document.addEventListener('keypress', (event) => {
+            //     var name = event.key;
+            //     var code = event.code;
+            //     // Alert the key name and key code on keydown
+            //     alert(`Key pressed ${name} \r\n Key code value: ${code}`);
+                
+            //   }, false);
 
         }
 
