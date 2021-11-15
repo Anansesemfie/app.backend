@@ -206,9 +206,18 @@ function ad_card(book,location){
 
     if(book.category.length>0){
     category=book.category[0];
-      book.category.forEach(ele=>{
-        categories+=ele+',';
-    })
+    for (let i = 0; i < book.category.length; i++) {
+      
+      categories+=book.category[i];
+
+      if(i!=(book.category.length-1)){
+        categories+=',';
+      }
+      
+    }
+    //   book.category.forEach(ele=>{
+    //     categories+=ele+',';
+    // })
 
     }
     
