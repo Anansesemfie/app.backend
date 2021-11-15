@@ -78,19 +78,22 @@ body{
 
 /* width */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
     height: 5px;
+    
+    
   }
   
   /* Track */
   ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px grey; 
+    /* box-shadow: inset 0 0 5px black;  */
     border-radius: 3px;
   }
    
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.5); 
+    background: rgb(0, 0, 0); 
+    border-radius: 5px;
    
   }
   
@@ -340,7 +343,11 @@ body{
   width: 100%;
   height: 50%;
   border-radius: 26px;
+  /* transform: skew(0deg,1deg); */
+  transition: 0.5s;
  }
+
+ 
 
  /* .parentDiv{
    height:500px;
@@ -364,10 +371,76 @@ body{
    background-color: rgba(0, 0, 0, 0.5);
  }
 
+
+ .parentDiv .tooltiptext {
+  visibility: hidden;
+  width: inherit;
+  max-height: 300px;
+  /* background-color: rebeccapurple; */
+  background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /*Positioning*/
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -140px;
+
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.parentDiv .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  transform: rotate(180deg);
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #394a56 transparent transparent transparent;
+}
+
+.tooltiptext .cats{
+background-color: #394a56;
+min-height: 2rem;
+font-weight: bolder;
+width: 100%;
+margin-top: -5px;
+border-radius: 6px;
+}
+
+.tooltiptext .desc{
+  text-align: left;
+  margin-left: 10px;
+  overflow:scroll;
+  max-height: 250px;
+}
+
+
+/* #peekBTN:hover .tooltiptext {
+  visibility: visible;
+} */
+.parentDiv:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* .tooltiptext:hover {
+  visibility: visible;
+} */
+
  .jstBook:hover + .delBook{
    display: block;
    color:white;
  }
+
 
  .delBook:hover{
   display: block;
@@ -627,6 +700,19 @@ min-height: inherit;
     left: 16px;
 }
 
+.bottom-right {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+}
+
+.bottom-bottom {
+    position: absolute;
+    bottom: 0px;
+    width: 90%;
+    margin: 3px;
+}
+
 .top-left {
     position: absolute;
     width:100%;
@@ -645,11 +731,7 @@ min-height: inherit;
     right: 16px;
 }
 
-.bottom-right {
-    position: absolute;
-    bottom: 8px;
-    right: 16px;
-}
+
 
 .centered {
     position: absolute;

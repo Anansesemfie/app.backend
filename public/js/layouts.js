@@ -230,17 +230,24 @@ function ad_card(book,location){
           Played <span>${book.played}</span> times
         </div>
 
-        <div class="bottom-left">
-          <!-- peek btn -->
-          <!--<button  class="btn btn-outline-primary btn-lg" id="peekBTN" data-target="${book._id}"><i class="fas fa-expand"></i>Peek</button> -->
-        </div>
+       
 
-        <div class="bottom-right"><!-- used to be bottom-right and btn-lg-->
-          <a class="btn btn-outline-info btn-lg" href="/book/Read/${book._id}"><i class="fas fa-door-open"></i>Open</a>
-        </div>
-
+        <div class="bottom-bottom"><!-- used to be bottom-right and btn-lg-->
+          <a class="btn btn-outline-light btn-block" href="/book/Read/${book._id}"><i class="fas fa-door-open"></i>Open</a>
         </div>
         
+
+        </div>
+        <div class="tooltiptext">
+        <div class="cats">
+        ${categories}
+        </div>
+        <hr>
+        <p class="desc">
+        ${book.description}
+        </p>
+        
+        </div>
 
 
       </div>
