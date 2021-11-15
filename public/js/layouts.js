@@ -206,6 +206,9 @@ function ad_card(book,location){
 
     if(book.category.length>0){
     category=book.category[0];
+    if(book.category.length<1){
+      categories+='No categories yet';
+    }
     for (let i = 0; i < book.category.length; i++) {
       
       categories+=book.category[i];
