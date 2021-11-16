@@ -283,10 +283,10 @@ function ad_card(book,location){
         </div>
         <div class="tooltiptext">
         <div class="cats">
-        <p>Category: ${categories} </p>
-        <p>Language: ${langs}</p>
+        <div class="row"><i class="fas fa-layer-group fa-1x"></i>- ${categories} </div><hr>
+        <div class="row"><i class="fas fa-microphone-alt fa-1x"></i>- ${langs}</div>
         </div>
-        <hr>
+        
         <p class="desc">
         ${book.description}
         </p>

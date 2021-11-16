@@ -59,6 +59,8 @@ body{
 
 .main{
   margin-top: 5%;
+  margin-left:5%;
+  margin-right:5%;
 }
 
 .loaded {
@@ -377,11 +379,13 @@ body{
   width: inherit;
   max-height: 300px;
   /* background-color: rebeccapurple; */
-  background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
-  color: #fff;
+  background-image: linear-gradient(90deg, rgb(230, 233, 235), rgba(237, 238, 241, 0.63));
+  color: rgb(5, 5, 5);
   text-align: center;
   border-radius: 6px;
+  border-top: 10px black;
   padding: 5px 0;
+  box-shadow:  5px 5px 5px 5px rgba(58, 51, 51, 0.637);
 
   /*Positioning*/
   position: absolute;
@@ -405,23 +409,30 @@ body{
   border-width: 5px;
   border-style: solid;
   border-color: #394a56 transparent transparent transparent;
+  
 }
 
 .tooltiptext .cats{
-background-color: #394a56;
+/* background-color: #394a56; */
 text-align: left;
 min-height: 2rem;
 font-weight:normal;
+/* color:#fff; */
 width: 100%;
 margin-top: -5px;
 border-radius: 6px;
 }
+.cats div{
+  margin-left: 10px;
+}
 
 .tooltiptext .desc{
+  border-top: 5px solid #000;
   text-align: left;
   margin-left: 10px;
   overflow:scroll;
   max-height: 250px;
+  background: "Description";
 }
 
 
@@ -449,8 +460,8 @@ border-radius: 6px;
   color:white;
 }
 
-.delBook span{
-  text-decoration: underline;
+.delBook span, i{
+  /* text-decoration: underline; */
   color:chocolate;
   font-size: larger;
 }
@@ -1004,6 +1015,8 @@ background-color:whitesmoke;
 @media screen and (max-width: 767px){
   .main {
     margin-top: 30%;
+    margin-left:5%;
+    margin-right:5%;
 }
 
 .Filter{/*filter page flex-box layout*/
