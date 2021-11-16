@@ -14,6 +14,21 @@ catch(err){
 }
 }
 
+const getLanguages = async ()=>{//get all categories
+        try{
+                let result = await fetch("/langs/");
+                let data = await result.json();
+                
+                if(!data.languages){
+                        throw 'Troublr getting categories';
+                }
+                return data.languages;
+        }
+        catch(err){
+                throw err;
+        }
+        }
+
 
 const getBookdetails = async(book)=>{// a single book details
         try{

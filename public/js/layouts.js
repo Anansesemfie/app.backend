@@ -79,16 +79,30 @@ const bookForm = async (loc)=>{
                      
                       <div class="row">
                           <!-- category / genre -->
-                          <div class="col-12">
+                          <div class="col-6">
                           <label for="category">Category</label>
                            <select name="category" id="bookcategory" multiple="multiple" style="width: 100%" class="form-control"  >
-                          
+                           
                            </select>
+                           </div>
+
+                           <div class="col-6">
+                          <label for="Languages">Languages</label>
+                           <select name="language" id="bookLangs" multiple="multiple" style="width: 100%" class="form-control"  >
+                           
+                           </select>
+                           </div>
+
+
+                         </div>  
+
+                         <div class="row">
+                           
                            <label for="author">Author(s)</label>
                            <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
                           </div>
                           
-                      </div>
+                     
                       <div class="row">
                                   <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning btn-block">Cancel</button></div>
                                   <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary btn-block">Post</button></div>
@@ -203,12 +217,11 @@ function ad_card(book,location){
     let loc= $('#'+location);
     let categories="";
     let category ="No"
+    let langs ="";
 
-    if(book.category.length>0){
+    if(book.category.length>0){//category
     category=book.category[0];
-    if(book.category.length<1){
-      categories+='No categories yet';
-    }
+
     for (let i = 0; i < book.category.length; i++) {
       
       categories+=book.category[i];
@@ -223,6 +236,24 @@ function ad_card(book,location){
     // })
 
     }
+
+    if(book.languages.length>0){//language
+      // category=book.category[0];
+  
+      for (let i = 0; i < book.languages.length; i++) {
+        
+        langs+=book.languages[i];
+  
+        if(i!=(book.languages.length-1)){
+          langs+=',';
+        }
+        
+      }
+      //   book.category.forEach(ele=>{
+      //     categories+=ele+',';
+      // })
+  
+      }
     
 
     loc.append(
@@ -238,8 +269,8 @@ function ad_card(book,location){
           <div class="top-top">
           <!-- book info -->
           <h3>#${book.title}</h3><br>
-          Part of <span title="${categories}">${category}</span> category<br>
-          Played <span>${book.played}</span> times
+          <span title="${categories}">${category}</span><br>
+          <i class="fas fa-play"></i>: <span>${book.played}</span>
         </div>
 
        
@@ -252,7 +283,8 @@ function ad_card(book,location){
         </div>
         <div class="tooltiptext">
         <div class="cats">
-        ${categories}
+        <p>Category: ${categories} </p>
+        <p>Language: ${langs}</p>
         </div>
         <hr>
         <p class="desc">

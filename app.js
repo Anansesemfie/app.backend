@@ -17,6 +17,7 @@ const chapter = require('./routes/chapter');
 const reaction = require('./routes/reaction');
 const filter = require('./routes/filter');
 const subscription = require('./routes/subscribe');
+const languages = require('./routes/lang');
 
 
 // imports 
@@ -81,6 +82,7 @@ app.use('/filter',filter);
 
 app.use('/react',reaction);
 app.use('/subscribe',subscription);
+app.use('/langs',languages);
 // app.post('/react',requireAuth);
 
 

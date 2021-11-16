@@ -71,7 +71,7 @@ $(document).ready(async ()=>{
                             
                 
                             //multiselect
-                            $('select').select2({
+                            $('#bookcategory').select2({
                                 theme: 'classic',
                                 placeholder: 'Select category',
                                 maximumSelectionLength: 4
@@ -82,10 +82,22 @@ $(document).ready(async ()=>{
                             let cat = await getCategory();
                             cat.forEach(cate => {
                                var newOption = new Option(cate.title[0], cate.title[0], false, false);
-                            $('Select').append(newOption).trigger('change');
+                            $('#bookcategory').append(newOption).trigger('change');
                             });
                             
+                            //multiple languages
+                            $('#bookLangs').select2({
+                                theme: 'classic',
+                                placeholder: 'Select category',
+                                maximumSelectionLength: 4
+                            });
                             
+                            //init languages
+                            let lang = await getLanguages();
+                            lang.forEach(cate => {
+                               var newOption = new Option(cate.title[0], cate.title[0], false, false);
+                            $('#bookLangs').append(newOption).trigger('change');
+                            });
                 
                             
                 

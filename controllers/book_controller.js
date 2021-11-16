@@ -68,6 +68,7 @@ const New_book = async (req,res)=>{
         description:"",
         authors:[],
         category:[],
+        languages:[],
         cover:"",
         uploader:""
       }
@@ -82,7 +83,8 @@ const New_book = async (req,res)=>{
 
       newBook.title=body.title;
       newBook.description=body.description;
-      newBook.category=body.category
+      newBook.category=body.category;
+      newBook.languages=body.language;
       newBook.uploader=await decode_JWT(req.cookies.jwt);
       newBook.authors = body.author.split('-');//split author strings into an array
       // newBook.cover = {originalname:file.originalname,encoding:file.encoding,mimetype:file.mimetype,buffer:file.buffer};
@@ -92,7 +94,7 @@ const New_book = async (req,res)=>{
         let fileBack = await createFolderDIr(file,body.title);
         console.log(fileBack);
 
-      let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,uploader:newBook.uploader});
+      let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,languages:newBook.languages,uploader:newBook.uploader});
       
       if(!response){
      throw 'Could not create book';

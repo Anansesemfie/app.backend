@@ -392,7 +392,7 @@ body{
 
   /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
   opacity: 0;
-  transition: opacity 1s;
+  transition: opacity 0.5s;
 }
 
 .parentDiv .tooltiptext::after {
@@ -409,8 +409,9 @@ body{
 
 .tooltiptext .cats{
 background-color: #394a56;
+text-align: left;
 min-height: 2rem;
-font-weight: bolder;
+font-weight:normal;
 width: 100%;
 margin-top: -5px;
 border-radius: 6px;
@@ -422,6 +423,7 @@ border-radius: 6px;
   overflow:scroll;
   max-height: 250px;
 }
+
 
 
 /* #peekBTN:hover .tooltiptext {
@@ -1104,6 +1106,11 @@ background-color:whitesmoke;
 
       .delBook{
         display: block;
+      }
+
+      .parentDiv .tooltiptext{
+        width: 90%;
+        left: 40%;
       }
 
 

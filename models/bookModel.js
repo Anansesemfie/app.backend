@@ -30,6 +30,7 @@ const bookSchema = new Schema({
     },
     authors:[],
     category:[],
+    languages:[],
     folder:{
         type:String,
         unique:false,
