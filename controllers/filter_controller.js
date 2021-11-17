@@ -7,8 +7,9 @@ const exempt = '-__v -status -folder -uploader';
 const filterThorough = async(req,res)=>{
     try{
   //get values from body
-    const played = req.query.played
+    const played = req.query.played;
     const cate = req.query.category;
+    const lang = req.query.language;
 
     console.log(played==0,cate !="");
     
