@@ -105,7 +105,7 @@ const options = {
   path: '/transaction/initialize',
   method: 'POST',
   headers: {
-    Authorization: 'sk_live_3c13a073aa98c52473269da7f0834d7501dce74c',
+    Authorization: 'Bearer sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600',
     'Content-Type': 'application/json'
   }
 }
@@ -116,6 +116,7 @@ const request = https.request(options, res => {
   });
   res.on('end', () => {
     console.log(JSON.parse(data))
+    
   })
 }).on('error', error => {
   console.error(error)

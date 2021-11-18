@@ -1,5 +1,5 @@
 const {subscription,subscribing} = require('../models/subscriptionModel');
-const {paywithPAYSTACK}= require('../util/utils');
+const {paywithPAYSTACK}= require('../util/payments');
 
 const exempt =' -v';
 

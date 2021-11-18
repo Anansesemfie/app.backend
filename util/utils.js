@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
-const https = require('https');
+
 
 // const { isNull } = require('util');
 
@@ -311,53 +311,6 @@ const genRandCode= ()=>{
 
 
 
-//paystack
-
-const paystackOptions = {//paystack account info 
-  hostname: 'api.paystack.co',
-  port: 443,
-  path: '/transaction/initialize',
-  method: 'POST',
-  headers: {
-    Authorization: 'sk_test_c87e018dbb9c018a24afe295b8206c223bb2a13f',
-    'Content-Type': 'application/json'
-  }
-}
-
-
-
-
-const paywithPAYSTACK =async (params)=>{//paying with payStack
-  try{
-    // params.currency="GHS";
-    params.callback_URL =`${service.host}/`;
-
-    const jstParams=JSON.stringify(params)
-    console.log(jstParams,params);
-
-    const paystackReq = https.request(paystackOptions, res => {
-      console.log(`statusCode: ${res.statusCode}`);
-      let data = ''
-      res.on('data', (chunk) => {
-        data += chunk
-      });
-      res.on('end', () => {
-        return JSON.parse(data);
-      })
-    }).on('error', error => {
-      console.log(error);
-    })
-    
-   paystackReq.write(jstParams);
-    paystackReq.end()
-    
-  }
-  catch(error){
-    throw error;
-  }
-}
-
-
 
 
 
@@ -375,6 +328,5 @@ module.exports={
   createAudioDIr,
   realDate,
   updateUserDP,
-  genRandCode,
-  paywithPAYSTACK
+  genRandCode
 }
