@@ -1,4 +1,4 @@
-let width = screen.width;
+
 
 const newSearch = ()=>{
     try{
@@ -74,7 +74,7 @@ $(document).ready(async ()=>{
                 // Cancel the default action, if needed
                 event.preventDefault();
                 // Trigger the button element with a click
-                if(width<=760){
+                if(screen.width<=760){
                     const keyword = $('#searchSpace').val();
                     let state = await searching(keyword);
                 if(!state){
