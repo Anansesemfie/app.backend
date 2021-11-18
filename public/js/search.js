@@ -1,3 +1,5 @@
+let width = screen.width;
+
 const newSearch = ()=>{
     try{
         const search = $("<div   class=search>");
@@ -66,6 +68,29 @@ $(document).ready(async ()=>{
             
             
         });
+        
+        document.getElementById("searchSpace").addEventListener("keypress", async (event) => {//search by enter
+            if (event.key=="Enter"||event.code== 13 ||event.code=="Enter") {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Trigger the button element with a click
+                if(width<=760){
+                    const keyword = $('#searchSpace').val();
+                    let state = await searching(keyword);
+                if(!state){
+                    $(this).css('background-color','brown');
+                }
+                else{
+                    throw 'Nothing found';
+                }
+                }
+
+                document.getElementById("searchBtn").click();//not mobile
+
+                
+            }
+        });
+
         
         const searchButton = $('#searchBtn');//get search button element
         searchButton.on('click',()=>{//when search button is clicked

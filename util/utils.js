@@ -319,7 +319,7 @@ const paystackOptions = {//paystack account info
   path: '/transaction/initialize',
   method: 'POST',
   headers: {
-    Authorization: 'sk_test_c87e018dbb9c018a24afe295b8206c223bb2a13f',
+    Authorization: 'sk_live_3c13a073aa98c52473269da7f0834d7501dce74c',
     'Content-Type': 'application/json'
   }
 }
@@ -329,7 +329,7 @@ const paystackOptions = {//paystack account info
 
 const paywithPAYSTACK =async (params)=>{//paying with payStack
   try{
-    // params.currency="GHS";
+    params.currency="GHS";
     params.callback_URL =`${service.host}/`;
 
     const jstParams=JSON.stringify(params)

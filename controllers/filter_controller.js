@@ -11,25 +11,41 @@ const filterThorough = async(req,res)=>{
     const cate = req.query.category;
     const lang = req.query.language;
 
-    console.log(played==0,cate !="");
+    console.log(played==0,cate=="",lang);
     
     let filtered; 
     //search
-    if(cate !="" && played>0){//both are present
-        console.log('missing nothing');
-        filtered= await book.find({category:cate,played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});; 
+    if(cate !="" && lang !="" && played>0){//all are present
+        console.log('all are present');
+        filtered= await book.find({category:cate,played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});
     }
-    else if(cate==""&& played>0){
-        console.log('missing a bit of something');
-        filtered= await book.find({played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});;
+    else if(cate==""&& lang==""&& played>0){//just played
+        console.log('just played');
+        filtered= await book.find({played:{$gt:played-1},status:'Active'},exempt).sort({"_id":-1});
     }
-    else if(cate!=""&& played==0){
-        console.log('missing a lil something');
-        filtered= await book.find({category:cate,status:'Active'},exempt).sort({"_id":-1});;
+    else if(cate!=""&& lang=="" && played==0){//just category
+        console.log('just category');
+        filtered= await book.find({category:cate,status:'Active'},exempt).sort({"_id":-1});
+    }
+    else if(cate==""&& lang!=""&& played==0){//just language
+        console.log('just language');
+        filtered= await book.find({languages:lang,status:'Active'},exempt).sort({"_id":-1});
+    }
+    else if(cate!=""&& lang!=""&&played==0){//category and language
+        console.log('category and language');
+        filtered= await book.find({languages:lang,category:cate,status:'Active'},exempt).sort({"_id":-1});
+    }
+    else if(cate!=""&& lang==""&&played>0){//category and played
+        console.log('category and played');
+        filtered= await book.find({played:{$gt:played-1},category:cate,status:'Active'},exempt).sort({"_id":-1});
+    }
+    else if(cate==""&& lang!=""&&played>0){//language and played
+        console.log('language and played');
+        filtered= await book.find({played:{$gt:played-1},languages:lang,status:'Active'},exempt).sort({"_id":-1});
     }
     else{
         console.log('missing something');
-        filtered= await book.find({status:'Active'},exempt).sort({"_id":-1});;
+        filtered= await book.find({status:'Active'},exempt).sort({"_id":-1});
     }
 
     //return something
@@ -66,7 +82,7 @@ const search = async (req,res)=>{
         let reg = `/.*${keyword}.*/`;
 
     const viaTitle = await book.find({title:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt).sort({"_id":-1});;
-        if(viaTitle){ //if title was a hit
+        if(viaTitle.length>=1){ //if title was a hit
             
             if(books.length<=0){
                 viaTitle.forEach(book1 => {
@@ -87,7 +103,29 @@ const search = async (req,res)=>{
             }
             
         }
-        // console.log(books)
+        const viaLang = await book.find({languages:{$regex: ".*" + keyword + ".*",$options:'igm'},status:"Active"},exempt).sort({"_id":-1});;
+        if(viaLang){ //if language was a hit
+            
+            if(books.length<=0){
+                viaLang.forEach(book1 => {
+                    books.push(book1);
+                });
+                // console.log('error')
+            }
+            else{
+                viaLang.forEach(book1 => {
+                for(let i=0;i<=books.length;i++){
+                    // console.log(books[i]._id==book1._id);
+                    if(books[i]._id!== book1._id){
+                        books.push(book1);
+                    }
+                }
+            });
+            
+            }
+            
+        }
+        console.log(books)
 
         res.json({books});
 
@@ -96,6 +134,7 @@ const search = async (req,res)=>{
     }
     catch(error){
         res.status(403).json({error});
+        // console.log(error);
 
     }
     

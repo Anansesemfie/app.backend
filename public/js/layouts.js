@@ -318,6 +318,17 @@ const addAuthor = (name,loc)=>{
     )
 }
 
+
+const addLangs = (name,loc)=>{
+  let position = $(`#${loc}`);
+
+  position.append(
+      `<a href="#">
+      <h5 class=" badge text-light">${name}</h5>
+      </a> `
+  )
+}
+
 //category
 const addCategory=(cat_name,location='category')=>{
     let loc= $('#'+location);

@@ -287,7 +287,7 @@ const Filter = async (query)=>{
                 // console.log(query);
 
 
-        let respond = await fetch(`/filter/speci?played=${query.played}&category=${query.category}`,{method:"GET"});
+        let respond = await fetch(`/filter/speci?played=${query.played}&category=${query.category}&language=${query.language}`,{method:"GET"});
 
         if(respond.status==404||respond.status==403){
                 throw 'Something unexpected happened, check your connection'

@@ -8,6 +8,7 @@ console.log(fstParam,lstParam);
 
 
 const cate_field = $('#category');
+const lang_field = $('#langs');
 const played_field = $('#played');
 const filtBtn = $('#filterBtn');
 
@@ -16,15 +17,22 @@ const filter = async()=>{
     try{
         // console.log(butt);
         let category =cate_field.val();
+        let language = lang_field.val();
         let played=played_field.val()
+        
         if(!category){
             category="";
+        }
+        if(!language){
+            language="";
         }
         if(!played){
             played=0;
         }
+
         const data = {
             category,
+            language,
             played
         }
         const filtering = await Filter(data);
@@ -86,20 +94,16 @@ $(document).ready(async ()=>{
         toastHolder(); // toast holder
        $('.toast').toast('show');
         $('#books').html('');
-        let cat = await getCategory();
+        loadCategory();
+        loadLangs();
         // console.log(cat);
         if(fstParam && lstParam){
             let expd=await expand();
         }
-        cat.forEach(cat => {
-            // console.log(cat.title[0]);
-           cate_field.append($('<option/>',{'value':cat.title[0]}).append(cat.title[0]));                   
-         });
+       
+        Events();
 
-         $('#filterBtn').on('click',async ()=>{
-            //  alert('hello');
-            let filt = await filter();
-         });
+        
     }
     catch(error){
          toast({message:error,title:'Trouble with user',bg:'bg-danger'});
@@ -107,3 +111,45 @@ $(document).ready(async ()=>{
     }
 })
 
+
+const loadCategory =async ()=>{
+    try{
+      let cat = await getCategory();
+    // cate_field.html('');
+    cat.forEach(cat => {
+        // console.log(cat.title[0]);
+       cate_field.append($('<option/>',{'value':cat.title[0]}).append(cat.title[0]));                   
+     });  
+    }
+    catch(error){
+        throw error;
+    }
+    
+}
+const loadLangs =async ()=>{
+    try{
+      let lang = await getLanguages();
+    // console.log(lang.title);
+    lang.forEach(lang => {
+        // console.log(cat.title[0]);
+       lang_field.append($('<option/>',{'value':lang.title[0]}).append(lang.title[0]));                   
+     });  
+    }
+    catch(error){
+        throw error;
+    }
+    
+}
+
+const Events =()=>{
+    try{
+        $('#filterBtn').on('click',async ()=>{
+            //  alert('hello');
+            let filt = await filter();
+         });
+
+    }
+    catch(error){
+        throw error
+    }
+}

@@ -7,7 +7,7 @@ const action=params[4];
 const book = params[5];
 
 //check cookies
-const width = screen.width;
+let width = screen.width;
 
 
 //page elements
@@ -52,6 +52,10 @@ const loadBook = async ()=>{
     details.bookBack.category.forEach(cat => {//print categories
         addCategory(cat,'category');
     });
+    details.bookBack.languages.forEach(lang => {
+        addLangs(lang,'langs');
+    })
+
     details.bookBack.authors.forEach(author=>{//print authors
         addAuthor(author,'Authors');
     });

@@ -5,6 +5,12 @@ body{
     /* font-family: 'Sofia', cursive; */
 
    
+    
+    /* Other non-webkit browsers */
+    zoom: 0.8; 
+    zoom: 80%; /* Webkit browsers */
+
+   
 }
 
 .search{
@@ -58,6 +64,7 @@ body{
 }
 
 .main{
+  -moz-transform: scale(0.8, 0.8); 
   margin-top: 5%;
   margin-left:5%;
   margin-right:5%;
@@ -234,6 +241,15 @@ body{
 
   .books{
     transition-duration: 0.5s;
+    -moz-transform: scale(0.8, 0.8); 
+  }
+  #langs a{
+    background-color: #394a56;
+    font-size: larger;
+    margin-right: 10px;
+  }
+  #langs a :nth-child(even){
+    background-color: #E8290B;
   }
 
   .image_viewer{
@@ -385,7 +401,7 @@ body{
   border-radius: 6px;
   border-top: 10px black;
   padding: 5px 0;
-  box-shadow:  5px 5px 5px 5px rgba(58, 51, 51, 0.637);
+  box-shadow:  2px 2px 2px 2px rgba(58, 51, 51, 0.637);
 
   /*Positioning*/
   position: absolute;
@@ -516,6 +532,9 @@ border-radius: 6px;
   .myPlayer .card-body{
     width: 100%;
     flex-direction: row;
+  }
+  .playPause{
+    width: max-content;
   }
 
 
@@ -1051,7 +1070,7 @@ background-color:whitesmoke;
         width:19rem;
       }
       .myPlayer .playPause{
-        width:max-content;
+        width: max-content;
       }
       .myPlayer .card-body{
         width: 100%;

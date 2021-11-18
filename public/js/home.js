@@ -136,7 +136,8 @@ $(document).ready(async ()=>{
                             break;
                     }
                 
-                }).on('mouseover',()=>{
+                }).on('mouseover',(e)=>{
+                e.attributes('disabled').css('background-color', 'grey');
                 
                 })
 
