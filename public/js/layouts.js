@@ -636,18 +636,27 @@ const position = $(`${loc}`);
  }  
 
 
- const addSubscription = (loc)=>{
+ const addSubscription = (loc,details)=>{
         const position = $(`${loc}`);
-     position.append(`
-     
-  <div class="col">
-    <div class="card">
-      <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-      </div>
-    </div>
-  </div>
-     `);
+
+        position.append(
+          `
+          <div class="sub-container" style="background-image: linear-gradient(to bottom right, #f0f, ${details.color});">
+          <small>
+            Don't miss out the latest
+          </small>
+          <h2>
+            ${details.title}
+          </h2>
+          <a style="background-image: linear-gradient(to bottom right, #f0f, ${details.color});" target="_blank" href="new?subscriptionsKey=${details.title}" >Proceed</a>
+          <small>
+            Duration: ${details.days} days <br />
+            Max Users: ${details.maxUsers}
+          </small>
+        </div>
+  
+      `
+  
+  
+      );
  }

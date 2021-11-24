@@ -1,5 +1,11 @@
+const request = require('request');
+
 const {subscription,subscribing} = require('../models/subscriptionModel');
-const {paywithPAYSTACK}= require('../util/payments');
+const User = require('../models/userModel');
+
+
+const {initializePayment, verifyPayment} = require('../util/paystack')(request);
+const {decode_JWT} = require('../util/utils');
 
 const exempt =' -v';
 
@@ -60,6 +66,7 @@ const getPage = async(req,res)=>{
         res.status(403).json({error});
     }
 }
+
 
 //get all active subscriptions
 const getSubscriptions = async(req,res)=>{
@@ -156,19 +163,24 @@ const postSubscription =async(req,res)=>{
 const Subscribe = async (req,res)=>{
     try{
        
-        // if(!req.cookies.jwt){
-        //     res.redirect('/user/redirect?=subscribe');
-        // }
+        if(!req.cookies.jwt){
+            throw 'User Missing';
+        }
+
+        const user =await decode_JWT(req.cookies.jwt)
+
         const subName = req.query.subscriptionsKey;
         if(!subName){
             throw 'No Subscription key was found';
         }
 
         // something was passed;
-        const thisSub = await subscription.findOne({name:subName});
+        const thisSub = await subscription.details(subName);
         if(!thisSub){
             throw 'Something else happened';
         }
+
+        const thisUser = await User.info(user._id);
 
         // console.log(thisSub);
         //subscription was found
@@ -189,18 +201,23 @@ const Subscribe = async (req,res)=>{
 
         const sending = {
             amount:realAmnt,
-            email:'akwasi.osei.adubofour@gmail.com',
-            reference:'Testing_Bro'
+            email:thisUser.email,
+            metadata:{
+            user_id:req.cookies.jwt,
+            subscription:subName
+        }
 
         }
 
-        const payBack = await paywithPAYSTACK(sending);
-        // console.log(payBack);
-        // if(!payBack){
-        //     throw 'Error connecting to payStack';
-        // }
-
-        // res.json({payBack});
+        initializePayment(sending, (error, body)=>{
+            if(error){
+                //handle errors
+                console.log(error);
+                return;
+           }
+           response = JSON.parse(body);
+           res.redirect(response.data.authorization_url)
+        });
 
 
 
@@ -212,10 +229,85 @@ const Subscribe = async (req,res)=>{
 
 }
 
+
+
+const afterPayment =async(req,res) => {
+    try{
+        const ref = req.query.reference;
+        if(!req.cookies.jwt){
+            throw 'User Missing';
+        }
+        const user = await decode_JWT(req.cookies.jwt);
+
+    
+    verifyPayment(ref, async (error,body)=>{
+        if(error){
+            //handle errors appropriately
+           throw 'Error whiles coming back';
+        }
+        response = JSON.parse(body);
+       
+    
+        // what to after payment is successful or not...........................................
+
+       if(response.status){//a successful payment
+        const data = response.data.metadata
+        const metaUser =await decode_JWT(data.user_id);
+        console.log(user._id==metaUser._id);
+
+        if(user._id!=metaUser._id){//check user who payed and current user
+            throw `User identities don't match`
+        }
+
+        // console.log(data);
+
+        const subInfo = await subscription.details(data.subscription);// get subscription information
+        console.log(subInfo);
+
+        // create new subscription_instance
+        let newSub= await subscribing.openSubscribe({
+            ref:ref,
+            user:user._id,
+            subscription:subInfo.id
+        },subscription);
+
+        if(!newSub){//error while creating a new subscription instance
+            throw `Error while while subscribing`;
+        }
+
+        console.log(newSub);
+        //active subscription for user
+        let updateUser= await User.subscription({
+            user:user._id,
+            subscription:subInfo.id
+        },subscription);
+
+        console.log(updateUser);
+
+
+
+       }
+       else{
+           throw 'Error While Processing Payment';
+       }
+
+         res.json({response,user:req.cookies.jwt});//this will go after testing
+
+    });
+
+
+    }
+    catch(error){
+    res.status(400).json({error});
+    }
+    
+}
+
 module.exports={
 getPage,
 getSubscriptions,
 postSubscription,
-Subscribe
+Subscribe,
+afterPayment
 
 }

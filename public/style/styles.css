@@ -466,6 +466,50 @@ border-radius: 6px;
   font-size: larger;
 }
 
+/* SUbscription */
+.sub-container {
+	background-image: linear-gradient(to bottom right, #f0f, #00f);
+	border-radius: 15px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	padding: 30px;
+	margin: 15px;
+  text-align: center;
+  max-width: 90%;
+}
+
+.sub-container h2 {
+	margin-bottom: 30px;
+	letter-spacing: 0.5px;
+}
+
+.sub-container input, .sub-container a {
+	border: none;
+	border-radius: 3px;
+	display: block;
+	font-size: 12px;
+	padding: 7px 10px;
+	margin: 15px 0;
+	width: 100%;
+}
+
+.sub-container a {
+	background-image: linear-gradient(to bottom right, #f0f, #00f);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	color: #fff;
+}
+
+.sub-container small {
+	font-size: 0.75em;
+	line-height: 10px;
+	opacity: 0.5;
+}
+
+.sub-container small:first-of-type {
+	text-transform: uppercase;
+}
+
+
+/* subscription */
 
   /* End of new book layout */
 
@@ -805,8 +849,10 @@ border-top-right-radius: 5px;
 footer{
   text-align: center;
   margin-top: 120px;
-  color: #aaa;
+  color: rgb(255, 255, 255);
+  background-image: linear-gradient(90deg, rgba(13, 8, 87, 0.562), rgba(122, 81, 3, 0.281));
 }
+
 
 .react{
   background-color: rgba(0, 0, 0, 0);

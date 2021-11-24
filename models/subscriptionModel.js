@@ -20,7 +20,6 @@ const subscriptionSchema = new Schema({//list of subscription types
     },
     users:{
         type:Number,
-        max:5,
         min:1,
         required:false,
         default:1
@@ -84,14 +83,14 @@ const subscriptionSchema = new Schema({//list of subscription types
  })
  
  //statics for subscription types
- subscriptionSchema.details = async function(subID){
+ subscriptionSchema.statics.details = async function(subID){
      try{
         //get id first
         if(!subID){
             throw 'ID not found';
         }
         //search for details
-        const details = await this.findById({_id:subID});
+        const details = await this.findOne({name:subID});
         if(!details){
             throw 'Could not fetch subscription type details';
         }
@@ -100,7 +99,8 @@ const subscriptionSchema = new Schema({//list of subscription types
             duration:details.duration,
             renew:details.autorenew,
             status:details.active,
-            users:details.users
+            users:details.users,
+            amount:details.amount
         }
      }
      catch(error){
@@ -110,16 +110,16 @@ const subscriptionSchema = new Schema({//list of subscription types
 
  //some static functions for subscriptions
 
- subscribedSchema.openSubscribe = async function (details){//new subscription
+ subscribedSchema.statics.openSubscribe = async function (details,subs){//new subscription
      try{
-        const chkRef = await this.find({ref:details.ref});
-        if(chkRef){//reference already exists
-            throw 'Reference already exists';
-        }
+        // const chkRef = await this.find({ref:details.ref});
+        // if(chkRef){//reference already exists
+        //     throw 'Reference already exists';
+        // }
         //continue after ref check....................................
         //VARS
         const subscription_ID = details.subscription;
-        const chkSubs = await findOne({_id:subscription_ID,active});
+        const chkSubs = await subs.findOne({_id:subscription_ID});
 
         if(!chkSubs){
             throw 'This subscription does not exist';
@@ -149,7 +149,7 @@ const subscriptionSchema = new Schema({//list of subscription types
 
  }
 
- subscribedSchema.toggleSubscribe = async function(details){//deactivate and active subscription
+ subscribedSchema.statics.toggleSubscribe = async function(details){//deactivate and active subscription
      try{
         const user = details.user;
         const sub = details.subscription;
@@ -181,7 +181,7 @@ const subscriptionSchema = new Schema({//list of subscription types
  }
 
  //Cancel or close subscription will be here
- subscribedSchema.closeSub = async function(details){
+ subscribedSchema.statics.closeSub = async function(details){
      try{
         //details
         const user = details.user;
