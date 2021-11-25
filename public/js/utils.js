@@ -436,3 +436,32 @@ const userBooks = async (user)=>{
         }
 
 }
+
+
+// subscription
+const getSubscriptions = async ()=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({active:'true'});
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/subscribe/all',requestOptions);
+        if(respond.status==404||respond.status==404){
+                throw '404';
+        }
+
+        return respond.json();
+        }
+        catch(error){
+                throw error
+        }
+}

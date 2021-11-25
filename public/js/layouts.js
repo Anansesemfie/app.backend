@@ -639,19 +639,23 @@ const position = $(`${loc}`);
  const addSubscription = (loc,details)=>{
         const position = $(`${loc}`);
 
+
         position.append(
           `
-          <div class="sub-container" style="background-image: linear-gradient(to bottom right, #f0f, ${details.color});">
+          <div class="sub-container" style="background-image: linear-gradient(to bottom right, #f0f, ${details.accent});">
           <small>
             Don't miss out the latest
           </small>
           <h2>
-            ${details.title}
+            ${details.name}
           </h2>
-          <a style="background-image: linear-gradient(to bottom right, #f0f, ${details.color});" target="_blank" href="new?subscriptionsKey=${details.title}" >Proceed</a>
+          
+          <div class="amount">Amount: Ghs${details.amount}</div>
+          <button style="background-image: linear-gradient(to bottom right, #f0f, ${details.accent});" target="_blank" data-id="${details.name}" id="subButton">Proceed</button>
           <small>
-            Duration: ${details.days} days <br />
-            Max Users: ${details.maxUsers}
+            Duration: ${details.duration} days <hr />
+            Max Users: ${details.users}<hr/>
+            Auto Renewal: ${details.autorenew}
           </small>
         </div>
   

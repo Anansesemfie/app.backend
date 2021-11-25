@@ -5,9 +5,9 @@ const User = require('../models/userModel');
 
 
 const {initializePayment, verifyPayment} = require('../util/paystack')(request);
-const {decode_JWT} = require('../util/utils');
+const {decode_JWT,milliToggle} = require('../util/utils');
 
-const exempt =' -v';
+const exempt =' -__v -_id -active -moment';
 
 //aux functions
 
@@ -114,11 +114,18 @@ const getSubscriptions = async(req,res)=>{
         // continue after fetch for subs
         // console.log(subs);
 
+        subs.forEach(sub=>{
+            let newDuration = milliToggle({time:sub.duration,return:'toDays'});
+            sub.duration = newDuration;
+        });
+        
+
         res.json({subs});
 
 
     }
     catch(error){
+        // console.log(error);
         res.status(403).json({error});
     }
 }
@@ -133,7 +140,7 @@ const postSubscription =async(req,res)=>{
        
         const oneMnt = 2.628e+9
         const times = body.duration;
-        const duration = oneMnt*times;
+        const duration = milliToggle({time:times,return:'toMilliseconds'});
 
         const newSubscription = {
             name:body.name,

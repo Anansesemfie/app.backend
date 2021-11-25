@@ -298,6 +298,29 @@ const audioStorage = multer.memoryStorage();
       }
     }
 
+    const milliToggle = (details)=>{
+      let data;
+      let time = parseInt(details.time);
+
+      switch (details.return) {
+        case 'toDays':
+         data =(time)/(1000*60*60*24);
+          
+          break;
+          case 'toMilliseconds':
+            
+          data = time * 24 * 60 * 60 * 1000;
+          break;
+      
+        default:
+
+          break;
+      }
+
+      return data;
+
+    }
+
 
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$#%*&';
 const genRandCode= ()=>{
@@ -328,5 +351,6 @@ module.exports={
   createAudioDIr,
   realDate,
   updateUserDP,
-  genRandCode
+  genRandCode,
+  milliToggle
 }

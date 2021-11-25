@@ -16,7 +16,7 @@ const subscriptionSchema = new Schema({//list of subscription types
     },
     duration:{
         type:String,
-        default:'2.628e+9'
+        default:'2592000000'
     },
     users:{
         type:Number,

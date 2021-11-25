@@ -87,7 +87,7 @@ userSchema.pre('save',async function(next){
 });
 
 //static method to login
-userSchema.statics.login=async function(email,password){
+userSchema.statics.login=async function(email,password){a
     const user = await this.findOne({email});//search for email/username
     if(user){
         const auth = await bcrypt.compare(password,user.password);//compare received password with user.password
@@ -103,7 +103,7 @@ userSchema.statics.login=async function(email,password){
         throw Error('Password is incorrect');
     }
     throw Error('incorrect email');
-};
+}
 
 userSchema.statics.subscription = async function(info,subs){
     try{
