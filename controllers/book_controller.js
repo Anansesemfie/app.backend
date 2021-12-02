@@ -2,7 +2,7 @@ const { book} = require('../models/bookModel');
 const User = require('../models/userModel');
 const{ bookReact} = require('../models/reactionModel');
 
-const {mailer,decode_JWT,service,createFolderDIr} = require('../util/utils'); 
+const {mailer,decode_JWT,service,createFolderDIr,createImageDIr} = require('../util/utils'); 
 const exempt = '-__v -status -folder';
 
 
@@ -113,21 +113,62 @@ const New_book = async (req,res)=>{
 
 
 //update book pages
-const Update_book = async (req,res)=>{
-  const action=req.params.action;
-  const bookID = req.params.book;
-  // console.log(action,bookID);
-  switch (action) {
-    case "Edit":
-       res.render(`book`);
-      break;
-    case "Read":
-      res.render(`book`);
-      break;
-    default:
-      res.redirect('/');
-      break;
+const Update_book = async (req, res) => {
+  try{
+    const body = req.body;
+    const file = req.file;
+    const updateValues ={};
+
+    const bookDetails = await book.findById(body.id);//get book details
+    if(!bookDetails) throw 'Error fetching Book';
+
+
+
+    if(file){
+      const newCover = await createImageDIr(bookDetails.folder,file,body.title,bookDetails.cover);
+  if(newCover){
+      updateValues.cover = newCover.filename;
+      // console.log(newCover);
   }
+  else{
+      throw 'Error making changes to file';
+  }
+  }
+
+  updateValues.title = body.title;
+  updateValues.description = body.description;
+  updateValues.category = body.category;
+  updateValues.authors = body.author;
+
+  const upBook = await book.findByIdAndUpdate(body.id,updateValues);
+  if(!upBook) throw 'Error updating'
+
+
+
+
+    res.json({upBook});
+  }
+  catch(error){
+throw error
+  }
+}
+
+
+//PAGE
+const bookPage = async (req,res)=>{
+  try{
+    // const action=req.params.action;
+      const bookID = req.params.book;
+      // console.log(action,bookID);
+      
+          res.render(`book`);
+  }
+  catch(error){
+    res.status(404).render('notFound');
+
+  }
+ 
+     
   
 }
 
@@ -313,6 +354,7 @@ const subscription = async(req,res)=>{
 
 module.exports={
     New_book,
+    bookPage,
     Update_book,
     Get_book,
     Get_books,

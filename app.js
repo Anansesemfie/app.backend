@@ -1,6 +1,6 @@
 //Requires
 const express = require('express');
-// const https = require('https');
+const https = require('https');
 
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -93,7 +93,37 @@ app.get('/',(req,res)=>{
 })
 
 
-
+app.get('/sub',(req,res)=>{
+    
+const params = JSON.stringify({
+  "email": "customer@email.com",
+  "amount": "20000"
+})
+const options = {
+  hostname: 'api.paystack.co',
+  port: 443,
+  path: '/transaction/initialize',
+  method: 'POST',
+  headers: {
+    Authorization: 'Bearer sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600',
+    'Content-Type': 'application/json'
+  }
+}
+const request = https.request(options, res => {
+  let data = ''
+  res.on('data', (chunk) => {
+    data += chunk
+  });
+  res.on('end', () => {
+    console.log(JSON.parse(data))
+    
+  })
+}).on('error', error => {
+  console.error(error)
+})
+request.write(params)
+request.end()
+})
 // app.post('/',(req,res)=>{
 //     console.log(req.files);
 //     if(req.files){

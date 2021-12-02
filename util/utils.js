@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
-const https = require('https');
+
 
 // const { isNull } = require('util');
 
@@ -239,6 +239,17 @@ const audioStorage = multer.memoryStorage();
     }
 
 
+    // const updateCover = async (file,path)=>{
+    //   try{
+
+
+    //   }
+    //   catch(error){
+    //     throw error;
+    //   }
+    // }
+
+
 
 
 
@@ -261,15 +272,22 @@ const audioStorage = multer.memoryStorage();
     }
 
 
-    const createAudioDIr = async (direct,file,title)=>{
+    const createAudioDIr = async (direct,file,title,oldDir='')=>{//new audio file
         try{
           let buff = new Buffer.from(file.buffer, 'base64');//to buffer from Base64
           let newTitle = title.split(' ');
           newTitle = newTitle.join('-');
 
+          if(oldDir){//remove the old directory
+            if(fs.existsSync(`uploads${oldDir.slice(1)}`)){//if dir exists
+              fs.unlinkSync(`uploads${oldDir.slice(1)}`);
+            }
+            
+          }
+          console.log(newTitle,buff);
           let filename =`uploads/${direct}/${newTitle}${Audioextention(file.mimetype)}`
           if (fs.existsSync(filename)) {
-            filename+=`uploads/${direct}/${newTitle}-${Audioextention(file.mimetype)}`;
+            filename=`uploads/${direct}/${newTitle}-${Audioextention(file.mimetype)}`;
             // Do something
         }
 
@@ -285,6 +303,38 @@ const audioStorage = multer.memoryStorage();
         }
     }
 
+    const createImageDIr = async (direct,file,title,oldDir='')=>{//new audio file
+      try{
+        let buff = new Buffer.from(file.buffer, 'base64');//to buffer from Base64
+        let newTitle = title.split(' ');
+        newTitle = newTitle.join('-');
+
+        if(oldDir){//remove the old directory
+          if(fs.existsSync(`uploads${oldDir.slice(1)}`)){//if dir exists
+            fs.unlinkSync(`uploads${oldDir.slice(1)}`);
+          }
+          
+        }
+        console.log(newTitle,buff);
+        let filename =`uploads/${direct}/${newTitle}${Imgextention(file.mimetype)}`
+        if (fs.existsSync(filename)) {
+          filename=`uploads/${direct}/${newTitle}-${Imgextention(file.mimetype)}`;
+          // Do something
+      }
+
+        fs.writeFileSync(filename, buff);
+
+        return {filename:filename.slice(1),mimetype:file.mimetype};
+
+
+
+      }
+      catch(err){
+        throw err;
+      }
+  }
+
+    
     const realDate= (date)=>{//luxon to get meaningful time
       try{
         
@@ -296,6 +346,29 @@ const audioStorage = multer.memoryStorage();
       catch(error){
         throw error;
       }
+    }
+
+    const milliToggle = (details)=>{
+      let data;
+      let time = parseInt(details.time);
+
+      switch (details.return) {
+        case 'toDays':
+         data =(time)/(1000*60*60*24);
+          
+          break;
+          case 'toMilliseconds':
+            
+          data = time * 24 * 60 * 60 * 1000;
+          break;
+      
+        default:
+
+          break;
+      }
+
+      return data;
+
     }
 
 
@@ -311,6 +384,7 @@ const genRandCode= ()=>{
 
 
 
+<<<<<<< HEAD
 //paystack
 
 const paystackOptions = {//paystack account info 
@@ -358,6 +432,8 @@ const paywithPAYSTACK =async (params)=>{//paying with payStack
 }
 
 
+=======
+>>>>>>> subscribe
 
 
 
@@ -373,8 +449,9 @@ module.exports={
   uploadAudio,
   createFolderDIr,
   createAudioDIr,
+  createImageDIr,
   realDate,
   updateUserDP,
   genRandCode,
-  paywithPAYSTACK
+  milliToggle
 }

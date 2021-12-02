@@ -159,11 +159,11 @@ const get_comments = async ()=>{//get all comments
         }
         else{
 
-
+            throw 'Trouble getting comments'
         }
     } 
     catch (error) {
-        toast({message:error,title:'Could not retrieve comments',bg:'bg-warning'});
+        toast({message:error,title:'Something unexpected happened',bg:'bg-warning'});
     }
 
 }
