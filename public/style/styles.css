@@ -1,7 +1,14 @@
+html{
+  
+  background-image: linear-gradient(to bottom right, #252527, #000);
+
+}
+
 /* prefered styles */
 body{
 
-    background-color: rgb(255, 255, 255);
+    /* background-color: rgb(255, 255, 255); */
+    background-image: linear-gradient(to bottom right, #000, #3e3e41);
     /* font-family: 'Sofia', cursive; */
 
    
@@ -223,6 +230,7 @@ body{
       font-size: 22px;
       font-weight: 800px;
       padding: 10px;
+      color:white;
   }
 
   .pic_heading{
@@ -597,11 +605,14 @@ border-radius: 6px;
     background:linear-gradient(#f44336,#e8e40b);
     clip-path: circle(10% at 5% 94%);
   }
-  #player #playPause:hover{
+  .myPlayer .playPause{
+    width: max-content;
+  }
+  .myPlayer #playPause:hover{
     background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));
   }
 
-  #player .ETA{
+  .myPlayer .ETA{
     font-size: 1em;
     width: max-content;
   }
@@ -853,10 +864,11 @@ border-top-right-radius: 5px;
 }
 
 footer{
+  bottom:0;
   text-align: center;
   margin-top: 120px;
   color: rgb(255, 255, 255);
-  background-image: linear-gradient(90deg, rgba(13, 8, 87, 0.562), rgba(122, 81, 3, 0.281));
+  background-image: linear-gradient(90deg, rgba(37, 37, 37, 0.884), rgba(5, 5, 5, 0.027));
 }
 
 
