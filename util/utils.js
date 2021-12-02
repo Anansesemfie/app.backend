@@ -384,56 +384,6 @@ const genRandCode= ()=>{
 
 
 
-<<<<<<< HEAD
-//paystack
-
-const paystackOptions = {//paystack account info 
-  hostname: 'api.paystack.co',
-  port: 443,
-  path: '/transaction/initialize',
-  method: 'POST',
-  headers: {
-    Authorization: 'sk_live_3c13a073aa98c52473269da7f0834d7501dce74c',
-    'Content-Type': 'application/json'
-  }
-}
-
-
-
-
-const paywithPAYSTACK =async (params)=>{//paying with payStack
-  try{
-    params.currency="GHS";
-    params.callback_URL =`${service.host}/`;
-
-    const jstParams=JSON.stringify(params)
-    console.log(jstParams,params);
-
-    const paystackReq = https.request(paystackOptions, res => {
-      console.log(`statusCode: ${res.statusCode}`);
-      let data = ''
-      res.on('data', (chunk) => {
-        data += chunk
-      });
-      res.on('end', () => {
-        return JSON.parse(data);
-      })
-    }).on('error', error => {
-      console.log(error);
-    })
-    
-   paystackReq.write(jstParams);
-    paystackReq.end()
-    
-  }
-  catch(error){
-    throw error;
-  }
-}
-
-
-=======
->>>>>>> subscribe
 
 
 
