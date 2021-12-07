@@ -115,6 +115,68 @@ const bookForm = async (loc)=>{
             
 }
 
+const UpdatebookForm = async (id,loc)=>{
+  let position = $(loc);
+  //init category
+
+
+  position.append(`<form action="/book/update" enctype="multipart/form-data" method="POST">
+                     <div class="container">
+                    <div class="row">
+                        <!-- title and description -->
+                        <div class="col-6">
+                        <input type="text" name="id" value="${id}" hidden=true/>
+                            <label for="title">Title</label>
+                         <input type="text"  name="title" id="edit_title" maxlength=50 class="form-control" required placeholder="Title">
+                         <label for="description">Description</label>
+                         <textarea name="description" id="edit_description" cols="30" maxlength=1000 class="form-control" rows="10"></textarea>
+                        </div>
+                        <!-- cover image here -->
+                        <div class="col-6">
+                            <input type="file" name="file" class="form-control"> 
+                             <img id="file" class="image_viewer">
+                        </div>
+                    </div>
+    
+                   
+                    <div class="row">
+                        <!-- category / genre -->
+                        <div class="col-6">
+                        <label for="category">Category</label>
+                         <select name="category" id="edit_bookcategory" multiple="multiple" style="width: 100%" class="form-control"  >
+                         
+                         </select>
+                         </div>
+
+                         <div class="col-6">
+                        <label for="Languages">Languages</label>
+                         <select name="language" id="edit_bookLangs" multiple="multiple" style="width: 100%" class="form-control"  >
+                         
+                         </select>
+                         </div>
+
+
+                       </div>  
+
+                       <div class="row">
+                         
+                         <label for="author">Author(s)</label>
+                         <input name="author" id="edit_author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
+                        </div>
+                        
+                   
+                    <div class="row">
+                                <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning btn-block">Cancel</button></div>
+                                <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-primary btn-block">Post</button></div>
+                         </div>
+    
+               </div>
+             </form>`)
+          
+              
+          
+}
+
 
 
 const postChapter = (id,loc)=>{
@@ -152,6 +214,44 @@ const postChapter = (id,loc)=>{
 
                       </form>
     `);
+}
+
+const updateChapter = (id,chap,loc)=>{
+  let position = $(loc);
+
+  position.append(`
+  <form action="/chapter/upload" enctype="multipart/form-data" method="POST">
+      <input type="text" name="book" value="${id}" hidden=true/>
+      <input type="text" name="chapter" value="${chap}" hidden=true/>
+                     <div class="container">
+                    <div class="row">
+                    <div class="col-6">
+                    <label for="title">Chapter Title</label>
+                 <input type="text"  name="title" id="edit_chap_title" maxlength=50 class="form-control" required placeholder="Title">
+                </div>
+                <div class="col-6">
+                    <label for="title">Audio File</label>
+                 <input type="file"  name="file"  class="form-control" required>
+                </div>
+
+                    </div>
+
+                    <div class="row">
+                      <div class="col-12">
+              <label for="description">Chapter Description</label>
+              <textarea name="description" id="edit_chap_description" cols="30" maxlength=100 class="form-control" rows="10"></textarea>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                                <div class="col-6"><button type="reset" id="genBtn"  class="btn btn-warning btn-block">Cancel</button></div>
+                                <div class="col-6"><button type="submit" id="genBtn" data-id="newBook" class="btn btn-info btn-block">Post</button></div>
+                         </div>
+
+                    </div>
+
+                    </form>
+  `);
 }
 
 
@@ -431,8 +531,12 @@ const addCommentOut = (loc,msg_details)=>{
 
 
 //functions
-const addChapter = (data,loc)=>{
+const addChapter = (data,loc,mine)=>{
     let position = $(`#${loc}`);
+    let edit = ''
+    if(mine){
+      edit = `<button class="btn btn-light btn-sm cat " id="edit-chapter" data-target='${data._id }'>Edit </button>`
+    }
     position.append(`
     <div class="col mb-4 chapter">
                 <div class="card">
@@ -440,7 +544,7 @@ const addChapter = (data,loc)=>{
                   <div class="card-body">
                   <div class="col-12">
                   
-                  <div class="card-title" title="">#${data.title}</div>
+                  <div class="card-title row"><div title="">#${data.title}</div> <div>${edit}</div>  </div>
                   <hr>
                   
                   ${data.description}

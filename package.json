@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev":"NODE_ENV=development nodemon app.js"
   },
   "author": {
     "name": "Emmanuel Osei Mensah",
@@ -16,6 +17,7 @@
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
+    "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",

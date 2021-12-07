@@ -1,5 +1,5 @@
 const paystack = (request) => {
-  const MySecretKey = 'Bearer sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600';
+  const MySecretKey = `Bearer ${process.env.PAYSTACK}`;
   //sk_test_xxxx to be replaced by your own secret key
   const initializePayment = (form, mycallback) => {
       const option = {

@@ -2,6 +2,12 @@
 
 const link =window.location.href;
 const params = link.split('/');
+let mine = false;
+let book_title;
+let book_desc;
+let book_cate;
+let book_langs;
+let book_authors;
 
 const action=params[4];
 const book = params[5];
@@ -34,6 +40,13 @@ const loadBook = async ()=>{
         if(!details){
             location.href="/";
         }
+        
+        book_title=details.bookBack.title;
+        book_desc=details.bookBack.description;
+        book_cate= details.bookBack.category;
+        book_langs=details.bookBack.languages;
+        book_authors=details.bookBack.authors;
+
 
     //fill the blanks
     cover.attr('src',details.bookBack.cover);
@@ -44,8 +57,13 @@ const loadBook = async ()=>{
         ifUser.append(
            
             $('<button/>',{'class':'button btn cat signin','id':'chapter'}).append('Add Chapter'),
-            // $('<button/>',{'class':'button btn cat signin','id':'update'}).append('Update')
+            $('<button/>',{'class':'button btn cat signin','id':'update'}).append('Edit')
+
+            
+            
         );
+        owner_book()
+        mine = true;
         
     }
 
@@ -59,6 +77,8 @@ const loadBook = async ()=>{
     details.bookBack.authors.forEach(author=>{//print authors
         addAuthor(author,'Authors');
     });
+
+   
     }
     catch(err){
         toast({message:err,title:'Could not get books',bg:'bg-danger'});
@@ -216,8 +236,12 @@ const loadChapters = async () =>{//load chapters if any.........................
             $('#Chapters').html('');
             details.forEach(chap=>{
                 // console.log(chap);
-                addChapter(chap,'Chapters');
+                addChapter(chap,'Chapters',mine);
             })
+            if(mine){
+                // alert('This is mine');
+                owner_events();
+            }
             back = true
         }
         return true;
@@ -250,10 +274,10 @@ const playChapter = async (chapt)=>{
 //On page conditions
 
 
-/*main function        __
-        \\\_|\\   /\  | |  
-        \\\_|\\  /_\  | |
-        \\   \\ /  \  |_|
+/*main function        __     _____
+        \\\_|\\   /\  | |   /  __  \
+        \\\_|\\  /_\  | |  |  |  | \  
+        \\   \\ /  \  |_|  |_/   | |
 
 */
         $(document).ready(async ()=>{
@@ -277,6 +301,8 @@ const playChapter = async (chapt)=>{
        toastHolder(); // toast holder
        $('.toast').toast('show');
 
+
+
         const go =await loadChapters(); 
         if(go){
             preventAudioDownload(); 
@@ -297,7 +323,7 @@ const playChapter = async (chapt)=>{
             // player stuff
         }
         const chapter = $('#chapter');
-        const update = $('#update');
+        
         
         
 
@@ -317,9 +343,7 @@ const playChapter = async (chapt)=>{
             
                 
 
-                update.on('click',()=>{//update
-                    alert('update clicked');
-                })
+               
 
             }
             catch(err){
@@ -385,6 +409,13 @@ const playChapter = async (chapt)=>{
             });
 
 
+            if(mine){
+                
+
+
+                
+            }
+
             // document.addEventListener('keypress', (event) => {
             //     var name = event.key;
             //     var code = event.code;
@@ -395,6 +426,91 @@ const playChapter = async (chapt)=>{
 
         }
 
+        const owner_events =()=>{//events on chapter by Owner
+            console.log('mine');
+
+                const chapEdits = document.querySelectorAll('#edit-chapter');
+                chapEdits.forEach(ele => {
+                    ele.addEventListener('click',()=>{
+                        let chapID = ele.getAttribute("data-target")
+
+                        alert(chapID);
+
+                        $('.modal-body').html('');
+                        updateChapter(book,chapID,'.modal-body');
+        
+                        // call modal
+                        $('#myModal').modal('toggle');
+                        
+                    });
+                });
+        }
+
+
+ const owner_book =async ()=>{//events on book by owner
+
+
+            const update = $('#update');
+
+        update.on('click',async ()=>{//update
+            $('.modal-body').html('');
+            UpdatebookForm(book,'.modal-body');
+
+            console.log(book_title,book_desc);
+            //autofill
+            $('#edit_title').val(book_title);
+            $('#edit_description').val(book_desc);
+
+
+
+
+
+            //multiselect category
+           
+            $('#edit_bookcategory').select2({
+                theme: 'classic',
+                placeholder: 'Select category',
+                maximumSelectionLength: 4
+            });
+
+            //multiselect languages
+            $('#edit_bookLangs').select2({
+                theme: 'classic',
+                placeholder: 'Select languages',
+                maximumSelectionLength: 4
+            });
+
+            let cat = await getCategory();
+            cat.forEach(cate => {
+                let set = false;
+                if(book_cate){
+                    set = book_cate.includes(cate.title[0]);
+                }
+                
+                // console.log(set,cate.title[0]);
+                var newOption = new Option(cate.title[0], cate.title[0], set, set);
+             $('#edit_bookcategory').append(newOption).trigger('change');
+             });
+             
+             let lang = await getLanguages();
+             lang.forEach(cate => {
+                let set = false;
+                 if(book_langs){
+                   set= book_langs.includes(cate.title[0]);
+                 }
+                
+                // console.log(set,cate.title[0]);
+                var newOption = new Option(cate.title[0], cate.title[0], set, set);
+             $('#edit_bookLangs').append(newOption).trigger('change');
+             });
+
+
+
+            $('#myModal').modal('toggle');
+        })
+
+
+        }
 
 
 

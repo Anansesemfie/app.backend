@@ -166,6 +166,8 @@ const login_post = async (req,res)=>{//login controller
     }
 }
 
+
+
 const logout_get = async (req,res)=>{//logout 
     res.cookie('jwt','',{maxAge:1,httpOnly:true});
     res.redirect('/');

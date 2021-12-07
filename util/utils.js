@@ -49,7 +49,7 @@ const mailer=(mail)=>{
 
 }
 
-process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/Ananse-fie?retryWrites=true&w=majority";
+
       if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
       }
@@ -60,9 +60,9 @@ process.env.DB="mongodb+srv://webUser:Falcon@6013@ananse-fie.xqmwg.mongodb.net/A
 
 const service={
     "port":process.env.PORT || 5000,
-    "host":"https://anansesemfie.com/",
+    "host":process.env.HOST || "https://anansesemfie.com/",
     "DB":process.env.DB,
-    "secret":"symbiosis"
+    "secret":process.env.SECRET
 }
 
 //JSON web Token 
@@ -324,7 +324,7 @@ const audioStorage = multer.memoryStorage();
 
         fs.writeFileSync(filename, buff);
 
-        return {filename:filename.slice(1),mimetype:file.mimetype};
+        return {filename:filename.slice(8),mimetype:file.mimetype};
 
 
 

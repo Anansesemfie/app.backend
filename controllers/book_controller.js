@@ -115,6 +115,11 @@ const New_book = async (req,res)=>{
 //update book pages
 const Update_book = async (req, res) => {
   try{
+    if(!req.cookies.jwt){
+      throw 'Error identifying User';
+    }
+    const user = decode_JWT(req.cookies.jwt);
+
     const body = req.body;
     const file = req.file;
     const updateValues ={};
@@ -122,6 +127,9 @@ const Update_book = async (req, res) => {
     const bookDetails = await book.findById(body.id);//get book details
     if(!bookDetails) throw 'Error fetching Book';
 
+    if(bookDetails.uploader!=user._id){
+      throw 'Error identifying Owner'
+    }
 
 
     if(file){
@@ -139,6 +147,7 @@ const Update_book = async (req, res) => {
   updateValues.description = body.description;
   updateValues.category = body.category;
   updateValues.authors = body.author;
+  updateValues.languages = body.language;
 
   const upBook = await book.findByIdAndUpdate(body.id,updateValues);
   if(!upBook) throw 'Error updating'
@@ -146,10 +155,11 @@ const Update_book = async (req, res) => {
 
 
 
-    res.json({upBook});
+  res.redirect(`/book/Read/${body.id}`);
   }
   catch(error){
-throw error
+    res.status(403).json({error});
+// throw error
   }
 }
 

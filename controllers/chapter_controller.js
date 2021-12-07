@@ -66,9 +66,15 @@ const postChapter = async (req,res)=>{
 
 const updateChapter = async(req,res)=>{
     try{
+        if(!req.cookies.jwt){
+            throw 'Error identifying user';
+        }
+        const user = decode_JWT(req.cookies.jwt);
+
         let file = req.file;
         let body = req.body;
-        const chapID = body.id;
+        const chapID = body.chapter;
+        const book = body.book;
         const uploadValues ={};
 
         
@@ -77,10 +83,21 @@ const updateChapter = async(req,res)=>{
         if(!chapDetails){
             throw 'Error fetching Chapter'
         }
+        if(chapDetails.book!=book){//confirm book
+            throw 'Error identifying book';
+        }
+
         const bookDetails = await book.findById(chapDetails.book);//get book details
         if(!bookDetails){
             throw 'Error fetching Book';
         }
+
+        if(bookDetails.uploader!=user._id){
+            throw 'Error Identifying Owner';
+        }
+
+
+
 
         //start updating chapter
         if(file){
@@ -102,7 +119,7 @@ const updateChapter = async(req,res)=>{
         throw 'Could not update chapter';
     }
 
-        res.json({updateChap});
+    res.redirect(`/book/Read/${body.id}`);
 
     }
     catch(error){
