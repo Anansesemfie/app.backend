@@ -2,10 +2,10 @@
 const express = require('express');
 const https = require('https');
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
+// if (process.env.NODE_ENV !== 'production') {
+//   require('dotenv').config();
+// }
+require('dotenv').config();
 // console.log(process.env);
 
 const bodyParser = require('body-parser');
