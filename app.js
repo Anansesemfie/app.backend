@@ -5,9 +5,9 @@ const https = require('https');
 // if (process.env.NODE_ENV !== 'production') {
 //   require('dotenv').config();
 // }
-// require('dotenv').config();
-console.log(process.env);
+require('dotenv').config();
 
+console.log(process.env.HOST);
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');

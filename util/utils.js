@@ -53,7 +53,7 @@ const mailer=(mail)=>{
       if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
       }
-      console.log(process.env.DB);
+      // console.log(process.env.DB);
       // else{
       //   
       // }
