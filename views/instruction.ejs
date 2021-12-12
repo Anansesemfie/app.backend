@@ -1,30 +1,5 @@
 <%- include('partials/header'); %>
 <style>
-    body{
-        background:rgb(4, 102, 214)
-    }
-
-    body::before{
-    content:'';
-    position: absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:linear-gradient(#f00,#f0f);
-    clip-path: circle(30% at right 70%);
-  }
-  body::after{
-    content:'';
-    position: absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:linear-gradient(#f44336,#E8290B);
-    clip-path: circle(10% at 10% 30%);
-  }
-
   .title{
       margin-top: 20%;
       margin-left: 20%;
@@ -46,17 +21,26 @@
 </style>
 
 
-<div class="container">
+<div class="container main">
     <header>
-        <p>
-            You are seeing this page because your upload failed, check the info provided below, to know what is expected of you
+        <p class="title">
+            Something went wrong
         </p>
     </header>
 
     <div class="col-12">
         <div class="row">
-                <div class="row row-cols-1 row-cols-md-3" id="top_books">
-                  
+                <div class="row row-cols-1 row-cols-md-1" id="top_books">
+                  <div class="card colorful" style="width:18rem">
+                    <div class="card-body">
+                        <h2 style="font-family: cursive;
+                        margin: 20%;
+                        font-weight: bolder;"><%= error %></div></h2>
+                    </div>
+                    <div class="card-footer">
+                        
+                    </div>
+                  </div>
                 
               </div>
         </div>

@@ -169,6 +169,7 @@ const postSubscription =async(req,res)=>{
 
 const Subscribe = async (req,res)=>{
     try{
+        // console.log('just now ');
        
         if(!req.cookies.jwt){
             throw 'User Missing';
@@ -230,8 +231,9 @@ const Subscribe = async (req,res)=>{
 
     }
     catch(error){
-        console.log(error);
+        // console.log(error);
         // res.status(403).json({error});
+        res.render('instruction',{error});
     }
 
 }
