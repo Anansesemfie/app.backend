@@ -227,11 +227,11 @@ const updateChapter = (id,chap,loc)=>{
                     <div class="row">
                     <div class="col-6">
                     <label for="title">Chapter Title</label>
-                 <input type="text"  name="title" id="edit_chap_title" maxlength=50 class="form-control" placeholder="Title">
+                 <input type="text"  name="title" id="edit_chap_title" maxlength=50 class="form-control" required placeholder="Title">
                 </div>
                 <div class="col-6">
                     <label for="title">Audio File</label>
-                 <input type="file"  name="file"  class="form-control" required>
+                 <input type="file"  name="file"  class="form-control">
                 </div>
 
                     </div>
@@ -547,7 +547,7 @@ const addChapter = (data,loc,mine)=>{
                   <div class="card-title row"><div title="">#${data.title}</div> <div>${edit}</div>  </div>
                   <hr>
                   
-                  ${data.description}
+                  <div>${data.description}</div>
                  
                   </div>
                     

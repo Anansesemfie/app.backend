@@ -899,6 +899,16 @@ footer a:hover{
   border-bottom: chocolate 5px solid;
 }
 
+.link{
+  color:white;
+  font-size: larger;
+}
+.link:hover{
+  
+  color: white;
+  border-bottom: chocolate 5px solid;
+}
+
 
 .react{
   background-color: rgba(0, 0, 0, 0);

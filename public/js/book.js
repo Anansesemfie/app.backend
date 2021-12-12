@@ -433,11 +433,19 @@ const playChapter = async (chapt)=>{
                 chapEdits.forEach(ele => {
                     ele.addEventListener('click',()=>{
                         let chapID = ele.getAttribute("data-target")
+                        let Divholder =ele.parentElement.parentElement.parentElement;
 
-                        alert(chapID);
+                        let title =Divholder.children[0].children[0].innerHTML.slice(1);
+                        let desc =Divholder.parentElement.children[0].children[2].innerHTML;
+                        // alert(chapID);
 
                         $('.modal-body').html('');
                         updateChapter(book,chapID,'.modal-body');
+
+                        $('#edit_chap_title').val(title);
+                        $('#edit_chap_description').val(desc);
+
+
         
                         // call modal
                         $('#myModal').modal('toggle');

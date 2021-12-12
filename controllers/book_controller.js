@@ -158,7 +158,7 @@ const Update_book = async (req, res) => {
   res.redirect(`/book/Read/${body.id}`);
   }
   catch(error){
-    res.status(403).json({error});
+    res.render('instruction',{error})
 // throw error
   }
 }
