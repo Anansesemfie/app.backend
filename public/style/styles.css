@@ -904,9 +904,10 @@ footer a:hover{
   font-size: larger;
 }
 .link:hover{
-  
+
   color: white;
-  border-bottom: chocolate 5px solid;
+  border-left: chocolate 5px solid;
+  border-right: chocolate 5px solid;
 }
 
 
