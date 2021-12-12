@@ -169,7 +169,7 @@ const postSubscription =async(req,res)=>{
 
 const Subscribe = async (req,res)=>{
     try{
-        // console.log('just now ');
+        console.log('just now ');
        
         if(!req.cookies.jwt){
             throw 'User Missing';

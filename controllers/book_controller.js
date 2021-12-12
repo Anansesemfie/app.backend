@@ -118,7 +118,7 @@ const Update_book = async (req, res) => {
     if(!req.cookies.jwt){
       throw 'Error identifying User';
     }
-    const user = decode_JWT(req.cookies.jwt);
+    const user = await decode_JWT(req.cookies.jwt);
 
     const body = req.body;
     const file = req.file;
@@ -126,7 +126,7 @@ const Update_book = async (req, res) => {
 
     const bookDetails = await book.findById(body.id);//get book details
     if(!bookDetails) throw 'Error fetching Book';
-
+    
     if(bookDetails.uploader!=user._id){
       throw 'Error identifying Owner'
     }

@@ -74,6 +74,7 @@ const decode_JWT=async (code)=>{
       let back = {_id:""};
 
       try{
+        console.log(service.secret);
           jwt.verify(token,service.secret,(err,decodedToken)=>{
           if(err){
               throw err;

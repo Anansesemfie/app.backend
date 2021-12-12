@@ -6,7 +6,7 @@ var PreviousUrl; /* global variable that will store the
                     url currently in the secondary window */
 
  const openPopup =(url)=>{
-     let newUrl =`new?subscriptionsKey=${url}`
+     let newUrl =`/subscribe/new?subscriptionsKey=${url}`
   if(windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open(newUrl, "SingleSecondaryWindowName",
          "resizable,scrollbars,status");

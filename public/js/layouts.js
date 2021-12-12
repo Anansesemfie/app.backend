@@ -220,14 +220,14 @@ const updateChapter = (id,chap,loc)=>{
   let position = $(loc);
 
   position.append(`
-  <form action="/chapter/upload" enctype="multipart/form-data" method="POST">
+  <form action="/chapter/update" enctype="multipart/form-data" method="POST">
       <input type="text" name="book" value="${id}" hidden=true/>
       <input type="text" name="chapter" value="${chap}" hidden=true/>
                      <div class="container">
                     <div class="row">
                     <div class="col-6">
                     <label for="title">Chapter Title</label>
-                 <input type="text"  name="title" id="edit_chap_title" maxlength=50 class="form-control" required placeholder="Title">
+                 <input type="text"  name="title" id="edit_chap_title" maxlength=50 class="form-control" placeholder="Title">
                 </div>
                 <div class="col-6">
                     <label for="title">Audio File</label>
