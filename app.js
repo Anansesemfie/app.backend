@@ -101,7 +101,9 @@ app.get('/',(req,res)=>{
     res.render('index');
 })
 
-
+app.get('/congrats',(req,res)=>{
+  res.render('congrats');
+})
 // app.get('/sub',(req,res)=>{
     
 // const params = JSON.stringify({

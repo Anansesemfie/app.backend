@@ -878,8 +878,10 @@ border-top-right-radius: 5px;
 
   overflow-y: scroll;
   overflow:hidden;
-  font-size: medium;
+  font-size: x-large;
   font-family: 'Circular-Loom';
+  max-width: 60%;
+  margin-left: 20%;
 }
 
 footer{
@@ -1112,6 +1114,21 @@ background-color:whitesmoke;
 
 .card_les > img {
   margin-bottom: .75rem;
+}
+
+.congrats .card{
+  background-color: rgba(0, 0, 0, 0.3);
+  color:white;
+  margin-left: 50%;
+}
+.congrats .card .username{
+  font-size: x-large;
+  margin: 50;
+}
+.congrats .card .message{
+  font-size: xxx-large;
+  font-weight: bolder;
+}
 }
 
 /* mobile view*/

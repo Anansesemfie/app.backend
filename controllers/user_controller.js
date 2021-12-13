@@ -192,9 +192,9 @@ if(JWT_back){
         
         .then(()=>{
         User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
-        res.send('User successfully Activated');
+        res.render('iinstruction',{error:'User successfully Activated'});
     }).catch((err)=>{
-        res.send('User was not activated');
+        res.render('congrats',{username:user.username,message:'User was not activated'});
         throw err;
     });
     }
