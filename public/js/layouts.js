@@ -337,7 +337,7 @@ function ad_card(book,location){
 
     }
 
-    if(book.languages.length>0){//language
+    if(book.languages){//language
       // category=book.category[0];
   
       for (let i = 0; i < book.languages.length; i++) {

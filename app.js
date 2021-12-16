@@ -9,7 +9,7 @@ require('dotenv').config();
 
 
 
-console.log(process.env.HOST);
+
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -70,6 +70,7 @@ app.on('ready',()=>{
     app.listen(utils.service.port,()=>{
       console.log(process.env.SECRET);
         console.log(`Connection established on port ${utils.service.port} `);
+        console.log(process.env.HOST);
     })
 }).on('error',()=>{
     console.log("Error whiles connecting to DB");

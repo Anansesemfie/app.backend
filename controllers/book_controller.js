@@ -243,20 +243,22 @@ const Get_books =async (req,res)=>{
       switch (req.body.active) {//check param
 
           case "all"://all subscriptions
+          console.log('none');
               delete reqBody.status;
               break;
 
           case "true"://just active subscription type
-
+        console.log('active')
                   reqBody.status="Active";
           break;
 
           case "false"://just inactive subscription type
+          console.log('inactive')
                   reqBody.status="Inactive";
           break;
       
           default:
-              throw 'Keyword not recognized';
+              return
           break;
       }
       
@@ -272,8 +274,8 @@ const Get_books =async (req,res)=>{
       res.json({books});
 
   }
-  catch(err){
-    res.status(403).json({err});
+  catch(eorrr){
+    res.status(403).json({error});
 
   }
  

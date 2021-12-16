@@ -52,7 +52,10 @@ const getBooks = async ()=>{//all available books
         try{
         let result = await fetch(`/book/`,{
                 method: 'POST',
-                redirect: 'follow'}
+                redirect: 'follow',
+                data:{
+                        "active": false
+                }}
               );
         if(result.status==404){
                 throw 'Something went wrong whiles getting books';

@@ -52,6 +52,7 @@ const mailer=(mail)=>{
 
       if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
+        process.env.HOST="http://localhost:5000/";
       }
       // console.log(process.env.DB);
       // else{
@@ -61,7 +62,7 @@ const mailer=(mail)=>{
 
 const service={
     "port":process.env.PORT || 5000,
-    "host":process.env.HOST || "https://anansesemfie.com/",
+    "host":process.env.HOST,
     "DB":process.env.DB,
     "secret":process.env.SECRET
 }
@@ -75,7 +76,7 @@ const decode_JWT=async (code)=>{
 
       try{
         
-          jwt.verify(token,service.secret,(err,decodedToken)=>{
+          await jwt.verify(token,service.secret,(err,decodedToken)=>{
           if(err){
               throw err;
           }

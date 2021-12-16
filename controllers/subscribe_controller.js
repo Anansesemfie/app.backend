@@ -299,8 +299,8 @@ const afterPayment =async(req,res) => {
        else{
            throw 'Error While Processing Payment';
        }
-
-         res.json({response,user:req.cookies.jwt});//this will go after testing
+let message =``
+         res.render('congrats',{username:'',response,user:req.cookies.jwt});//this will go after testing
 
     });
 

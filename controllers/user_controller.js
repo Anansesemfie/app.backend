@@ -181,30 +181,37 @@ const  login_signup = async (req,res)=>{//Login and signup page
 }
 
 const verify_acct= async (req,res)=>{//Verify Account
-  
-let JWT_back = await utils.decode_JWT(req.params.id);
+  try{
+      let JWT_back = await utils.decode_JWT(req.params.id);
 
-if(JWT_back){
-    let user = await User.findOne({_id:JWT_back._id});
+      if(!JWT_back._id){
+        throw 'Token not valid';
+      }
+        let user = await User.findOne({_id:JWT_back._id});//locate user data
+        if(!user){
+            throw 'user not found';
+        }
+        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})//activate account
+            .then(()=>{
+            User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
+            res.render('iinstruction',{error:'User successfully Activated'});
+        }).catch((err)=>{
+            throw err;
+        });
 
-    if(user){
-        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})
+        res.render('congrats',{username:user.username,message:'User was not activated'});//render varification page
         
-        .then(()=>{
-        User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
-        res.render('iinstruction',{error:'User successfully Activated'});
-    }).catch((err)=>{
-        res.render('congrats',{username:user.username,message:'User was not activated'});
-        throw err;
-    });
-    }
-    else{
-        res.send('User Not found');
-    }
+        
+        
     
-}
+
+  }
+  catch(error){
+    res.render('instruction',{error});
+  }
 
 }
+
 const profile=async(req,res)=>{
 try{
     res.render('profile');
@@ -324,7 +331,7 @@ const resetPassword = async(req,res)=>{
         }
 
         const newPass = utils.genRandCode()//generate new password
-
+        // console.log(utils.service.host);
         const salt = await bcrypt.genSalt();//gen salt
         let password = await bcrypt.hash(newPass,salt);
 

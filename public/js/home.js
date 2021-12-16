@@ -18,10 +18,15 @@ const Books = async()=>{
     let book = await getBooks();
     if(!book){
   _book.append($('<img/>',{'src':'/images/logo_d.png'}));
-
     }
+    // console.log(book);
     _book.html('');
+    for(let i=0; i<book.length; i++){
+        console.log(book[i]);
+    }
+
     book.forEach(story=>{
+        console.log(story);
         ad_card(story,'top_books');
     });
 
