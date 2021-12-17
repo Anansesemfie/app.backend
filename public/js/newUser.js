@@ -14,7 +14,7 @@ const status_err = document.querySelector('.status.error');
 const queryString = window.location.search;
 const parameters = new URLSearchParams(queryString);
 const redirect = parameters.get('redirect');
-alert(redirect);
+// alert(redirect);
 
 
 _newAcct.on('click',async ()=>{
@@ -120,8 +120,9 @@ loginBtn.on('click',()=>{
                 if(data.user){
                     let toHere = '/'
                     if(redirect){
+                        // alert(redirect);
 
-                        location.assign(redirect);
+                        toHere=redirect;
                     }
                     //redirect here
                     location.assign(toHere);

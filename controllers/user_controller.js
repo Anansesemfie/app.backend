@@ -95,12 +95,14 @@ const signup_post = async (req,res)=>{
                  <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
                  </div><hr>
                  <a href='${utils.service.host}user/verify/${key}' style='
-            background-color:#000;
-            color:#fff;
-            border-radius:2px;
-            font-size:16pt;
+                 background-image: linear-gradient(
+                    90deg, rgb(97, 174, 197), rgb(224, 194, 19));
+                color: rgb(255, 255, 255);
+                border-radius: 4px;
+                padding: 15px 32px;
+                text-align: center;
             '>Please verify your Account</a>
-            <div style="background-color:black; color:white">
+            <div style="background-color:black; color:white; margin-top:5%;">
             copyright Anansesemfie
        </div>
             
@@ -347,11 +349,14 @@ const resetPassword = async(req,res)=>{
             <label>New Password</label>
             <p><h3>${newPass}</h3></p>
             <a href='${utils.service.host}user/' style='
-       color:chocolate;
-       border-radius:2px;
-       font-size:16pt;
+            background-image: linear-gradient(
+                90deg, rgb(97, 174, 197), rgb(224, 194, 19));
+            color: rgb(255, 255, 255);
+            border-radius: 4px;
+            padding: 15px 32px;
+            text-align: center;
        '>Login</a>
-       <div style="background-color:black; color:white">
+       <div style="background-color:black; color:white; margin-top:5%;">
             copyright Anansesemfie
        </div>
        
