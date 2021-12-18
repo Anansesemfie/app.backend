@@ -1129,7 +1129,7 @@ background-color:whitesmoke;
   font-size: xxx-large;
   font-weight: bolder;
 }
-}
+
 
 /* mobile view*/
 @media screen and (max-width: 767px){
@@ -1242,8 +1242,9 @@ background-color:whitesmoke;
       }
 
       .parentDiv .tooltiptext{
-        width: 90%;
-        left: 40%;
+        max-width: 90%;
+        left: 55%;
+        margin-left: -51%;
       }
 
 
