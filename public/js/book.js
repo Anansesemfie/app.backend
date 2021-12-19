@@ -40,7 +40,7 @@ const loadBook = async ()=>{
         if(!details){
             location.href="/";
         }
-        console.log(details);
+        
         
         book_title=details.bookBack.title;
         book_desc=details.bookBack.description;

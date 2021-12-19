@@ -184,14 +184,16 @@ const subscriptionSchema = new Schema({//list of subscription types
  subscribedSchema.statics.closeSub = async function(details){
      try{
         //details
-        const user = details.user;
-        const sub = details.subscription;
+        const sub = details;
 
-        if(!(user&&sub)){
+        console.log(sub);
+       
+
+        if(!sub){
             throw 'missing details';
         }
         // continue after detail check
-        const chksub = await this.findOne({user,_id:sub,active});
+        const chksub = await this.findOne({_id:sub,active:true});
         if(!chksub){//check if subscription exist's
             throw 'subscription not found';
         } 
@@ -210,7 +212,18 @@ const subscriptionSchema = new Schema({//list of subscription types
      }
  }
 
- subscribedSchema.Time = async function(details){
+ subscribedSchema.statics.getSubs = async ()=>{
+     try{
+        const sub = await this.find({active:true},'-__v -ref -user -_id -status');
+
+        return sub;
+     }
+     catch(error){
+         throw error;
+     }
+ }
+
+ subscribedSchema.statics.Time = async function(details){
      try{   
         const startDate = details.start;
         const dura = details.duration;

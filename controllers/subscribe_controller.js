@@ -271,7 +271,7 @@ const afterPayment =async(req,res) => {
         // console.log(data);
 
         const subInfo = await subscription.details(data.subscription);// get subscription information
-        console.log(subInfo);
+        // console.log(subInfo);
 
         // create new subscription_instance
         let newSub= await subscribing.openSubscribe({

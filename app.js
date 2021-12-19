@@ -1,7 +1,9 @@
 //Requires
 const express = require('express');
 const https = require('https');
+const date = new Date();
 
+const {checkSubs}= require('./util/Extras');
 // if (process.env.NODE_ENV !== 'production') {
 //   require('dotenv').config();
 // }
@@ -48,7 +50,7 @@ app.use(express.static('uploads'));
 app.use(express.json());
 app.use(cookieParser());
 
-console.log(utils.service.DB);
+// console.log(utils.service.DB);
 
 mongoose.Promise=global.Promise;
 //establish connection
@@ -65,16 +67,38 @@ mongoose.connection.once('open',()=>{
 })
 
 
+
+
+
+setInterval(() => {
+    let now = date.getHours();//get current time
+    let convTime = now*100 + date.getMinutes();
+        
+    if(convTime == 2459){//check if time is 12:59pm
+        
+         app.emit('subscriptions');
+    }
+
+   
+},1000)
+
+
 //start local server
 app.on('ready',()=>{
     app.listen(utils.service.port,()=>{
-      console.log(process.env.SECRET);
+    //   console.log(process.env.SECRET);
         console.log(`Connection established on port ${utils.service.port} `);
-        console.log(process.env.HOST);
+        // console.log(process.env.HOST);
     })
 }).on('error',()=>{
     console.log("Error whiles connecting to DB");
 });
+
+
+//events
+app.on('subscriptions',()=>{
+    checkSubs();
+})
 
 
 //routes
