@@ -78,14 +78,15 @@ $(document).ready(async ()=>{
 
 const events = async ()=>{
    
+const subs = document.querySelectorAll('#subButton');
 
-    $('#subButton').on('click',(e)=>{
-        let div = $(e.target);
+// console.log(subs);
 
-        openPopup($(div).data('id'))
-        // console.log($(div).data('id'));
+subs.forEach(but=>{
+    but.addEventListener('click',()=>{
+        openPopup($(but).data('id'));
+    })
+})
 
-      })
-
-
+    
 }

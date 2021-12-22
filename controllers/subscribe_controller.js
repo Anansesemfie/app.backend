@@ -268,6 +268,15 @@ const afterPayment =async(req,res) => {
             throw `User identities don't match`
         }
 
+        // check for reference
+        const thisRef = await subscribing.findOne({ref});
+        // if(!thisRef){
+        //     console.log(thisRef);
+        //     throw 'Error fetching data'
+        // }
+        if(thisRef){
+            throw 'Reference exists already';
+        }
         // console.log(data);
 
         const subInfo = await subscription.details(data.subscription);// get subscription information
@@ -288,26 +297,26 @@ const afterPayment =async(req,res) => {
         //active subscription for user
         let updateUser= await User.subscription({
             user:user._id,
-            subscription:subInfo.id
-        },subscription);
+            subscription:newSub
+        },subscribing);
 
         console.log(updateUser);
 
 
-
+let message =`Subscription successfully activated`
+         res.render('congrats',{username:updateUser.username,message:message,});//this will go after testing
        }
        else{
            throw 'Error While Processing Payment';
        }
-let message =``
-         res.render('congrats',{username:'',response,user:req.cookies.jwt});//this will go after testing
+
 
     });
 
 
     }
     catch(error){
-    res.status(400).json({error});
+    res.render('instruction',{error});
     }
     
 }

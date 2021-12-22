@@ -12,13 +12,14 @@ require('dotenv').config();
 
 
 
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const {checkUser,checkAccount,requireAuth} = require('./middleware/authMiddleware');
 
 const utils = require('./util/utils');
 
+console.log(utils.service);
 //routes
 const user = require('./routes/user');
 const book = require('./routes/book');
@@ -80,15 +81,15 @@ setInterval(() => {
     }
 
    
-},1000)
+},60000)
 
 
 //start local server
 app.on('ready',()=>{
     app.listen(utils.service.port,()=>{
-    //   console.log(process.env.SECRET);
+      console.log(process.env.SECRET);
         console.log(`Connection established on port ${utils.service.port} `);
-        // console.log(process.env.HOST);
+        console.log(process.env.HOST);
     })
 }).on('error',()=>{
     console.log("Error whiles connecting to DB");

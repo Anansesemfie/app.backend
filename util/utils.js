@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const fs = require('fs');
-
+require('dotenv').config();
 
 // const { isNull } = require('util');
 
@@ -53,6 +53,7 @@ const mailer=(mail)=>{
       if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
         process.env.HOST="http://localhost:5000/";
+        process.env.SECRET="sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600"
       }
       // console.log(process.env.DB);
       // else{
@@ -61,9 +62,9 @@ const mailer=(mail)=>{
       
 
 const service={
-    "port":process.env.PORT || 5000,
-    "host":process.env.HOST,
-    "DB":process.env.DB,
+    "port":process.env.PORT|| 5000,
+    "host":process.env.HOST/*||"localhost"*/,
+    "DB":process.env.DB/*||"mongodb://localhost:27017/Ananse_fie"*/,
     "secret":process.env.SECRET
 }
 

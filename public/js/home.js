@@ -18,12 +18,10 @@ const Books = async()=>{
     let book = await getBooks();
     if(!book){
   _book.append($('<img/>',{'src':'/images/logo_d.png'}));
+  throw `Couldn't get books, check connection`;
     }
     // console.log(book);
     _book.html('');
-    for(let i=0; i<book.length; i++){
-        console.log(book[i]);
-    }
 
     book.forEach(story=>{
         console.log(story);
