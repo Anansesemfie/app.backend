@@ -105,7 +105,7 @@ userSchema.statics.login=async function(email,password){
     throw Error('incorrect email');
 }
 
-userSchema.statics.subscription = async function(info,subs){
+userSchema.statics.subscription = async function(info,subss,subs){
     try{
         let user = await this.findOne({_id:info.user,active:true});
         if(!user){
@@ -116,14 +116,16 @@ userSchema.statics.subscription = async function(info,subs){
         if(!sub){
             throw 'Subscription is not active';
         }
-        let subLimit = this.find({subscription:info.subscription});
+        let parentSub = subss.findOne({_id:sub.subscription,active:true});
 
-        if(subLimit>=sub.maxUsers){
+        let subLimit = this.count({subscription:info.subscription});
+
+        if(subLimit>parentSub.users){
             throw 'Maximum users exceeded';
         }
 
         // update user now 
-        let newSub = await this.findByIdAndUpdate({_id:info.user},{subscription:info.subscription});
+        let newSub = await this.updateOne({_id:info.user},{subscription:info.subscription});
         if(!newSub){
             throw `couldn't update subscription`
         }

@@ -235,7 +235,7 @@ const editEvents =()=>{
 
         //update password
         $('#updateInfo').on('click',async ()=>{
-            alert('updatePass clicked');
+          
             const fstPass =$('#pass_2').val();
             const scdPass =$('#pass_1').val();
             if(!fstPass||!scdPass){
@@ -244,8 +244,9 @@ const editEvents =()=>{
             if(fstPass===scdPass){//check passwords
                 let passSent = await updatePassword(fstPass);
                 if(passSent.done){
-                     fstPass.text('');
-                    scdPass.text('');
+                    //   alert('Password updated');
+                    $('#pass_2').val('');
+                    $('#pass_1').val('');
                
                     toast({message:'Password successfully Updated',title:'Update',bg:'bg-success'});
                  }   

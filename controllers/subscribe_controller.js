@@ -23,40 +23,6 @@ const exempt =' -__v -_id -active -moment';
 
 
 
-//automated functions
-
-const autoCheckSubscriptions = async ()=>{
-    try{
-
-        //get all active subscriptions
-        const allSubscribed = await subscribing.find({active:true},exempt);
-        if(!allSubscribed){
-            throw 'No subscriptions found';
-        }
-
-        //check each subsscription
-        allSubscribed.forEach(async (sub)=>{
-            let subDetails = await subscription.subDetails(sub.subscription);//get subscription type details
-            if(!subDetails){//check details
-                throw 'Details not found';
-            }
-            
-
-        })
-
-
-
-    }
-    catch(error){
-
-    }
-}
-
-
-
-
-
-
 //route controllers 
 const getPage = async(req,res)=>{
     try{
@@ -87,6 +53,7 @@ const getSubscriptions = async(req,res)=>{
                 case "true"://just active subscription type
 
                         reqBody.active=true;
+                        reqBody.visible=true;
                 break;
 
                 case "false"://just inactive subscription type
@@ -94,7 +61,7 @@ const getSubscriptions = async(req,res)=>{
                 break;
             
                 default:
-                    throw 'Keyword not recognized';
+                    reqBody.active=false;
                 break;
             }
             
@@ -102,6 +69,7 @@ const getSubscriptions = async(req,res)=>{
         }
         else{
             reqBody.active=true;
+            reqBody.visible=true;
         }
         
 

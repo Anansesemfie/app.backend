@@ -66,6 +66,55 @@ const compareTimes =async (time,duration)=>{//compare time and duration
     }
 }
 
+const compareMaxUsers = async (sub)=>{
+    /*
+    1. get sub details
+    2. get parent sub Details
+    3. count number of users on this subscription
+    4. if users exceeds max users of parent subscription
+    5. set subscription to status Inactive
+    6. if users don't exceed max users of parent subscription
+    7. check if subscription status is "Active"
+    */
+
+    try{    
+        if(!sub){
+            throw 'error getting subscription details';
+        }
+
+        let originSub = await subscription.findOne({_id:sub.subscription,active:true},'-__v -moment -active -accent -name -amount');//parent subscription details
+
+        if(!originSub){
+            throw 'error getting subscription details';
+        }
+
+        let users = await User.count({subscription:sub._id});
+
+        if(users>originSub.users){//exceeds max
+            let intoOblivion =  await subscribing.updateOne({_id:sub._id},{status:'Inactive'});
+            if(!intoOblivion){
+                throw 'Error in Deactivation'
+            }
+
+        }
+        else{//in range
+            if(sub.status!='Active'){
+              let backToLife =  await subscribing.updateOne({_id:sub._id},{status:'Active'});
+              if(!backToLife){
+                throw 'Error in Activation'
+              }
+            }
+
+        }
+        
+
+
+    }
+    catch(error){
+        throw error;
+    }
+}
+
 
 const checkThis = async (sub)=>{
     try{
@@ -73,8 +122,8 @@ const checkThis = async (sub)=>{
             throw 'error getting subscription details';
         }
 
-        console.log(sub);
-        const originSub = await subscription.findOne({_id:sub.subscription,active:true},'-__v -moment -active -accent -name -amount');//parent subscription details
+        // console.log(sub);
+        let originSub = await subscription.findOne({_id:sub.subscription,active:true},'-__v -moment -active -accent -name -amount');//parent subscription details
 
         if(!originSub){
             throw 'error getting subscription details';
@@ -115,9 +164,6 @@ const checkThis = async (sub)=>{
         
     });
 
-
-
-    // console.log(subs)
 
  }
 

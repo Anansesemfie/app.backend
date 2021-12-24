@@ -1,3 +1,5 @@
+const {subscribing,subscription} = require('../models/subscriptionModel');
+
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
@@ -17,8 +19,7 @@ const handleErrors=(err)=>{
     }
 
     //duplicate error code
-    if(err.code === 11000)
-    {
+    if(err.code === 11000){
         errors.email="Email already used"
 
         return errors;
@@ -50,13 +51,18 @@ const handleErrors=(err)=>{
         errors.account = 'Choose an account type';
     }
 
-    //validation errors
-    if(err.message.includes('user validation failed'))
-    {
-        Object.values(err.errors).forEach(({properties})=>{
-           errors[properties.path]=properties.message;
-        });
+     //account creating
+    if(err.message==='Error while creating account'){
+        errors.account = 'Something went wrong while setting account up';
     }
+
+    //validation errors
+    // if(err.message.includes('user validation failed'))
+    // {
+    //     Object.values(err.errors).forEach(({properties})=>{
+    //        errors[properties.path]=properties.message;
+    //     });
+    // }
 
     return errors;
 }
@@ -75,7 +81,7 @@ const createToken =(id)=>{
 //signup page
 
 
-//new User
+//new User.................................................................................................................
 const signup_post = async (req,res)=>{
     if(req.cookies.jwt){
         res.redirect('/');
@@ -85,11 +91,18 @@ const signup_post = async (req,res)=>{
         
         const user = await User.create({email,password,username,account});
         
-        if(user){
-            const key = createToken(user._id);
-            User.findByIdAndUpdate({_id:user._id},{key},{useFindAndModify:true})
-            .then(()=>{
+        if(!user){
+            throw 'Error while creating account'
 
+        }
+            const key = createToken(user._id);
+            const upUser= await User.updateOne({_id:user._id},{key})
+
+
+            if(!upUser){
+                throw 'Account Setup issues';
+            }
+            
                  let html = `
                  <div style="background-color:white; width:100%; height:auto;">
                  <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
@@ -116,39 +129,24 @@ const signup_post = async (req,res)=>{
         }
 
         
-        if(utils.mailer(mail)){
-            res.status(201).json({user:'User Created'});
-        }
-        else{
-             throw 'User Creation Attempted but email verification was not sent';
-        }
-
-       
-
-            }).catch((err)=>{
-                res.status(400).json({err});
-
-            });
-           
-        }
+        
         
 
-        // const token = createToken(user._id);
-      
-
-        // res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
-
-        // res.status(201).json({user:user._id});
+            
+            utils.mailer(mail)
+           
     }
     catch(err){
     
        const errors= handleErrors(err);
-        res.status(400).json({errors:errors});
+        res.status(400).json({error:errors});
         // throw err;
     }
 }
 
-//Signin user
+
+
+//Signin user..............................................................................................................
 const login_post = async (req,res)=>{//login controller
     const {email,password} =req.body;
     try {
@@ -170,51 +168,85 @@ const login_post = async (req,res)=>{//login controller
 
 
 
-const logout_get = async (req,res)=>{//logout 
+const logout_get = async (req,res)=>{//logout ....................................................................................................
     res.cookie('jwt','',{maxAge:1,httpOnly:true});
     res.redirect('/');
 }
 
-const  login_signup = async (req,res)=>{//Login and signup page
+const  login_signup = async (req,res)=>{//Login and signup page.............................................................................................
     if(req.cookies.jwt){
         res.redirect('/');
     }
     res.render('login_signup');
 }
 
-const verify_acct= async (req,res)=>{//Verify Account
+const verify_acct= async (req,res)=>{//Verify Account.........................................................................................................
   try{
-      let JWT_back = await utils.decode_JWT(req.params.id);
-
-      if(!JWT_back._id){
-        throw 'Token not valid';
+      if(!req.params.id){
+           throw 'Token not valid';
       }
+      let JWT_back = await utils.decode_JWT(req.params.id);
+      if(!JWT_back){
+       throw 'Trouble decoding token'
+      }
+
         let user = await User.findOne({_id:JWT_back._id});//locate user data
         if(!user){
             throw 'user not found';
         }
-        User.findByIdAndUpdate({_id:JWT_back._id},{active:true})//activate account
-            .then(()=>{
-            User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
-            res.render('instruction',{error:'User successfully Activated'});
-        }).catch((err)=>{
-            throw err;
-        });
+        // console.log(user);
+
+        const upOne= await User.updateOne({_id:JWT_back._id},{active:true})//activate account
+        if(!upOne){
+            throw 'Error verifying account';
+        }
+        const upTwo = await User.updateOne({_id:JWT_back._id},{active:true,key:null})
+            if(!upTwo){
+                 throw 'Error verifying account';
+            }
+            // console.log(upTwo);
+
+            //open onetime subscription
+            const sub = await subscription.details('Welcome');
+            // console.log(sub);
+            if(!sub){
+                throw 'Subscription Failed';
+            }
+
+            //open new subscription instance
+            const randomRef = utils.genRandCode()//generate random code
+
+            const newSub = await subscribing.openSubscribe(
+                {
+                    subscription:sub.id,
+                    user:user._id,
+                    ref:randomRef
+
+                },subscription
+            );
+
+            if(!newSub){
+                throw 'Error while activating trial package';
+            }
+            console.log(newSub);
+
+            const initSub = User.subscription({user:user._id,subscription:newSub},subscription,subscribing);
+            if(!initSub){
+                throw 'Failed to initialize subscription';
+            }
 
         res.render('congrats',{username:user.username,message:'User was successfully activated'});//render varification page
         
-        
-        
-    
 
   }
   catch(error){
+      console.log(error);
     res.render('instruction',{error});
   }
 
 }
 
-const profile=async(req,res)=>{
+const profile=async(req,res)=>{//profile...........................................................................................................................
 try{
     res.render('profile');
 }
@@ -224,7 +256,7 @@ res.redirect('/');
 }
 
 
-const getProfile = async (req,res)=>{
+const getProfile = async (req,res)=>{//profile details...........................................................................................................
     try{
         let {user} = req.body;//get user id from link
         let myself = false;
@@ -252,7 +284,7 @@ const getProfile = async (req,res)=>{
     }
 }
 
-const updateProfile = async(req,res)=>{//updating user profile
+const updateProfile = async(req,res)=>{//updating user profile...............................................................................................................
     try{
         if(!req.cookies.jwt){//if user is logged in
             throw 'No user';
@@ -291,7 +323,7 @@ const updateProfile = async(req,res)=>{//updating user profile
     }
 }
 
-const NewPassword =async(req,res)=>{
+const NewPassword =async(req,res)=>{//update password.......................................................................................................................
     try{
         if(!req.cookies.jwt){//if user is logged in
             throw 'No user';
@@ -320,7 +352,7 @@ const NewPassword =async(req,res)=>{
     }
 }
 
-const resetPassword = async(req,res)=>{
+const resetPassword = async(req,res)=>{//reset password.........................................................................................................
     try{
         if(req.cookies.jwt){//if user already logged in
             throw 'This is not allowed'

@@ -14,6 +14,10 @@ const subscriptionSchema = new Schema({//list of subscription types
         type:Boolean,
         default:false
     },
+    visible:{
+        type:Boolean,
+        default:false
+    },
     duration:{
         type:String,
         default:'2592000000'
@@ -55,10 +59,6 @@ const subscriptionSchema = new Schema({//list of subscription types
     user:{
         type:ObjectId,
         required:[true,'missing user ID']
-    },
-    maxUsers:{
-        type:Number,
-        required:[true,'Missing max # of users']
     },
     status:{
         type:String,
@@ -119,6 +119,7 @@ const subscriptionSchema = new Schema({//list of subscription types
         //continue after ref check....................................
         //VARS
         const subscription_ID = details.subscription;
+        // console.log(details);
         const chkSubs = await subs.findOne({_id:subscription_ID});
 
         if(!chkSubs){
@@ -127,14 +128,14 @@ const subscriptionSchema = new Schema({//list of subscription types
         //continue after checking subscription availability
 
         //data from schema
-        const maxUsers = chkSubs.users;
+        // const maxUsers = chkSubs.users;
         const subscription = chkSubs._id;
 
         //data from req
         const user = details.user;
         const ref = details.ref;
 
-        const addSub = await this.create({maxUsers,subscription,user,ref});
+        const addSub = await this.create({subscription,user,ref});
 
         if(!addSub){
             throw 'Error adding Subscription';

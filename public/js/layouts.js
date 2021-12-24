@@ -359,11 +359,13 @@ function ad_card(book,location){
     loc.append(
         `
     <div class="col mb-4 parentDiv">
+    <a href="/book/Read/${book._id}">
         <div class="ig_container jstBook">
             <img src="${book.cover}" alt="${book.title}">
 
 
         </div>
+        
         <div class="delBook">
 
           <div class="top-top">
@@ -393,7 +395,7 @@ function ad_card(book,location){
         
         </div>
 
-
+        </a>
       </div>
 
     `
