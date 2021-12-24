@@ -34,8 +34,10 @@ const getBookdetails = async(book)=>{// a single book details
         try{
                 
         let result = await fetch(`/book/${book}`);
-        if(result.status == 404){
-                throw 'check internet connection';
+        if(result.status >= 400){
+                let err = await result.json();
+                        // console.log(err);
+                throw err.error;
         }
         let data = await result.json();
         
@@ -57,8 +59,10 @@ const getBooks = async ()=>{//all available books
                         "active": false
                 }}
               );
-        if(result.status==404){
-                throw 'Something went wrong whiles getting books';
+        if(result.status>=400){
+                let err = await result.json();
+                        // console.log(err);
+                        throw err.error;
         }
         let data = await result.json();
        
@@ -79,13 +83,15 @@ const getChapters = async(book)=>{
                         redirect: 'follow'}
                       );
 
-                if(result.status==404){
-                        throw 'Something went wrong whiles getting books';
+                if(result.status>=400){
+                        let err = await result.json();
+                        // console.log(err);
+                        throw err.error;
                 }
 
                 let data = await result.json();
                 
-                return data.validChaps;
+                return {chapters:data.chapters,info:data.info};
                 
 
         }
@@ -145,13 +151,17 @@ const postReaction = async (book,action)=>{//send reaction
 
 const getReaction = async (book)=>{//get reactions 
         try{
-                const reacts = await fetch(`/react/${book}`,{method:'GET'});
+                if(!book) throw 'book ID missing';
+                const respond = await fetch(`/react/${book}`,{method:'GET'});
                 //  console.log(reacts);
-                if(reacts){
-                        let res = reacts.json();
-                        return res;
+                if(respond.status>=400){
+                        let err = await respond.json();
+                        throw err.error;
+                       
 
                 }
+                 let res = respond.json();
+                        return res;
         }
         catch(err){
                 throw err;
@@ -160,10 +170,13 @@ const getReaction = async (book)=>{//get reactions
 
 const postSeen = async (book)=>{
         try{
-                const seen = await fetch(`/react/seen/${book}`,{method:'POST'});
-                if(seen){
-                        return 0;
+                let respond = await fetch(`/react/seen/${book}`,{method:'POST'});
+                if(respond.status>=400){
+
+                        let err = await respond.json();
+                        throw err.error; 
                 }
+                return 0;
         }
         catch(err){
                 throw err;
@@ -205,9 +218,10 @@ const postComment = async (book,comment)=>{
                 };
 
         let respond = await fetch('/react/comment',requestOptions);
-        // console.log(respond.status);
+        
         if(respond.status==403){
-                throw 'Not logged in';
+                let err = await respond.json();
+                throw err.error;
         }
         else{
                 return true
@@ -239,13 +253,15 @@ const getComments = async (book)=>{
 const getFile = async (chapter)=>{
         try{
                 let response = await fetch(`/file/${chapter}`, {method:'GET'});
-                if(response.status==404){
-                        throw 'Trouble Getting audio file'
+                if(response.status>=400){
+                        let err = await response.json();
+                        throw err.error;
 
-                }
-                else{
-                        return response.json();
-                }
+                }         
+                let data =response.json()       
+                console.log(data);
+                return data;
+                
 
 
         }
@@ -262,8 +278,9 @@ const search =async(keyword)=>{
                 let response = await fetch(`/filter/find?keyword=${keyword}`, {method:'GET'}); 
                 // console.log(response.status);
                 if(response.status===404){
-                        
-                        throw 'Not found';
+                        let err = await respond.json();
+                        throw err.error;
+                      
 
                 }
                 else if(response.status===403){
@@ -428,10 +445,12 @@ const userBooks = async (user)=>{
         let respond = await fetch('/book/user',requestOptions);
         if(respond.status==404||respond.status==404){
                 throw '404';
-                location.assign('/');
+                
         }
 
+
         return respond.json();
+        
 
         }
         catch(error){

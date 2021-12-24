@@ -167,11 +167,11 @@ const subscriptionSchema = new Schema({//list of subscription types
 
         if(chkSubs.status==='Active'){//deactivate
             
-            let closeSub = await this.findOneAndUpdate({_id:chkSubs._id},{status:'Inactive'});
+            let closeSub = await this.updateOne({_id:chkSubs._id},{status:'Inactive'});
 
         }
         else{
-            let openSub = await this.findOneAndUpdate({_id:chkSubs._id},{status:'Active'});
+            let openSub = await this.updateOne({_id:chkSubs._id},{status:'Active'});
         }
 
      }
@@ -194,11 +194,12 @@ const subscriptionSchema = new Schema({//list of subscription types
         }
         // continue after detail check
         const chksub = await this.findOne({_id:sub,active:true});
+        
         if(!chksub){//check if subscription exist's
             throw 'subscription not found';
         } 
 
-        const termSub = await this.findOneAndUpdate({_id:chksub._id},{active:false});
+        const termSub = await this.updateOne({_id:chksub._id},{active:false});
         if(!termSub){
             throw 'could not close subscription';
         }
@@ -214,7 +215,7 @@ const subscriptionSchema = new Schema({//list of subscription types
 
  subscribedSchema.statics.getSubs = async ()=>{
      try{
-        const sub = await this.find({active:true},'-__v -ref -user -_id -status');
+        let sub = await this.find({active:true},'-__v -ref -user -_id -status');
 
         return sub;
      }
@@ -223,17 +224,63 @@ const subscriptionSchema = new Schema({//list of subscription types
      }
  }
 
- subscribedSchema.statics.Time = async function(details){
+ subscribedSchema.statics.valid = async function(id=''){
      try{   
-        const startDate = details.start;
-        const dura = details.duration;
-        const date = mongoose.now();
+         const feedBack={
+             active:'',info:""
+         };
+        //  console.log(id);
+        if(!id){
+            feedBack.active =false;
+            feedBack.info ='subscription not found';
+        }
+        else{
 
+            let sub = await this.findOne({_id:id});//locate subscription
+            // console.log(sub);
+            if(!sub){
+                throw 'Error locating subscription';
+            }
+            // if()
+            
 
-        
+            switch (sub.active) {
+                case true:
+                    console.log('true');
+                    //active subscription
+                    switch (sub.status) {
+                        case 'Active':
+                            feedBack.active =true;
+                            feedBack.info ='Active subscription';
+                            break;
+                        case 'Inactive':
+                            feedBack.active =false;
+                            feedBack.info ='This is a faulty subscription';
+
+                        break;
+                        default:
+                            feedBack.active =false;
+                            feedBack.info ='There is something wrong with this subscription';
+                            break;
+                    }
+                    
+                    break;
+            
+                default:
+                    console.log('false');
+                    feedBack.active=false;
+                    feedBack.info ='Subscription Expired'
+                    break;
+            }
+
+        }
+            
+
+            return feedBack;        
 
      }
      catch(error){
+         throw error;
 
      }
  } 

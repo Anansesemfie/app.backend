@@ -107,7 +107,7 @@ const New_book = async (req,res)=>{
   catch(err){
     console.log(err);
    const errors = handleError(err);
-   res.render('instruction');
+   res.render('instruction',{error:errors});
   }
 }
 
@@ -198,7 +198,7 @@ const Get_book = async (req,res)=>{
     
     let user = await decode_JWT(req.cookies.jwt);
   
- console.log(bookBack);
+//  console.log(bookBack);
   if(bookBack.uploader==user._id){
    
     creator=true;
@@ -222,7 +222,7 @@ const Get_book = async (req,res)=>{
   }
   catch(err){
     let erros = handleError(err);
-    res.send(erros);
+    res.status(403).json(erros);
   }
  
 
@@ -274,7 +274,7 @@ const Get_books =async (req,res)=>{
       res.json({books});
 
   }
-  catch(eorrr){
+  catch(error){
     res.status(403).json({error});
 
   }
@@ -287,7 +287,8 @@ const Get_mine= async (req,res)=>{
     const Books ={
       liked:[],
       created:[]
-    }
+    };
+
     if(!user||user=='me'){//get user 
       if(!req.cookies.jwt){
         throw 'User not logged in'
@@ -296,70 +297,77 @@ const Get_mine= async (req,res)=>{
     }
 
     const me = await User.findOne({_id:user});
-    if(me){
+    if(!me){
+      throw 'User not found';
+    }
         const likes = await bookReact.find({user:me._id}).sort({"_id":-1});;//search for all liked books
-
-        if(likes.length>=0){//push liked books
-          console.log(likes.length>=1);
-          let i=1;
-          likes.forEach(async bk=>{
-            let _book= await book.findOne({_id:bk.bookID},exempt);//get book by ID
-            // console.log(i,_book);
-            if(_book){
-              Books.liked.push(_book);
-              console.log(Books.liked);
-            }
-            
-            i++;
-          });
-          
+        if(!likes){
+          throw 'Error getting liked books';
         }
-        if(me.account ==='Creator'){
-          const allBooks = await book.find({uploader:me._id},exempt).sort({"_id":-1});;//get all created books 
-          if(allBooks.length>0){
-            // console.log('All books:',allBooks)
-            allBooks.forEach(bk=>{
-
-              Books.created.push(bk);//push books to OBj
-              // console.log(Books.created);
-            });
+        
+        let likesLength = likes.length;
+        // console.log(likes[(likesLength-1)].bookID);
+        
+        for(let i=0;i<=(likesLength-1);i++){
+          let thisBook=likes[i].bookID;
+          let _book= await book.find({_id:thisBook},exempt);//get book by ID
+          // let bookFinal = _book[0];
+          // console.log(bookFinal);
+          if(_book){
+             Books.liked.push(_book[0]);
           }
+          if(!_book){
+            throw 'Something unusual happened';
+          }
+         
         }
-        else{
-          delete Books.created;
-        }
+                 
+                
+                
+    switch (me.account) {
+      case 'Creator':
+      let uploaderBooks = await book.find({uploader:me._id},exempt).sort({"_id":-1});;//get all created books       
+                if(uploaderBooks.length>0){
+                            // console.log('All books:',uploaderBooks)
+                            uploaderBooks.forEach(bk=>{
+
+                              Books.created.push(bk);//push books to OBj
+                              // console.log(Books.created);
+                            });
+                          }
+      break;
+
+      case 'Owner':
+          let authorBooks = await book.find({author:me._id},exempt).sort({"_id":-1});;//get all created books 
+                   
+          if(authorBooks.length>0){
+                      // console.log('All books:',authorBooks)
+                      authorBooks.forEach(bk=>{
+
+                        Books.created.push(bk);//push books to OBj
+                        // console.log(Books.created);
+                      });
+                    }
+        break;
+        
+
+    
+      default:
+        delete Books.created;
+        break;
+    }
+
+
         // console.log(Books);
 
         res.json({Books});
 
-
-    }   
-    else{
-      throw 'User was not found';
-    }
-
   }
   catch(error){
+    console.log(error);
     res.status(403).send(error);
   }
 }
-
-
-const subscription = async(req,res)=>{
-    try{
-      res.send('subscribe');
-    }
-    catch(error){
-      // res.status(403).json({error});
-    }
-
-}
-
-
-
-
-
-
 
 
 
@@ -370,7 +378,6 @@ module.exports={
     Update_book,
     Get_book,
     Get_books,
-    Get_mine,
-    subscription
+    Get_mine
 }
 

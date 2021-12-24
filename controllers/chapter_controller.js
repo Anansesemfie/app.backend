@@ -1,5 +1,7 @@
-const {mailer,decode_JWT,service,createAudioDIr} = require('../util/utils'); 
+const {decode_JWT,createAudioDIr} = require('../util/utils'); 
 const {book} = require('../models/bookModel');
+const {subscribing} =require('../models/subscriptionModel');
+const User = require('../models/userModel');
 const chapter = require('../models/chapterModel');
 const exempt = '-__v -file -mimetype -book';
 
@@ -24,7 +26,7 @@ const postChapter = async (req,res)=>{
              throw `You don't own this book`;
         }
         
-                console.log('attempt chapter'); 
+                // console.log('attempt chapter'); 
 
             let createdChapter =await chapter.create({title:body.title,description:body.description,book:thisBook._id});
 
@@ -34,7 +36,7 @@ const postChapter = async (req,res)=>{
             else{
                 const thisFile = await createAudioDIr(thisBook.folder,file,body.title);
                 if(thisFile){
-                    chapter.findOneAndUpdate({_id:createdChapter._id},{file:thisFile.filename,mimetype:thisFile.mimetype}).then((data)=>{
+                    chapter.updateOne({_id:createdChapter._id},{file:thisFile.filename,mimetype:thisFile.mimetype}).then((data)=>{
                         console.log(data);
 
                     }).catch((err)=>{
@@ -50,16 +52,12 @@ const postChapter = async (req,res)=>{
             }
             
             res.redirect(`/book/Read/${body.book}`);
-              
-
-
-        
 
         }
 
     }
     catch(err){
-        res.json({err});
+        res.render('instruction',{error:err});
     }
 
 }
@@ -136,11 +134,13 @@ const getChapters = async (req,res)=>{
         let bookID = req.params.book;
 
         if(!bookID){
-            res.status(400).send("Invalid book");
+
+            throw 'Invalid book';
         }
 
         const chaps = await chapter.find({book:bookID},exempt);
         let validChaps=[];
+        let message='';
 
         if(!req.cookies.jwt){
             for (let i = 0; i < 1; i++) {
@@ -149,15 +149,42 @@ const getChapters = async (req,res)=>{
             }
         }
         else{
-            chaps.forEach(each=>{
-                validChaps.push(each);
-            });
-        }
+            const user = (await decode_JWT(req.cookies.jwt))._id;
+            //check subscription 
+            let userSub = await User.findOne({_id:user,active:true});//get user details
+            if(!userSub){
+                throw 'User is invalid';
+            }
+            
+            if(!userSub.subscription){
+                validChaps.push(chaps[0]);
+                message='Subscription not found';
 
-        res.json({validChaps});
+            }
+            else{
+                let subscription = await subscribing.valid(userSub.subscription);
+            // console.log(subscription);
+            if(!subscription.active){
+                console.log(chaps.length);
+                validChaps.push(chaps[0]);
+                message=subscription.info;
+            }
+            else{
+               chaps.forEach(each=>{
+                validChaps.push(each);
+                message=subscription.info;
+            }); 
+            }
+            }
+            
+            
+        }
+        console.log(validChaps,message);
+
+        res.json({chapters:validChaps,info:message});
     }
     catch(err){
-        throw err;
+        res.status(403).json({error:err});
 
     }
 }

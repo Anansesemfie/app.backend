@@ -35,7 +35,7 @@ const {Daydif,milliToggle,mailTemplate,} = require('./utils');
             }
     
             
-            await utils.mailer(mail);
+            utils.mailer(mail);
 
 
 

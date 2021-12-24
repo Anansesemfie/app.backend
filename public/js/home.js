@@ -24,7 +24,7 @@ const Books = async()=>{
     _book.html('');
 
     book.forEach(story=>{
-        console.log(story);
+        // console.log(story);
         ad_card(story,'top_books');
     });
 

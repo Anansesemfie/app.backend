@@ -118,13 +118,20 @@ const Disliking = async ()=>{
 }
 
 const reactions = async ()=>{//get all reactions...............................
-    const reacts = await getReaction(book);
-    if(reacts){
-        // console.log(reacts);
-        likes.text(reacts.likes);
-        dislikes.text(reacts.dislikes);
+    try{
+        const reacts = await getReaction(book);
+            // if(!reacts){
+               
+                
+            // }
+            likes.text(reacts.likes);
+                dislikes.text(reacts.dislikes);
+    }
+    catch(error){
+        throw error;
 
     }
+   
 }
 
 //Seen
@@ -224,7 +231,7 @@ const loadChapters = async () =>{//load chapters if any.........................
        let back;
         const details = await getChapters(book);
         //  console.log('in load',details);
-        if(details.length==0){
+        if(details.chapters.length==0){
             $('#Chapters').html('');
             $('#Chapters').append(`
             <center>
@@ -235,10 +242,19 @@ const loadChapters = async () =>{//load chapters if any.........................
         }
         else{
             $('#Chapters').html('');
-            details.forEach(chap=>{
+            details.chapters.forEach(chap=>{
                 // console.log(chap);
                 addChapter(chap,'Chapters',mine);
             })
+            if(details.info!=='Active subscription'){
+                console.log(details.info);
+                $('#Chapters').append(`
+            <center>
+            <a href="/subscribe" class="button cat btn-lg btn-block">Get yourself a plan to enjoy more</a>
+            </center>
+            `)
+
+            }
             if(mine){
                 // alert('This is mine');
                 owner_events();

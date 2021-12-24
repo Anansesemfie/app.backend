@@ -87,7 +87,7 @@ const signup_post = async (req,res)=>{
         
         if(user){
             const key = createToken(user._id);
-            User.findByIdAndUpdate({_id:user._id},{key})
+            User.findByIdAndUpdate({_id:user._id},{key},{useFindAndModify:true})
             .then(()=>{
 
                  let html = `
@@ -196,12 +196,12 @@ const verify_acct= async (req,res)=>{//Verify Account
         User.findByIdAndUpdate({_id:JWT_back._id},{active:true})//activate account
             .then(()=>{
             User.findByIdAndUpdate({_id:JWT_back._id},{active:true,key:null})
-            res.render('iinstruction',{error:'User successfully Activated'});
+            res.render('instruction',{error:'User successfully Activated'});
         }).catch((err)=>{
             throw err;
         });
 
-        res.render('congrats',{username:user.username,message:'User was not activated'});//render varification page
+        res.render('congrats',{username:user.username,message:'User was successfully activated'});//render varification page
         
         
         
@@ -232,16 +232,16 @@ const getProfile = async (req,res)=>{
         if(user=='me'){//myself or not 
             user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
             if(!user){
-                res.status(403).send('user invalid');
+               throw 'user invalid';
             }
-            else{
-                myself=user==(await utils.decode_JWT(req.cookies.jwt))._id;
-
-            } 
-
+    
+            
 
         }
-        console.log(user);
+        if(user==(await utils.decode_JWT(req.cookies.jwt))._id){
+            myself=true;
+        }
+    
         //get user details
         const userBck = await User.find({_id:user},exempt);
       

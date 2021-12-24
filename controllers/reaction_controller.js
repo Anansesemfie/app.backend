@@ -29,7 +29,7 @@ const postReaction = async (req,res)=>{
         if(reaction.action!==body.action){
 
             //update reaction
-            let action = await bookReact.findByIdAndUpdate({_id:reaction._id},{action:body.action});
+            let action = await bookReact.updateOne({_id:reaction._id},{action:body.action});
             if(!action){
                 res.status(403).json({message:'Failed',status:'Error'});
             }
@@ -57,12 +57,19 @@ const postReaction = async (req,res)=>{
 
 const getReactions = async (req,res)=>{
     try{
-        const book = req.params.book;
-        if(!book){
-            res.status(400).json({message:'No book',status:'Error'});
+        if(!req.params.book||req.params.book==''||req.params.book==undefined){
+            throw 'Book Id missing';
         }
+        const book = req.params.book;
+        
         const likes = await bookReact.find({bookID:book,action:'Like'});
+        if(!likes){
+            throw 'Error Retrieving likes'
+        }
         const dislikes = await bookReact.find({bookID:book,action:'Dislike'});
+        if(!dislikes){
+            throw 'Error Retrieving dislikes'
+        }
 
         res.json({
             likes:likes.length,
@@ -71,6 +78,7 @@ const getReactions = async (req,res)=>{
     }
     catch(err){
         console.log(err);
+        res.status(403).json({error:err});
 
     }
 }
@@ -81,7 +89,7 @@ const getReactions = async (req,res)=>{
 const postComment = async (req,res)=>{
     try{
         if(!req.cookies.jwt){//no user found
-            res.status(403).json({message:'No User found',status:'Error'});
+            throw 'No user found';
         }
         const body = req.body;
         // console.log(body);
@@ -106,8 +114,8 @@ const postComment = async (req,res)=>{
 
     }
     catch(err){
-
-    console.log(err);
+        console.log(err);
+        res.status(403).json({error:err});
 
     }
 }
@@ -148,7 +156,8 @@ const getComments = async (req,res)=>{
         // db.users.aggregate([{$match:{"_id":"60def21ef6b0386590386672"}},{$lookup:{from:"books", localField:"_id", foreignField:"uploader", as:"User_books"}}]).pretty()
         }
     catch(err){
-        console.log(err);
+        res.status(403).json({error:err});
+
     }
 }
 
@@ -156,7 +165,7 @@ const getComments = async (req,res)=>{
 const postSeen = async (req,res)=>{
     try{
         if(!req.cookies.jwt){
-            res.end();
+            throw 'Log in is required'
         }
         const book = req.params.book;
         const user = await decode_JWT(req.cookies.jwt);
@@ -166,11 +175,9 @@ const postSeen = async (req,res)=>{
         if(!see){
             //create new doc
             const seen = await bookSeen.create({bookID:book,user:user});
-            if(seen){
-                res.end();
-            }
-            else{
-                throw Error('Seen was not created');
+            if(!seen){
+                throw 'Seen was not created';
+               
             }
         }
 
@@ -178,12 +185,15 @@ const postSeen = async (req,res)=>{
 
     }
     catch(err){
-
+        res.status(403).json({error:err});
     }
 }
 
 const getSeen = async (req,res)=>{
     try{
+        if(!req.params.book){
+            throw 'Book ID not found';
+        }
         const book = req.params.book;
         const seen = await bookSeen.find({bookID:book});
         const played = await bookSeen.find({bookID:book,played:true});
@@ -195,7 +205,7 @@ const getSeen = async (req,res)=>{
 
     }
     catch(err){
-        console.log(err);
+        res.status(403).json({error:err});
 
     }
 }

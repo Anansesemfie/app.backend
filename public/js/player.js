@@ -18,18 +18,23 @@ const durTIme = $('#durTime');
 
 
 const newSong = async (chapter)=>{
-    const newFile = await getFile(chapter); 
+    try{
+    const newFile = (await getFile(chapter)).audio; 
+    // const file=newFile.audio;
     // console.log(myUrl()+newFile.medPath);
 
 
-    if(myUrl()+newFile.medPath != audio.src){
-        audio.src=newFile.medPath;//set audio path
+    if(myUrl()+newFile.path != audio.src){
+        audio.src=newFile.path;//set audio path
 
-        // console.log(audio.nodeType=newFile.medMime);
+        // console.log(newFile.length);
 
         audio.load();//load audio
         audtitle.text(`${newFile.title} playing.....`)
         playNow();
+        setTimeout(()=>{
+            checkDuration(audio.duration,newFile.length,newFile.message);
+        },100)
         
         
     }
@@ -38,6 +43,11 @@ const newSong = async (chapter)=>{
         playNow()
         
     }
+    }
+    catch(error){
+        throw error;
+    }
+    
 
 }
 
@@ -125,6 +135,8 @@ playPauseButton.on('click',()=>{
     
 })
 
+
+
 //fast forward
 fastForward.on('click',()=>{
      let timeNow = audio.duration - audio.currentTime;//chect for remaining
@@ -159,6 +171,7 @@ const timeLeft = ()=>{
 //done
 const done = ()=>{
     if(audio.currentTime == audio.duration){
+
         return true;
     }
     else{
@@ -172,4 +185,24 @@ const calculateTime = (secs) => {
     const seconds = Math.floor(secs % 60);
     const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
     return `${minutes}:${returnedSeconds}`;
+  }
+
+
+
+  //check duration 
+  const checkDuration =async (duration,allow,info)=>{
+            let stopHere = duration*allow;
+                    console.log(stopHere,allow);
+                    setInterval(() => {
+                    
+                        if(audio.currentTime >= stopHere){
+                    audio.pause();
+                    audio.src='';
+                    audtitle.text(info);
+                    playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
+                    
+
+                }
+                    }, 100);
+      
   }
