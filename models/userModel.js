@@ -107,18 +107,20 @@ userSchema.statics.login=async function(email,password){
 
 userSchema.statics.subscription = async function(info,subss,subs){
     try{
+        console.log(info,subss,subs);
         let user = await this.findOne({_id:info.user,active:true});
         if(!user){
             throw 'User is either not active or not found';
         }
 
         let sub = await subs.findOne({_id:info.subscription,active:true});
+        console.log(sub);
         if(!sub){
             throw 'Subscription is not active';
         }
-        let parentSub = subss.findOne({_id:sub.subscription,active:true});
+        let parentSub = await subss.findOne({_id:sub.subscription,active:true});
 
-        let subLimit = this.count({subscription:info.subscription});
+        let subLimit = await this.count({subscription:info.subscription});
 
         if(subLimit>parentSub.users){
             throw 'Maximum users exceeded';

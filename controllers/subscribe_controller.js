@@ -265,8 +265,8 @@ const afterPayment =async(req,res) => {
         //active subscription for user
         let updateUser= await User.subscription({
             user:user._id,
-            subscription:newSub
-        },subscribing);
+            subscription:newSub.toString()
+        },subscription,subscribing);
 
         console.log(updateUser);
 
