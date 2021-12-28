@@ -259,7 +259,7 @@ const getFile = async (chapter)=>{
 
                 }         
                 let data =response.json()       
-                console.log(data);
+                // console.log(data);
                 return data;
                 
 

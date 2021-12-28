@@ -192,7 +192,7 @@ const calculateTime = (secs) => {
   //check duration 
   const checkDuration =async (duration,allow,info)=>{
             let stopHere = duration*allow;
-                    console.log(stopHere,allow);
+                    // console.log(stopHere,allow);
                     setInterval(() => {
                     
                         if(audio.currentTime >= stopHere){
