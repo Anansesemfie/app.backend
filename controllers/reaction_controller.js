@@ -7,50 +7,55 @@ const exempt = '-__v';
 
 const postReaction = async (req,res)=>{
     try{
-        const body = req.body;
+        const {book,action} = req.body;
         // console.log('here',body);
 
         if(!req.cookies.jwt){//no user
-            res.status(403).json({message:'No User',status:'Error'});
+           throw 'User ID not found';
         }
 
         const user = await decode_JWT(req.cookies.jwt);//get user id
 
         //check if reaction exists
-        const reaction = await bookReact.findOne({user:user._id,bookID:body.book});
+        const reaction = await bookReact.findOne({user:user._id,bookID:book});
+        if(!reaction){
+            throw 'Something is wrong with reaction';
+        }
+
         if(reaction){
 
-            if(reaction.action===body.action){
-            // already exist
-            res.status(200).json({message:'Already Liked',status:'Warning'});
+            if(reaction.action===action){
+            throw `Not possible to ${action} twice`;
 
         }
         
         if(reaction.action!==body.action){
 
             //update reaction
-            let action = await bookReact.updateOne({_id:reaction._id},{action:body.action});
+            let action = await bookReact.updateOne({_id:reaction._id},{action:action});
             if(!action){
-                res.status(403).json({message:'Failed',status:'Error'});
+                throw 'Error updating Reaction'
             }
-            res.status(200).json({message:'Success',status:'Success'});
+            
         }
+        
         
         }
         else{
             console.log('new');
             //new reaction
-            let action = await bookReact.create({bookID:body.book,user:user._id,action:body.action});
+            let action = await bookReact.create({bookID:book,user:user._id,action:action});
             if(!action){
-                res.status(403).json({message:'Failed',status:'Error'});
+               throw 'Error initializing reaction';
             }
-            res.status(200).json({message:'Success',status:'Success'});
+           
 
         }
+        res.status(200).json({message:'Successful'});
     }
     catch(err){
-
-        console.log(err);
+        // console.log(err);
+        res.status(403).json({error:err});
     }
 }
 
@@ -77,7 +82,7 @@ const getReactions = async (req,res)=>{
         });
     }
     catch(err){
-        console.log(err);
+        // console.log(err);
         res.status(403).json({error:err});
 
     }
@@ -99,22 +104,22 @@ const postComment = async (req,res)=>{
         // console.log(thisBook);
 
         if(!thisBook){//check if book is active
-            res.status(403).json({message:'Book not found',status:'Error'});
+           throw 'Issues locating book';
         }
 
         //add new comment 
         let action = await bookComment.create({bookID:body.book,user:user._id,comment:body.comment});
 
         if(!action){
-            res.status(403).json({message:'Failed',status:'Error'});
+            throw 'Error adding comment'
         }
-        res.status(200).json({message:'Success',status:'Success'});
+        res.status(200).json({message:'Success'});
 
 
 
     }
     catch(err){
-        console.log(err);
+        // console.log(err);
         res.status(403).json({error:err});
 
     }
@@ -126,7 +131,7 @@ const getComments = async (req,res)=>{
         const thisBook = req.params.book;
         // console.log(thisBook);
         if(!thisBook){//no book was in request
-            res.status(403).json({message:'No specific book to check',status:'Attention'});
+            throw 'Book ID missing'
         }
 
         //get comments

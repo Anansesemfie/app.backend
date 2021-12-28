@@ -78,10 +78,23 @@ const getBooks = async ()=>{//all available books
 // CHapter
 const getChapters = async(book)=>{
         try{
-                let result = await fetch(`/chapter/${book}`,{
-                        method: 'GET',
-                        redirect: 'follow'}
-                      );
+                // console.log(book);
+                
+                      const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                        const raw = JSON.stringify({
+                                                "bookID":book
+                                        });
+
+                      const requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: 'follow'
+                      };
+
+                let result = await fetch(`/chapter/`,requestOptions);                      
 
                 if(result.status>=400){
                         let err = await result.json();
@@ -120,27 +133,14 @@ const postReaction = async (book,action)=>{//send reaction
                 };
 
         let respond = await fetch('/react/like',requestOptions);
-        if(respond){
-              let res= respond.json();
-              
-              // console.log(res);
-        // if(res.status===400){
-        //         throw 'Something went wrong';
-        // }
-        // else if(res.status===300){
-        //         alert('Be warned');
-        // }
-        // else{
-        //         alert('Action was successful');
-
-        // }
-        
-        return res;
+        if(respond.status>=400){
+                 let res = respond.json();
+                //  console.log(res);
+                 throw res.error;
         }
-        
-        
-
-       
+        let res= respond.json();
+                
+        return res;        
 
         }
         catch(err){
@@ -341,7 +341,8 @@ const expandFilter = async(fstParam,lstParam)=>{//Expand Filtering
 
 
                 if(respond.status>=400){
-                        throw new Error(response.status);
+                        let res = await respond.json();
+                        throw res.error;
                 }
 
                 return respond.json()

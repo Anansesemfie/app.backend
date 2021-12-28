@@ -98,7 +98,8 @@ const Liking = async ()=>{
 
     }
     catch(error){
-        toast({message:err,title:'Could not register reaction',bg:'bg-warning'});
+        console.log(error);
+        toast({message:error,title:'Could not register reaction',bg:'bg-warning'});
     }
     
 }
@@ -111,7 +112,7 @@ const Disliking = async ()=>{
             }
     }
     catch(error){
-        toast({message:err,title:'Could not register reaction',bg:'bg-warning'});
+        toast({message:error,title:'Could not register reaction',bg:'bg-warning'});
     }
     
 

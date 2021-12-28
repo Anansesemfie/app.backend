@@ -6,7 +6,7 @@ const {postChapter,getChapters,updateChapter} = require('../controllers/chapter_
 router.post('/upload',uploadAudio.single('file'),postChapter);
 router.post('/update',uploadAudio.single('file'),updateChapter);
 
-router.get('/:book',getChapters);
+router.post('/',getChapters);
 
 
 

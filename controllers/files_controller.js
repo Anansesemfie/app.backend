@@ -53,20 +53,20 @@ const readFile = async (req,res)=>{
                        
                         
                         
-                          const sub = await subscribing.validate(userSub.subscription);
+                          const sub = await subscribing.valid(userSub.subscription);
                         if(!sub){
                           throw 'Something unusual happened';
                         }
 
-                        if(!subscription.active){//inactive subscription
+                        if(!sub.active){//inactive subscription
 
                           audio.lenth=0.3;
-                          audio.message=subscription.info;
+                          audio.message=sub.info;
                       }
                       else{//active subscription
 
                         audio.length=1;
-                        audio.message=subscription.info;
+                        audio.message=sub.info;
                       }
         }
           

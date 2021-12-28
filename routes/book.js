@@ -7,7 +7,7 @@ const router = Router(); // initialize router   //bookController.Up_book
 
 
 router.get('/:book',Get_book);
-router.get('/Read/:book',bookPage);
+router.get('/Read/:book',bookPage);//page route
 
 
 router.post('/',Get_books);

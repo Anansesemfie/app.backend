@@ -131,7 +131,8 @@ const updateChapter = async(req,res)=>{
 
 const getChapters = async (req,res)=>{
     try{
-        let bookID = req.params.book;
+        const {bookID} = req.body;
+        console.log(req.body);
 
         if(!bookID){
 

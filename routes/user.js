@@ -1,25 +1,26 @@
 const { Router } = require('express');//destructure router from express
-const userController = require('../controllers/user_controller');
+const {signup_post,login_post,getProfile,updateProfile,NewPassword,resetPassword,logout_get,verify_acct,login_signup,profile} = require('../controllers/user_controller');
 const {uploadCover} = require('../util/utils');
 
 const router = Router();
 
 
 
-router.post('/signup',userController.signup_post);
-router.post('/login',userController.login_post);
-router.post('/profile/fetch',userController.getProfile);
+router.post('/signup',signup_post);
+router.post('/login',login_post);
+router.post('/profile/fetch',getProfile);
 
 //updates
-router.post('/update',uploadCover.single('dp_cover'),userController.updateProfile);
-router.put('/',userController.NewPassword);
-router.put('/reset',userController.resetPassword);
+router.post('/update',uploadCover.single('dp_cover'),updateProfile);
+router.put('/',NewPassword);
+router.put('/reset',resetPassword);
 
 
-router.get('/logout',userController.logout_get);
-router.get('/verify/:id',userController.verify_acct);
-router.get('/',userController.login_signup);
-router.get('/profile/:id',userController.profile);
+router.get('/logout',logout_get);
+router.get('/verify/:id',verify_acct);
+
+router.get('/',login_signup);//Login sign up page...........
+router.get('/profile/:id',profile);//PAGE................
 
 
 
