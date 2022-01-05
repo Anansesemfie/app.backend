@@ -19,7 +19,7 @@ const {checkUser,checkAccount,requireAuth} = require('./middleware/authMiddlewar
 
 const utils = require('./util/utils');
 
-console.log(utils.service);
+// console.log(utils.service);
 //routes
 const user = require('./routes/user');
 const book = require('./routes/book');
@@ -30,6 +30,7 @@ const reaction = require('./routes/reaction');
 const filter = require('./routes/filter');
 const subscription = require('./routes/subscribe');
 const languages = require('./routes/lang');
+const report = require('./routes/report');
 
 
 // imports 
@@ -74,14 +75,20 @@ mongoose.connection.once('open',()=>{
 setInterval(() => {
     let now = date.getHours();//get current time
     let convTime = now*100 + date.getMinutes();
-        
-    if(convTime == 2459){//check if time is 12:59pm
+
+    let today = date.getDate();
+    let lastDay = utils.daysInMonth()
+    if(convTime == 2459){//check if time is 12:59pm 2459
         
          app.emit('subscriptions');
     }
+    //console.log(today,lastDay.days);
+    if(today==lastDay.days){
+        app.emit('payout');
+    }
+       
+},25000)
 
-   
-},60000)
 
 
 //start local server
@@ -97,9 +104,80 @@ app.on('ready',()=>{
 
 
 //events
-app.on('subscriptions',()=>{
-    checkSubs();
+app.on('subscriptions',async ()=>{
+    try{
+      await checkSubs();
+    //         if(!checked){
+    //    throw "error checking subscriptions"
+    //         }
+            // console.log('checkings')
+    }
+    catch(error){
+        console.log(error);
+
+        let html = `
+            <div style="background-color:white; width:100%; height:auto;">
+            <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+            </div><hr>
+            <label>Error Message</label>
+            <p><h3>Errors</h3></p>
+           ${error}
+       <div style="background-color:black; color:white; margin-top:5%;">
+            copyright Anansesemfie
+       </div>
+       
+       `;
+       
+       let mail = {
+       "receiver":'mancuniamoe@gmail.com',
+       "subject":"Server Error",
+       "text":"Internal server error",
+       "html":html
+    }
+
+   
+    utils.mailer(mail);
+
+
+    }
+   
 })
+
+app.on('payout',async ()=>{
+    try{
+
+    }
+    catch(error){
+        console.log(error);
+
+        let html = `
+            <div style="background-color:white; width:100%; height:auto;">
+            <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+            </div><hr>
+            <label>Error Message</label>
+            <p><h3>Errors</h3></p>
+           ${error}
+       <div style="background-color:black; color:white; margin-top:5%;">
+            copyright Anansesemfie
+       </div>
+       
+       `;
+       
+       let mail = {
+       "receiver":'mancuniamoe@gmail.com',
+       "subject":"Server Error",
+       "text":"Internal server error",
+       "html":html
+    }
+
+   
+    utils.mailer(mail); 
+    }
+
+})
+
+
+
 
 
 //routes
@@ -119,7 +197,7 @@ app.use('/filter',filter);
 app.use('/react',reaction);
 app.use('/subscribe',subscription);
 app.use('/langs',languages);
-// app.post('/react',requireAuth);
+app.use('/report',report);
 
 
 

@@ -101,6 +101,25 @@ $(document).ready(async ()=>{
                                var newOption = new Option(cate.title[0], cate.title[0], false, false);
                             $('#bookLangs').append(newOption).trigger('change');
                             });
+
+                            //Owner
+                            $('#bookOwner').select2({
+                                theme: 'classic',
+                                placeholder: 'Select Owner',
+                                maximumSelectionLength: 1,
+                                templateResult: selectImage,
+                                templateSelection: selectImage
+                            });
+                            
+                            //init owner
+                            let owners = await getOwners();
+                            console.log(typeof owners);
+                                owners.forEach(own => {
+                                    console.log(own._id,own.username);
+                                // let show = `<img src="${own.dp}" class="msg-img"/>${own.username}`;
+                               var newOption = new Option(own.username,own._id, false, false,own.dp);
+                                $('#bookOwner').append(newOption).trigger('change');
+                            });
                 
                             
                 
@@ -139,10 +158,11 @@ $(document).ready(async ()=>{
                             break;
                     }
                 
-                }).on('mouseover',(e)=>{
-                e.attributes('disabled').css('background-color', 'grey');
-                
                 })
+                // .on('mouseover',(e)=>{
+                // e.attributes('disabled').css('background-color', 'grey');
+                
+                // })
 
     }
     catch(err){

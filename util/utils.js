@@ -366,6 +366,58 @@ const audioStorage = multer.memoryStorage();
       }
     }
 
+
+    const daysInMonth = (month='',year='')=>{
+      let days=new Date(year, month, 0).getDate();
+      let thisMonth=(new Date().getMonth())+1 ;
+      let thisYear=new Date().getFullYear() ;
+      
+      if(month&&year){
+      thisMonth = month;
+      thisYear = year
+      days = new Date(thisYear, thisMonth, 0).getDate();
+      }
+      
+      else if(month&&!year){
+       thisMonth = month;
+      thisYear = new Date().getFullYear();
+      
+      // console.log('month only')
+      days = new Date(thisYear, thisMonth, 0).getDate();
+      }
+      
+      else if(!month&&year){
+      thisMonth = (new Date().getMonth())+1 ;
+      thisYear = year;
+      
+      // console.log('year only')
+      days = new Date(thisYear, thisMonth, 0).getDate();
+      }
+      else{
+       thisMonth = (new Date().getMonth())+1 ;
+        thisYear = new Date().getFullYear();
+      
+      // console.log('none only')
+      days = new Date(thisYear, thisMonth, 0).getDate();
+      }
+       
+      
+     const finaldays=[thisYear,thisMonth,days].join('-');
+     const body ={
+        year: thisYear,
+        month: thisMonth,
+        days: days,
+        full:finaldays
+      }
+      
+      
+    /*   
+      console.log(days,thisMonth,thisYear); */
+      return body
+      
+      
+  }
+
     const milliToggle = (details)=>{
       let data;
       let time = parseInt(details.time);
@@ -426,6 +478,28 @@ const mailTemplate = (details)=>{
 
 }
 
+const calculateMoney = (played,dislike)=>{
+  try{
+    const rate = parseFloat(process.env.RATE);
+    played = parseFloat(played);//convert ri number if not 
+    dislike = parseFloat(dislike);//convert ri number if not 
+
+    const P_money = played*rate;
+    const M_money = dislike*rate;
+
+    const realMoney = P_money - M_money;
+
+    return {
+      Played_Credit:P_money,
+      Disliked_debit:M_money,
+      Total:realMoney
+    }
+  }
+  catch(error){
+    throw error;
+  }
+}
+
 
 
 
@@ -441,8 +515,10 @@ module.exports={
   createAudioDIr,
   createImageDIr,
   Daydif,
+  daysInMonth,
   updateUserDP,
   genRandCode,
   milliToggle,
-  mailTemplate
+  mailTemplate,
+  calculateMoney
 }

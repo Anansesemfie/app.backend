@@ -70,7 +70,8 @@ const New_book = async (req,res)=>{
         category:[],
         languages:[],
         cover:"",
-        uploader:""
+        uploader:"",
+        owner:""
       }
 
       let body = req.body;//get body from request
@@ -86,6 +87,10 @@ const New_book = async (req,res)=>{
       newBook.category=body.category;
       newBook.languages=body.language;
       newBook.uploader=await decode_JWT(req.cookies.jwt);
+      newBook.owner = body.owner;
+      if(!newBook.owner){//no specified owner
+        newBook.owner=newBook.uploader;//set uploader as owner
+      }
       newBook.authors = body.author.split('-');//split author strings into an array
       // newBook.cover = {originalname:file.originalname,encoding:file.encoding,mimetype:file.mimetype,buffer:file.buffer};
 
@@ -94,7 +99,7 @@ const New_book = async (req,res)=>{
         let fileBack = await createFolderDIr(file,body.title);
         console.log(fileBack);
 
-      let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,languages:newBook.languages,uploader:newBook.uploader});
+      let response = await book.create({title:newBook.title,description:newBook.description,folder:fileBack.location,cover:fileBack.cover,authors:newBook.authors,category:newBook.category,languages:newBook.languages,uploader:newBook.uploader,owner:newBook.owner});
       
       if(!response){
      throw 'Could not create book';
@@ -185,10 +190,11 @@ const bookPage = async (req,res)=>{
 const Get_book = async (req,res)=>{
   try{
      let bookID = req.params.book;//get book id from request
-   let bookBack;
-  let creator;
+    let bookBack;
+    let creator=false;
+    let owner=false;
 
-  console.log('get_book');
+  // console.log('get_book');
   
   if(req.cookies.jwt){//logged in user 
     bookBack= await book.findOne({_id:bookID},exempt);//get book from DB
@@ -203,9 +209,11 @@ const Get_book = async (req,res)=>{
    
     creator=true;
   }
-  else{
-    creator=false;
-  }
+ if(bookBack.owner==user._id){
+    owner=true;
+
+ }
+
   if(!creator&&bookBack.status=="Pending"){//if not the uploader kick out
     res.redirect('/');
   }
@@ -218,7 +226,7 @@ const Get_book = async (req,res)=>{
   }
   }
  
-  res.json({bookBack,creator});
+  res.json({bookBack,creator,owner});
   }
   catch(err){
     let erros = handleError(err);
@@ -338,7 +346,7 @@ const Get_mine= async (req,res)=>{
       break;
 
       case 'Owner':
-          let authorBooks = await book.find({author:me._id},exempt).sort({"_id":-1});;//get all created books 
+          let authorBooks = await book.find({owner:me._id},exempt).sort({"_id":-1});;//get all created books 
                    
           if(authorBooks.length>0){
                       // console.log('All books:',authorBooks)

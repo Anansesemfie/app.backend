@@ -1,5 +1,5 @@
 
-const getCategory = async ()=>{//get all categories
+const getCategory = async ()=>{//get all categories..................................................................
 try{
         let result = await fetch("/category/");
         let data = await result.json();
@@ -14,7 +14,7 @@ catch(err){
 }
 }
 
-const getLanguages = async ()=>{//get all categories
+const getLanguages = async ()=>{//get all categories................................................................................
         try{
                 let result = await fetch("/langs/");
                 let data = await result.json();
@@ -30,7 +30,7 @@ const getLanguages = async ()=>{//get all categories
         }
 
 
-const getBookdetails = async(book)=>{// a single book details
+const getBookdetails = async(book)=>{// a single book details.......................................................................
         try{
                 
         let result = await fetch(`/book/${book}`);
@@ -50,7 +50,7 @@ const getBookdetails = async(book)=>{// a single book details
         }  
 }
 
-const getBooks = async ()=>{//all available books
+const getBooks = async ()=>{//all available books.......................................................................................
         try{
         let result = await fetch(`/book/`,{
                 method: 'POST',
@@ -75,7 +75,40 @@ const getBooks = async ()=>{//all available books
         }
 }
 
-// CHapter
+const getOwners = async ()=>{//all available owners................................................................
+        try{
+                // console.log(book);
+                
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                        const raw = JSON.stringify({});
+
+                      const requestOptions = {
+                        method: 'POST',
+                        headers: myHeaders,
+                        body: raw,
+                        redirect: 'follow'
+                      };
+
+                let result = await fetch(`/user/owner`,requestOptions);    
+
+                if(result.status>=400){
+                        let res = await result.json();
+                        throw res.error;
+                }
+                        let res = await result.json();
+                return res.Owners;
+
+        }
+        catch(error){
+                throw error;
+        }
+
+}
+
+
+// CHapter..........................................................................................
 const getChapters = async(book)=>{
         try{
                 // console.log(book);
@@ -114,7 +147,7 @@ const getChapters = async(book)=>{
 }
 
 
-const postReaction = async (book,action)=>{//send reaction
+const postReaction = async (book,action)=>{//send reaction...........................................................
         try{
                 const myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
@@ -123,7 +156,7 @@ const postReaction = async (book,action)=>{//send reaction
                   book,
                   action
                 });
-                console.log(raw);
+                // console.log(raw);
                 
                 const requestOptions = {
                   method: 'POST',
@@ -134,7 +167,7 @@ const postReaction = async (book,action)=>{//send reaction
 
         let respond = await fetch('/react/like',requestOptions);
         if(respond.status>=400){
-                 let res = respond.json();
+                 let res = await respond.json();
                 //  console.log(res);
                  throw res.error;
         }
@@ -219,13 +252,12 @@ const postComment = async (book,comment)=>{
 
         let respond = await fetch('/react/comment',requestOptions);
         
-        if(respond.status==403){
+        if(respond.status>400){
                 let err = await respond.json();
                 throw err.error;
         }
-        else{
+
                 return true
-        }
         }
         catch(err){
                 throw err;
@@ -358,7 +390,7 @@ const expandFilter = async(fstParam,lstParam)=>{//Expand Filtering
 
 
 
-//user 
+//user ...................................................................................
 const getUser=async(user)=>{
         try{ 
                 if(!user.user){
@@ -379,9 +411,10 @@ const getUser=async(user)=>{
                 };
 
         let respond = await fetch('/user/profile/fetch',requestOptions);
-        if(respond.status==404||respond.status==404){
-                throw '404';
-                location.assign('/');
+        if(respond.status>=400){
+                let res = respond.json()
+                throw res.error;
+                // location.assign('/');
         }
 
         return respond.json();
@@ -393,7 +426,7 @@ const getUser=async(user)=>{
         }
 }
 
-const updatePassword =async (password)=>{
+const updatePassword =async (password)=>{//Update Password....................................................................................
         try{
                 const myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");

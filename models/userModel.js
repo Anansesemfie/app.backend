@@ -107,7 +107,7 @@ userSchema.statics.login=async function(email,password){
 
 userSchema.statics.subscription = async function(info,subss,subs){
     try{
-        console.log(info,subss,subs);
+        // console.log(info,subss,subs);
         let user = await this.findOne({_id:info.user,active:true});
         if(!user){
             throw 'User is either not active or not found';
@@ -120,7 +120,7 @@ userSchema.statics.subscription = async function(info,subss,subs){
         }
         let parentSub = await subss.findOne({_id:sub.subscription,active:true});
 
-        let subLimit = await this.count({subscription:info.subscription});
+        let subLimit = await this.countDocuments({subscription:info.subscription});
 
         if(subLimit>parentSub.users){
             throw 'Maximum users exceeded';
@@ -141,7 +141,7 @@ userSchema.statics.subscription = async function(info,subss,subs){
 }
 
 userSchema.statics.info = async function(id){
-    console.log(id);
+    // console.log(id);
     const user = await this.findById({_id:id,Active:true});
     // console.log(user);
     if(!user){
@@ -152,8 +152,46 @@ userSchema.statics.info = async function(id){
         email: user.email,
         id: user._id
     }
-    
+}
 
+userSchema.statics.users = async function(params){
+    try{
+        const {accountType,status} = params;//Deconstruct params
+        // console.log(accountType,status);
+        let Users ;
+        const exempt ='-__v -moment -email -password -key -subscription -bio -account -active -handles';
+
+        switch (status) {
+            case 'Active':
+                    // console.log('Active');
+                //active accounts
+                Users = await this.find({account:accountType,active:true},exempt);
+                if(!Users){
+                    throw 'Error getting users';
+                }
+                // console.log(Users);
+                // Users=activeUsers;
+
+                
+                break;
+        
+            default:
+                console.log('All');
+                Users = await this.find({account:accountType},exempt);
+                if(!Users){
+                    throw 'Error getting users';
+                }
+                // Users=allUsers;
+                break;
+        }
+
+        return Users;
+
+
+    }
+    catch(error){
+        throw error
+    }
 }
 
 // static method to follow user

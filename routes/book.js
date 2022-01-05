@@ -12,7 +12,7 @@ router.get('/Read/:book',bookPage);//page route
 
 router.post('/',Get_books);
 router.post('/upload',uploadCover.single('file'),New_book);//upload new book
-router.post('/user',Get_mine);
+router.post('/user',Get_mine);//user books
 router.post('/update',uploadCover.single('file'),Update_book);
 
 

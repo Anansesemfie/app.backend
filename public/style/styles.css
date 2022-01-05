@@ -1130,6 +1130,11 @@ background-color:whitesmoke;
   font-weight: bolder;
 }
 
+/* table */
+table{
+  color:white
+}
+/* table */
 
 /* mobile view*/
 @media screen and (max-width: 767px){

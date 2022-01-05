@@ -225,7 +225,7 @@ const subscriptionSchema = new Schema({//list of subscription types
      }
  }
 
- subscribedSchema.statics.valid = async function(id=''){
+ subscribedSchema.statics.valid = async function(id){
      try{   
          const feedBack={
              active:'',info:""
@@ -236,9 +236,9 @@ const subscriptionSchema = new Schema({//list of subscription types
             feedBack.info ='subscription not found';
         }
         else{
-
-            let sub = await this.findOne({_id:id});//locate subscription
-            // console.log(sub);
+            // console.log(id);
+            const sub = await this.findOne({_id:id});//locate subscription
+           
             if(!sub){
                 throw 'Error locating subscription';
             }
@@ -247,7 +247,7 @@ const subscriptionSchema = new Schema({//list of subscription types
 
             switch (sub.active) {
                 case true:
-                    console.log('true');
+                    console.log(id,sub);
                     //active subscription
                     switch (sub.status) {
                         case 'Active':
@@ -281,6 +281,7 @@ const subscriptionSchema = new Schema({//list of subscription types
 
      }
      catch(error){
+         
          throw error;
 
      }

@@ -3,6 +3,7 @@
 const link =window.location.href;
 const params = link.split('/');
 let mine = false;
+let owner =false
 let book_title;
 let book_desc;
 let book_cate;
@@ -67,6 +68,19 @@ const loadBook = async ()=>{
         mine = true;
         
     }
+    if(details.owner){
+        $('#owner').append(`
+        <table class="table table-striped" style="color: white;">
+        <tr>
+        <td>Month</td><!-- time-->
+        <td>Dislike</td><!-- dislikes-->
+        <td><Played</td><!-- played-->
+        <td>Total</td><!-- total-->
+        </tr>
+      </table>
+        `);
+        owner=true;
+    }
 
     details.bookBack.category.forEach(cat => {//print categories
         addCategory(cat,'category');
@@ -92,13 +106,16 @@ const loadBook = async ()=>{
 const Liking = async ()=>{
     try{
     const reacted = await postReaction(book,'Like');
-        if(reacted){
+        if(!reacted){
+            throw 'Error liking'
         
         }
+        return true
+        
 
     }
     catch(error){
-        console.log(error);
+        // console.log(error);
         toast({message:error,title:'Could not register reaction',bg:'bg-warning'});
     }
     
@@ -107,9 +124,11 @@ const Liking = async ()=>{
 const Disliking = async ()=>{
     try{
         const reacted = await postReaction(book,'Dislike');
-            if(reacted){
+            if(!reacted){
+                throw 'Error Disliking'
             
             }
+            return true
     }
     catch(error){
         toast({message:error,title:'Could not register reaction',bg:'bg-warning'});
@@ -209,10 +228,10 @@ const post_comment = async()=>{
             throw 'Comment did not go through!';
             // return false
         }
-        else{
-            comment.val('');
-            return true;
-        }
+       
+        comment.val('');
+        return true;
+        
 
         
     } catch (error) {
@@ -248,7 +267,7 @@ const loadChapters = async () =>{//load chapters if any.........................
                 addChapter(chap,'Chapters',mine);
             })
             if(details.info!=='Active subscription'){
-                console.log(details.info);
+                // console.log(details.info);
                 $('#Chapters').append(`
             <center>
             <a href="/subscribe" class="button cat btn-lg btn-block">Get yourself a plan to enjoy more</a>
@@ -262,7 +281,7 @@ const loadChapters = async () =>{//load chapters if any.........................
             }
             back = true
         }
-        return true;
+        return back;
     }
     catch(error){
         let msg = error;
@@ -373,15 +392,8 @@ const playChapter = async (chapt)=>{
         });
 
 
-        const Event = ()=>{
+        const Event = async ()=>{
 
-            $('#chapter').on('click',()=>{//new chapter
-                $('.modal-body').html('');
-                postChapter(book,'.modal-body');
-
-                // call modal
-                $('#myModal').modal('toggle');
-            })
 
             $('#comment_go').on('click touchstart',async ()=>{//add comment
                 let state = await post_comment();
@@ -434,6 +446,27 @@ const playChapter = async (chapt)=>{
                 
             }
 
+             $('#like_BTN').on('click',async ()=>{//liking 
+               
+                   let like= await Liking();
+                   if(!like){
+                       throw 'Could not like'
+                      
+                   }
+                    reactions();
+                  
+             });
+
+            $('#dislike_BTN').on('click',async ()=>{//disliking
+                let dislike = await Disliking();
+                if(!dislike){
+                    throw 'Could not dislike'
+                    
+                }
+                reactions();
+                
+            });
+
             // document.addEventListener('keypress', (event) => {
             //     var name = event.key;
             //     var code = event.code;
@@ -445,7 +478,15 @@ const playChapter = async (chapt)=>{
         }
 
         const owner_events =()=>{//events on chapter by Owner
-            console.log('mine');
+            // console.log('mine');
+            $('#chapter').on('click',()=>{//new chapter
+                $('.modal-body').html('');
+                postChapter(book,'.modal-body');
+
+                // call modal
+                $('#myModal').modal('toggle');
+            })
+
 
                 const chapEdits = document.querySelectorAll('#edit-chapter');
                 chapEdits.forEach(ele => {

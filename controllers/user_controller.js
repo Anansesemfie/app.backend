@@ -421,6 +421,56 @@ const resetPassword = async(req,res)=>{//reset password.........................
 }
 
 
+const getOwners = async (req,res)=>{
+    try{
+       
+        
+        if(!req.body){//if body is present
+            throw 'Body missing'
+        }
+
+         const {accountType,status} = req.body;
+         let Owners;
+
+        if(accountType!=undefined&&status!=undefined){
+            //there is a body
+            console.log('yes body');
+          
+            console.log(req.body);
+            Owners= await User.users({
+                accountType,
+                status
+            });
+
+            if(!Owners){
+                throw 'Error getting specified owners';
+            }
+        }
+        else{
+            //no body present
+            console.log('nobody');
+            Owners= await User.users({
+                accountType:'Owner',
+                status:'Active'
+            });
+            if(!Owners){
+                throw 'Error getting owners';
+            }
+        }
+
+        // console.log(owners)
+
+        res.json({Owners})
+
+        
+    }
+    catch(error){
+        console.log(error);
+        res.status(400).json({error});
+    }
+}
+
+
 
 //exports
 
@@ -434,5 +484,6 @@ module.exports={
     getProfile,
     updateProfile,
     NewPassword,
-    resetPassword
+    resetPassword,
+    getOwners
 }

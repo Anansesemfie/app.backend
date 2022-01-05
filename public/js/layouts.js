@@ -1,8 +1,13 @@
 
 //   <!-- Modal -->
-const handleError = (err)=>{
-    console.log(err);
-}
+const selectImage = (data)=>{
+  console.log(data);
+  if (!data.id) { return data.text; }
+  var $result= $(
+    `<span><img src="${data.element}"/> ${data.text} </span>`
+  );
+  return $result;
+};
 
 
 const prevenImagetDownload = ()=>{
@@ -97,9 +102,17 @@ const bookForm = async (loc)=>{
                          </div>  
 
                          <div class="row">
-                           
+                         <div class="col-6">
                            <label for="author">Author(s)</label>
                            <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
+                           </div>
+                           <div class="col-6">
+                           <label for="owner">Owner</label>
+                           <select name="owner" id="bookOwner" multiple="multiple" style="width: 100%" class="form-control"  >
+                           
+                           </select>
+
+                           </div>
                           </div>
                           
                      

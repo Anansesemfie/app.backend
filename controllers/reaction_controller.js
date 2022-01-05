@@ -1,8 +1,8 @@
 const{ bookReact, bookComment, bookSeen} = require('../models/reactionModel');
 const { book} = require('../models/bookModel');
-const {mailer,decode_JWT,service,createFileDIr,realDate} = require('../util/utils'); 
+const {decode_JWT} = require('../util/utils'); 
 const { ObjectId } = require('bson');
-const exempt = '-__v';
+// const exempt = '-__v';
 
 
 const postReaction = async (req,res)=>{
@@ -25,15 +25,15 @@ const postReaction = async (req,res)=>{
         if(reaction){
 
             if(reaction.action===action){
-            throw `Not possible to ${action} twice`;
+            throw `You can't ${action} again`;
 
         }
         
-        if(reaction.action!==body.action){
+        if(reaction.action!==action){
 
             //update reaction
-            let action = await bookReact.updateOne({_id:reaction._id},{action:action});
-            if(!action){
+            let reAction = await bookReact.updateOne({_id:reaction._id},{action:action});
+            if(!reAction){
                 throw 'Error updating Reaction'
             }
             
@@ -54,7 +54,7 @@ const postReaction = async (req,res)=>{
         res.status(200).json({message:'Successful'});
     }
     catch(err){
-        // console.log(err);
+        console.log(err);
         res.status(403).json({error:err});
     }
 }
@@ -214,14 +214,6 @@ const getSeen = async (req,res)=>{
 
     }
 }
-
-
-
-
-
-
-
-
 
 module.exports={
     postReaction,

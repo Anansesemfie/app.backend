@@ -1,6 +1,73 @@
 const {subscribing,subscription}= require('../models/subscriptionModel');
+const {bookReact,bookSeen}= require('../models/reactionModel');
 const User = require('../models/userModel');
-const {Daydif,milliToggle,mailTemplate,} = require('./utils');
+const {Daydif,milliToggle,mailTemplate,calculateMoney} = require('./utils');
+
+
+// private 
+const calcMoney = async (book,start='')=>{
+    /*
+    1.receive book
+    2.No start date
+        1. use book date 
+    2.get dislikes and played via start and end of month
+    3.calculate Money 
+    4.return bookName dislikes played and final amount
+    */ 
+
+    try{
+        // console.log(typeof book.moment);
+        let end;
+
+        if(!start){//if any missing dates
+            // console.log('nonstart')
+            bookDate = book.moment.toString();
+            // console.log(bookDate);
+            let startDate=new Date(bookDate.slice(0,15));
+           start = daysInMonth(startDate.getMonth(),startDate.getFullYear()).full;
+           console.log(start);
+           end= daysInMonth().full;
+        }
+        else{
+            let details = start.split('-');
+            console.log(details);
+            let newDate =daysInMonth(details[1],details[0]);
+            console.log(newDate);
+
+            end= newDate.full;
+        }
+            console.log('trial:',trialDate);
+            
+        const Dislikes = await bookReact.countReact({book:book._id,//get dislikes via book id
+            start:start,
+            end:end,
+            type:'Dislike'});
+
+            if(!Dislikes){
+                throw 'Error getting dislikes';
+            }
+            
+        const seenPlayed = await bookSeen.countSeen({book:book._id,start,end});
+        if(!seenPlayed){
+            throw 'error getting played or seen';
+        }
+        
+        //calculate
+        let moneyDetails = calculateMoney(seenPlayed.bookPlayed,Dislikes);
+        console.log(moneyDetails);
+        
+
+        // return {Dislikes,Seen:seenPlayed};
+
+    }
+    catch(error){
+        console.log(error);
+        throw error;
+    }
+}
+
+
+
 
  /*
 1. get subscriptions
@@ -88,7 +155,7 @@ const compareMaxUsers = async (sub)=>{
             throw 'error getting subscription details';
         }
 
-        let users = await User.count({subscription:sub._id});
+        let users = await User.countDocuments({subscription:sub._id});
 
         if(users>originSub.users){//exceeds max
             let intoOblivion =  await subscribing.updateOne({_id:sub._id},{status:'Inactive'});
@@ -154,18 +221,57 @@ const checkThis = async (sub)=>{
 
 
  const checkSubs = async ()=>{//check subscriptions
-    let subs = await subscribing.find({active:true},'-__v -ref -user -status');//get all active subscriptions
-    if(!subs){
-        throw 'error getting subscriptions';
+    try{
+        let subs = await subscribing.find({active:true},'-__v -ref -user -status');//get all active subscriptions
+            if(!subs){
+                throw 'error getting subscriptions';
+            }
+            if(subs.length==0){
+                throw 'no active subscriptions found'
+            }
+            subs.forEach(s => {
+                checkThis(s);
+                compareMaxUsers(s);
+                
+            });
     }
+    catch(error){
+        throw error;
 
-    subs.forEach(s => {
-        (checkThis(s));
-        
-    });
+    }
+    
 
 
  }
+
+ const checkbooks = async ()=>{
+     try{
+         
+
+     }
+     catch(error){
+         throw error;
+     }
+ }
+
+
+ const checkOwners = async ()=>{//check
+    try{
+        let owners = await User.find({account:'Owner',active:true});
+        if(!owners){//did not get all owners
+            throw 'error getting owners';
+        }
+        owners.forEach(owner => {
+
+
+        })
+
+
+    }
+    catch(error){
+        throw error;
+    }
+}
 
 
  module.exports ={

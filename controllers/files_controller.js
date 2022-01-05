@@ -35,21 +35,9 @@ const readFile = async (req,res)=>{
             audio.message='Subscribe to a plan';
         }
         else{
-             
-                        const see = await bookSeen.findOne({user:user._id,bookID:filePath.book});
-                        if(!see.played){
-                          const seen = await bookSeen.findByIdAndUpdate({_id:see._id},{played:true});
-                          if(seen){
-                            let record= await book.findByIdAndUpdate({_id:seen.bookID},{$inc:{played:1}});
-                                  if(record){
-                                    res.end(); 
-                                  }
-                                  else{
-                                      throw 'Could not record seen';
-                                  }
-                          }
-                        }
-                        //check subscription status
+          
+          
+          //check subscription status
                        
                         
                         
@@ -64,10 +52,32 @@ const readFile = async (req,res)=>{
                           audio.message=sub.info;
                       }
                       else{//active subscription
+                        
+                        let see = await bookSeen.findOne({user:user._id,bookID:filePath.book}); //get my seen reaction
+
+                        if(!see.played){//check if played already
+                          let seen = await bookSeen.findByIdAndUpdate({_id:see._id},{played:true});//mark as played
+                          if(!seen){
+                            throw 'Error while registering played';
+                          }
+                          let record= await book.findByIdAndUpdate({_id:seen.bookID},{$inc:{played:1}});//increase book played by 1
+                                  if(record){
+                                    res.end(); 
+                                  }
+                                  else{
+                                      throw 'Could not record seen';
+                                  }
+                        }
 
                         audio.length=1;
                         audio.message=sub.info;
                       }
+
+
+
+             
+                        
+                       
         }
           
           

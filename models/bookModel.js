@@ -42,6 +42,10 @@ const bookSchema = new Schema({
         required:false,
         unique:false
     },
+    owner:{
+        type:ObjectId,
+        required:[true,'Missing owner']
+    },
     uploader:{
         type:ObjectId,
         required:[true,'Missing uploader']
@@ -59,43 +63,32 @@ const bookSchema = new Schema({
      timestamp:true
  });
 
- //STATICS..........................................................................
+ //STATICS....................................................................................................................
 
-//  add author
-bookSchema.static.authorPush = async (user,book_id)=>{
+bookSchema.statics.userBooks = async function(user,state){
     try{
-        const _book=await this.findOne({_id:book_id});
-        if(_book){
-            _book.author.push(user);
+        if(!state&&!user){//check for parameters
+            throw 'Arguement missing';
         }
-        else{
-            throw Error('Book can not be found');
+        // console.log(user,state);
+        // user = ObjectId(user);
+        // 
+        const exempt ='-__v -authors -category -description -languages -folder -uploader -owner';
+
+        const books = await this.find({owner:user,status:state},exempt); //gather books
+        if(!books){
+            throw 'Error gathering books'
         }
+        // console.log(books);
+        
+        return books;
 
     }
-    catch(err){
-        throw Error('Author could not be added');
-    }
-}
-
-// remove author
-bookSchema.static.authorPop = async (user,book_id)=>{
-    try{
-        const _book=await this.findOne({_id:book_id});
-
-        if(_book){
-              let authorIndex = _book.author.indexOf(user);//get  "author" index
-            _book.author.splice(authorIndex, 1); //remove car from the author array
-
-        }
-        else{
-            throw Error('Book can not be found');
-        }
+    catch(error){
+        throw error;
 
     }
-    catch(err){
-        throw Error('Author could not be removed');
-    }
+
 }
 
 

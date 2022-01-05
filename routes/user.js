@@ -1,5 +1,5 @@
 const { Router } = require('express');//destructure router from express
-const {signup_post,login_post,getProfile,updateProfile,NewPassword,resetPassword,logout_get,verify_acct,login_signup,profile} = require('../controllers/user_controller');
+const {signup_post,login_post,getProfile,updateProfile,NewPassword,resetPassword,logout_get,verify_acct,login_signup,profile,getOwners} = require('../controllers/user_controller');
 const {uploadCover} = require('../util/utils');
 
 const router = Router();
@@ -9,6 +9,7 @@ const router = Router();
 router.post('/signup',signup_post);
 router.post('/login',login_post);
 router.post('/profile/fetch',getProfile);
+router.post('/owner',getOwners);
 
 //updates
 router.post('/update',uploadCover.single('dp_cover'),updateProfile);
