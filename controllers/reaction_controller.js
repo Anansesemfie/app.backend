@@ -18,9 +18,9 @@ const postReaction = async (req,res)=>{
 
         //check if reaction exists
         const reaction = await bookReact.findOne({user:user._id,bookID:book});
-        if(!reaction){
-            throw 'Something is wrong with reaction';
-        }
+        // if(!reaction){
+        //     throw 'Something is wrong with reaction';
+        // }
 
         if(reaction){
 
@@ -44,8 +44,8 @@ const postReaction = async (req,res)=>{
         else{
             console.log('new');
             //new reaction
-            let action = await bookReact.create({bookID:book,user:user._id,action:action});
-            if(!action){
+            let thisAction = await bookReact.create({bookID:book,user:user._id,action:action});
+            if(!thisAction){
                throw 'Error initializing reaction';
             }
            

@@ -443,12 +443,13 @@ const updatePassword =async (password)=>{//Update Password......................
 
                 let respond = await fetch('/user/',requestOptions);
                 
-                if(respond.status==404||respond.status==404){
-                throw '404';
+                if(respond.status>=400){
+                        let res = respond.json()
+                        throw res.error;
+                        // location.assign('/');
                 }
-                else{   
-                        return respond.json();
-                }
+                 return respond.json();
+                
 
         }
         catch(error){
@@ -477,9 +478,11 @@ const userBooks = async (user)=>{
                 };
 
         let respond = await fetch('/book/user',requestOptions);
-        if(respond.status==404||respond.status==404){
-                throw '404';
-                
+
+        if(respond.status>=400){
+                let res = respond.json()
+                throw res.error;
+                // location.assign('/');
         }
 
 
@@ -511,13 +514,51 @@ const getSubscriptions = async ()=>{
                 };
 
         let respond = await fetch('/subscribe/all',requestOptions);
-        if(respond.status==404||respond.status==404){
-                throw '404';
+        if(respond.status>=400){
+                let res = respond.json()
+                throw res.error;
+                // location.assign('/');
         }
 
         return respond.json();
         }
         catch(error){
                 throw error
+        }
+}
+
+
+
+//report
+const getReport = async (book)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({book});
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                // console.log(requestOptions);
+
+        let respond = await fetch('/report/month',requestOptions);
+        if(respond.status>=400){
+                let res = respond.json()
+                throw res.error;
+                // location.assign('/');
+        }
+        // console.log(respond);
+
+        return respond.json();
+
+        }
+        catch(error){
+                throw error;
         }
 }

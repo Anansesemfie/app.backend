@@ -71,7 +71,7 @@ const countStream = async (req,res)=>{
             if(!books){
                 throw 'could not get books';
             }
-            if(books.owner!=user){
+            if(books.owner!=user._id){
                 throw 'You do not own this book';
             }
                

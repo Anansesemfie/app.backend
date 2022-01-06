@@ -1131,8 +1131,19 @@ background-color:whitesmoke;
 }
 
 /* table */
-table{
-  color:white
+table {
+  width: 100%;
+  border: 1px solid chocolate;
+}
+table td{
+border: 2px solid white;
+align-content: center;
+width:2ch;
+}
+
+#tableDislike,#tablePlayed,#tableTotal{
+  font-size: 2vw;
+  color:chocolate
 }
 /* table */
 
@@ -1319,7 +1330,9 @@ table{
         display:none;
     }
 
-   
+    #tableDislike,#tablePlayed,#tableTotal{
+      font-size: 4vw;
+    }
 
 }
 /*Tablet view*/

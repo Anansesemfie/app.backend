@@ -64,7 +64,6 @@ const loadBook = async ()=>{
             
             
         );
-        owner_book()
         mine = true;
         
     }
@@ -72,10 +71,10 @@ const loadBook = async ()=>{
         $('#owner').append(`
         <table class="table table-striped" style="color: white;">
         <tr>
-        <td>Month</td><!-- time-->
-        <td>Dislike</td><!-- dislikes-->
-        <td><Played</td><!-- played-->
-        <td>Total</td><!-- total-->
+        <td>This Month</td><!-- time-->
+        <td><div class="row">Dislike:<label id="tableDislike"></label></div></td><!-- dislikes-->
+        <td><div class="row">Played:<label id="tablePlayed"></label></div></td><!-- played-->
+        <td><div class="row">Total:<label id="tableTotal"></label></div></td><!-- total-->
         </tr>
       </table>
         `);
@@ -377,6 +376,15 @@ const playChapter = async (chapt)=>{
                 }
 
             //actions
+            if(owner){
+                await ownerStat()
+            }
+
+            if(mine){
+               await owner_book()                
+            }
+
+
             
                 
 
@@ -384,7 +392,7 @@ const playChapter = async (chapt)=>{
 
             }
             catch(err){
-
+                toast({message:err,title:'Attention',bg:'bg-danger'});
             }
     
 
@@ -439,12 +447,7 @@ const playChapter = async (chapt)=>{
             });
 
 
-            if(mine){
-                
-
-
-                
-            }
+            
 
              $('#like_BTN').on('click',async ()=>{//liking 
                
@@ -579,6 +582,30 @@ const playChapter = async (chapt)=>{
 
         }
 
+
+    const ownerStat = async()=>{
+        try{
+            const report = await getReport(book);
+            if(!report){
+                throw 'Something Happened with report';
+            }
+            const streams =report.Streams;
+
+            let dislikes = $('#tableDislike');
+            let played = $('#tablePlayed');
+            let total = $('#tableTotal');
+
+            // console.log(report.Streams);
+            dislikes.text(`${streams.Dislikes.dislikes}(${streams.Dislikes.money})`);
+            played.text(`${streams.Played.played}(${streams.Played.money})`)
+            total.text(`${streams.Total}`)
+
+
+        }
+        catch(error){
+            throw error;
+        }
+    }
 
 
 

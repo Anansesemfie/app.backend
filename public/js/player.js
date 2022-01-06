@@ -72,6 +72,7 @@ const playNow = ()=>{ //play and pause
 // audio playing
 audio.addEventListener('play',()=>{
     player.find('*').attr('disabled', false);
+    playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
     setInterval(() => {
         timeLeft();
         if(done()){
@@ -79,6 +80,12 @@ audio.addEventListener('play',()=>{
             playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
         }
     }, 1);
+})
+
+// audio pause
+audio.addEventListener('pause',()=>{
+//    alert('paused')
+   playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`)
 })
 
 

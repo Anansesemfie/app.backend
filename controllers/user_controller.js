@@ -88,6 +88,9 @@ const signup_post = async (req,res)=>{
     }
     const {email,password,username,account} = req.body;
     try{
+        if(!account){
+            account='Consumer';
+        }
         
         const user = await User.create({email,password,username,account});
         
@@ -134,6 +137,7 @@ const signup_post = async (req,res)=>{
 
             
             utils.mailer(mail)
+            return true;
            
     }
     catch(err){
