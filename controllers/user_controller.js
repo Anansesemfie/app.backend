@@ -137,7 +137,7 @@ const signup_post = async (req,res)=>{
 
             
             utils.mailer(mail)
-            return true;
+            res.status(200).json({user:upUser._id});
            
     }
     catch(err){

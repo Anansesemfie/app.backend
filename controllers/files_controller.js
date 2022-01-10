@@ -48,7 +48,7 @@ const readFile = async (req,res)=>{
 
                         if(!sub.active){//inactive subscription
 
-                          audio.lenth=0.3;
+                          audio.length=0.3;
                           audio.message=sub.info;
                       }
                       else{//active subscription

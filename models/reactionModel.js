@@ -89,7 +89,7 @@ bookReactSchema.statics.countReact = async function (data) {
             default://dislike
             console.log('here')
             query = await this.find({moment:{$gte:start,$lt:end},bookID:book,action:'Dislike'});
-             console.log(query);
+            //  console.log(query);
             if(!query) throw 'Error getting dislikes from reaction count';
                 reactCount = query.length;
             break;

@@ -10,14 +10,21 @@ const postReaction = async (req,res)=>{
         const {book,action} = req.body;
         // console.log('here',body);
 
-        if(!req.cookies.jwt){//no user
-           throw 'User ID not found';
+        let user;
+        if(req.cookies.jwt){
+           user = (await decode_JWT(req.cookies.jwt))._id;
+           
+        }
+        else if(req.body.userID){
+            user = req.body.userID;
+        }
+        else{
+
+            throw 'Log in is required'
         }
 
-        const user = await decode_JWT(req.cookies.jwt);//get user id
-
         //check if reaction exists
-        const reaction = await bookReact.findOne({user:user._id,bookID:book});
+        const reaction = await bookReact.findOne({user:user,bookID:book});
         // if(!reaction){
         //     throw 'Something is wrong with reaction';
         // }
@@ -44,7 +51,7 @@ const postReaction = async (req,res)=>{
         else{
             console.log('new');
             //new reaction
-            let thisAction = await bookReact.create({bookID:book,user:user._id,action:action});
+            let thisAction = await bookReact.create({bookID:book,user:user,action:action});
             if(!thisAction){
                throw 'Error initializing reaction';
             }
@@ -93,13 +100,21 @@ const getReactions = async (req,res)=>{
 //new Comment
 const postComment = async (req,res)=>{
     try{
-        if(!req.cookies.jwt){//no user found
-            throw 'No user found';
+        let user;
+        if(req.cookies.jwt){
+           user = (await decode_JWT(req.cookies.jwt))._id;
+           
         }
+        else if(req.body.userID){
+            user = req.body.userID;
+        }
+        else{
+
+            throw 'Log in is required'
+        }
+
         const body = req.body;
         // console.log(body);
-        const user = await decode_JWT(req.cookies.jwt);//get user id
-
         const thisBook = await book.findOne({_id:body.book,status:"Active"});
         // console.log(thisBook);
 
@@ -108,7 +123,7 @@ const postComment = async (req,res)=>{
         }
 
         //add new comment 
-        let action = await bookComment.create({bookID:body.book,user:user._id,comment:body.comment});
+        let action = await bookComment.create({bookID:body.book,user:user,comment:body.comment});
 
         if(!action){
             throw 'Error adding comment'
@@ -169,11 +184,21 @@ const getComments = async (req,res)=>{
 //Seen
 const postSeen = async (req,res)=>{
     try{
-        if(!req.cookies.jwt){
+        let user;
+        if(req.cookies.jwt){
+           user = (await decode_JWT(req.cookies.jwt))._id;
+           
+        }
+        else if(req.body.userID){
+            user = req.body.userID;
+        }
+        else{
+
             throw 'Log in is required'
         }
+
         const book = req.params.book;
-        const user = await decode_JWT(req.cookies.jwt);
+       
         // console.log(book,user);
 
         const see = await bookSeen.findOne({bookID:book,user:user});

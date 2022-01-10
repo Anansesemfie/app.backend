@@ -14,7 +14,8 @@ const volumeDrag = document.getElementById('volumeRange');
 const curTIme = $('#curTime');
 const durTIme = $('#durTime');
 
-
+var length;
+var msg;
 
 
 const newSong = async (chapter)=>{
@@ -32,9 +33,8 @@ const newSong = async (chapter)=>{
         audio.load();//load audio
         audtitle.text(`${newFile.title} playing.....`)
         playNow();
-        setTimeout(()=>{
-            checkDuration(audio.duration,newFile.length,newFile.message);
-        },100)
+        length = newFile.length;
+        msg =newFile.message;
         
         
     }
@@ -75,6 +75,7 @@ audio.addEventListener('play',()=>{
     playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
     setInterval(() => {
         timeLeft();
+        checkDuration(audio.duration,length,msg);
         if(done()){
             audio.pause();
             playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
@@ -199,7 +200,7 @@ const calculateTime = (secs) => {
   //check duration 
   const checkDuration =async (duration,allow,info)=>{
             let stopHere = duration*allow;
-                    console.log(stopHere,allow);
+                    // console.log(stopHere,allow);
                     setInterval(() => {
                     
                         if(audio.currentTime >= stopHere){

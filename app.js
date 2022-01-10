@@ -75,10 +75,12 @@ mongoose.connection.once('open',()=>{
 setInterval(() => {
     let now = date.getHours();//get current time
     let convTime = now*100 + date.getMinutes();
+//    console.log(convTime);
 
+    
     let today = date.getDate();
     let lastDay = utils.daysInMonth()
-    if(convTime == 2459){//check if time is 12:59pm 2459
+    if(convTime == 245959){//check if time is 12:59pm 2459
         
          app.emit('subscriptions');
     }
@@ -87,7 +89,7 @@ setInterval(() => {
         app.emit('payout');
     }
        
-},25000)
+},30000)
 
 
 
