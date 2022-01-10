@@ -91,7 +91,7 @@ $(document).ready(async ()=>{
                             //multiple languages
                             $('#bookLangs').select2({
                                 theme: 'classic',
-                                placeholder: 'Select category',
+                                placeholder: 'Select Languages',
                                 maximumSelectionLength: 4
                             });
                             
