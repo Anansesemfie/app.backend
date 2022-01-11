@@ -1,71 +1,83 @@
 const {subscribing,subscription}= require('../models/subscriptionModel');
-const {bookReact,bookSeen}= require('../models/reactionModel');
+const {book}= require('../models/bookModel');
+const {report} = require('../controllers/report_controller');
 const User = require('../models/userModel');
 const {Daydif,milliToggle,mailTemplate,calculateMoney} = require('./utils');
 
 
 // private 
-const calcMoney = async (book,start='')=>{
-    /*
-    1.receive book
-    2.No start date
-        1. use book date 
-    2.get dislikes and played via start and end of month
-    3.calculate Money 
-    4.return bookName dislikes played and final amount
-    */ 
 
+
+//monthly payouts
+/*
+1. get owners
+2. loop through owners
+3. get every book 
+4. calculate monthly money 
+5. add all stats together
+6. send owner email
+7. return monthly stats 
+8. send all stats to bank email
+*/
+
+const OwnerBook = async(owner)=>{
     try{
-        // console.log(typeof book.moment);
-        let end;
-
-        if(!start){//if any missing dates
-            // console.log('nonstart')
-            bookDate = book.moment.toString();
-            // console.log(bookDate);
-            let startDate=new Date(bookDate.slice(0,15));
-           start = daysInMonth(startDate.getMonth(),startDate.getFullYear()).full;
-           console.log(start);
-           end= daysInMonth().full;
+        if(!owner){
+            throw 'Owner missing';
         }
-        else{
-            let details = start.split('-');
-            console.log(details);
-            let newDate =daysInMonth(details[1],details[0]);
-            console.log(newDate);
 
-            end= newDate.full;
-        }
-            console.log('trial:',trialDate);
+        const books = await book.find({owner:owner._id,state:'Active'});
+        if(books){//books are available
+            let book_count=0;//number of books
+            let dislikes=0;//number of dislikes
+            let played=0;//number of played
+            let debit=0;//deduction by dislikes
+            let credit=0;//addition by played
+            let total=0;
+
+            //start
+            books.forEach(bk=>{
+                let thisBook = report(bk);
+
+                dislikes+=parseFloat(thisBook.Dislikes.dislikes);
+
+                debit+=thisBook.Dislikes.money;
+
+                played+=parseFloat(thisBook.Played.played);
+
+                 credit+=thisBook.Played.money;
+
+                total+= thisBook.Total;
+                book_count++
+            });
+            const owns = {
+                email:owner.email,
+                account:owner.bank,
+                bookReport:{
+                    book_count,
+                    dislikes,
+                    debit,
+                    played,
+                    credit,
+                    total
+                }
+                }
+
+                console.log(owns);
+            return owns;
             
-        const Dislikes = await bookReact.countReact({book:book._id,//get dislikes via book id
-            start:start,
-            end:end,
-            type:'Dislike'});
 
-            if(!Dislikes){
-                throw 'Error getting dislikes';
-            }
-            
-        const seenPlayed = await bookSeen.countSeen({book:book._id,start,end});
-        if(!seenPlayed){
-            throw 'error getting played or seen';
         }
-        
-        //calculate
-        let moneyDetails = calculateMoney(seenPlayed.bookPlayed,Dislikes);
-        console.log(moneyDetails);
-        
-
-        // return {Dislikes,Seen:seenPlayed};
+        else{//no books
+            return
+        }
 
     }
     catch(error){
-        console.log(error);
-        throw error;
+        throw error
+
     }
 }
-
 
 
 
@@ -244,15 +256,6 @@ const checkThis = async (sub)=>{
 
  }
 
- const checkbooks = async ()=>{
-     try{
-         
-
-     }
-     catch(error){
-         throw error;
-     }
- }
 
 
  const checkOwners = async ()=>{//check
@@ -261,11 +264,16 @@ const checkThis = async (sub)=>{
         if(!owners){//did not get all owners
             throw 'error getting owners';
         }
-        owners.forEach(owner => {
+        const Owners=[];
 
+        for(let i=0;i<owners.length;i++){
+                Owners.push(await OwnerBook(owners[i]));
+        }
+        // owners.forEach(async (owner) => {
+            
+        // })
 
-        })
-
+        return Owners
 
     }
     catch(error){
@@ -275,5 +283,6 @@ const checkThis = async (sub)=>{
 
 
  module.exports ={
-     checkSubs
+     checkSubs,
+     checkOwners
  }

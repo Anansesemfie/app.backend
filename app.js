@@ -3,7 +3,7 @@ const express = require('express');
 const https = require('https');
 const date = new Date();
 
-const {checkSubs}= require('./util/Extras');
+const {checkSubs,checkOwners}= require('./util/Extras');
 // if (process.env.NODE_ENV !== 'production') {
 //   require('dotenv').config();
 // }
@@ -89,8 +89,8 @@ setInterval(() => {
         app.emit('payout');
     }
        
-},43200000)
-
+},43200000);
+// 
 
 
 //start local server
@@ -147,6 +147,67 @@ app.on('subscriptions',async ()=>{
 
 app.on('payout',async ()=>{
     try{
+        const own = await checkOwners();
+        if(!own){
+            throw 'Something unsual with owner report'
+        }
+        console.log(own);
+        let partHtml;
+
+        own.forEach(owe=>{
+            partHtml +=`<br><tr>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">${owe.email}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">
+            Account Name:${owe.account.name}<br>
+            Acount Number:${owe.account.number}<br>
+            Branch:${owe.account.branch}
+            </td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">${owe.bookReport.book_count}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">${owe.bookReport.dislikes}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Ghs${owe.bookReport.debit}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">${owe.bookReport.played}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Ghs${owe.bookReport.credit}</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Ghs${owe.bookReport.total}</td>
+            </tr>`
+
+        })
+
+        let html = `
+            <div style="background-color:white; width:100%; height:auto;">
+            <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+            </div><hr>
+            <label>Owners</label>
+            <p><h3>Payouts</h3></p>
+            <table style=" width: 100%;
+            border: 1px solid chocolate;">
+            <caption>Monthly</caption>
+            <tr>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">User mail</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Bank Details</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Books</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Dislikes</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Debit</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Played</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Credit</td>
+            <td style="border: 4px solid white; align-content: center; width:2ch;">Total Payout</td>
+            </tr>
+           ${partHtml}
+           </table>
+       <div style="background-color:black; color:white; margin-top:5%;">
+            copyright Anansesemfie
+       </div>
+       
+       `;
+       
+       let mail = {
+       "receiver":'mancuniamoe@gmail.com',
+       "subject":"Payouts",
+       "text":"Owner List",
+       "html":html
+    }
+
+   
+    utils.mailer(mail); 
 
     }
     catch(error){
