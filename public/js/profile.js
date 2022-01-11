@@ -14,10 +14,11 @@ const cover = $('.cover');
 
 //hidden
 const edit = $('#user_edit');//if user? edit
-const fb = $('#user_fb');//facebook
-const ig = $('#user_ig')//instagram
-const twi = $('#user_twi')//twitter
-const tel = $('#user_tel')//phone
+var account;
+// const fb = $('#user_fb');//facebook
+// const ig = $('#user_ig')//instagram
+// const twi = $('#user_twi')//twitter
+// const tel = $('#user_tel')//phone
 
 const myLiked = $('#myLiked')//liked book container
 const myCreated = $('#myCreated')//liked book container
@@ -27,6 +28,10 @@ const setUser = async (user)=>{
     try{
         if(user.myself){//this is my profile
             edit.css('display','block');
+
+            if (user.user[0].bank){//if account details are available
+                account = user.user[0].bank;
+            }
             
         }
 
@@ -79,7 +84,7 @@ const setBooks = async(books)=>{
             </center>`)
         }
 
-        if(books.Books.created.length>0){//have Created books
+        if(books.Books.created){//have Created books
             Ubks.css('display','block');
             if(Ubks.css('display','block')){//show number of books
                 __books.text(books.Books.created.length);
@@ -115,9 +120,10 @@ const get_user = async()=>{
 
         if(thisUser){
             let jstUser=await setUser(thisUser);
+            
 
             //get user books
-                console.log('Done');
+                // console.log('Done');
                 let user_books = await userBooks({user});
                 setBooks(user_books);
             
@@ -125,7 +131,7 @@ const get_user = async()=>{
         }
     }
     catch(error){
-        toast({message:error,title:'Could get user details',bg:'bg-danger'});
+        toast({message:error,title:'Could not get user details',bg:'bg-danger'});
     }
 }
 
@@ -164,6 +170,11 @@ const showEdit= async()=>{
     try{
         $('#Uname').val($('#user_name').text());//user name
         $('#Ubio').val($('#user_bio').text());//user name
+
+        //account info
+        $('#accountName').val(account.name);//account name
+        $('#accountNumber').val(account.number); //account number
+        $('#accountBranch').val(account.branch); //account branch
 
     }
     catch(error){
@@ -258,6 +269,22 @@ const editEvents =()=>{
             else{//passwords don't matchS
                 throw `Passwords don't match`;
             }
+        })
+
+        //update account 
+        $('#updateAccount').on('click',async()=>{
+            let accountName = $('#accountName').val();
+            let accountNumber = $('#accountNumber').val();
+            let accountBranch = $('#accountBranch').val();
+            const bank = await updateBank({accountName, accountNumber,accountBranch});
+            if(!bank){
+                throw 'Error updating bank account details'
+            }
+
+            toast({message:'Bank Account Details successfully Updated',title:'Update',bg:'bg-success'});
+
+            // console.log(accountName,accountNumber,accountBranch);
+            // alert('account btn clicked')
         })
          
 

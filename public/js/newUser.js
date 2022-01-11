@@ -80,6 +80,7 @@ _newAcct.on('click',async ()=>{
 })
 
 loginBtn.on('click',()=>{
+    try{
     switch (loginBtn.text()) {
     case 'Login':
         // login
@@ -88,35 +89,24 @@ loginBtn.on('click',()=>{
         form.addEventListener('submit', async(e)=>{
             e.preventDefault();
     
-            //reset errors
-            email_err.textContent = '';
-            password_err.textContent = '';
-            
-    
-            //get values
             let email = form.email.value;
             let password = form.password.value;
+            let source = 'Web';
     
             // console.log(email,password);
-            try{
+            // try{
                 const result = await fetch('/user/login',{
                     method:'POST',
-                    body:JSON.stringify({email,password}),
+                    body:JSON.stringify({email,password,source}),
                     headers:{'Content-type':'application/json'}
-                });
-    
-                const data = await result.json();
-    
-                console.log(data);
-                if(data.errors){
-                    email_err.textContent = data.errors.email;
-                    password_err.textContent=data.errors.password;
-                    status_err.innerHTML=data.errors.status;
-                    
-    
-    
-                }
+                })
                 
+                if(result.status>=400){
+                    let data = await result.json();
+                    throw data.error;
+                }
+
+                const data = await result.json();
                 if(data.user){
                     let toHere = '/'
                     if(redirect){
@@ -128,12 +118,14 @@ loginBtn.on('click',()=>{
                     location.assign(toHere);
                 }
     
-            }
-            catch(err){
-                throw err;
-            }
+            // }
+            // catch(error){
+            //     throw error;
+            // }
     
     
+        }).catch((error)=>{
+            throw error;
         });
         
         break;
@@ -155,13 +147,13 @@ loginBtn.on('click',()=>{
             let email = form.email.value;
             let password = form.password.value;
             let username =form.userName.value;
-            let account 
-            if(form.accountType.checked){
-               account="Creator";
-            }
-            else{
-                account="Consumer";
-            }
+            let account = "Consumer";
+            // if(form.accountType.checked){
+            //    account="Creator";
+            // }
+            // else{
+            //     account="Consumer";
+            // }
     
             // console.log(email,password);
             try{
@@ -173,21 +165,20 @@ loginBtn.on('click',()=>{
                     body:JSON.stringify({email,password,username,account}),
                     headers:{'Content-type':'application/json'}
                 });
+
+                if(result.status>=400){
+                    let data = await result.json();
+                    throw data.error;
+                }
     
                 const data = await result.json();
-    
-                console.log(data);
-                if(data.errors){
-                    email_err.textContent = data.errors.email;
-                    username_err.textContent = data.errors.username;
-                    password_err.textContent=data.errors.password;
-                    
-    
-    
-                }
                 if(data.user){
-                    alert(`verication request sent to email: ${email}`);
-                    location.reload();
+                    email.text('');
+                    password.text('');
+                    username.text('');
+
+                    toast({message:`verication request sent to email: ${email}`,title:'Account status',bg:'bg-success'});
+                    // location.reload();
                 }
     
             }
@@ -196,6 +187,8 @@ loginBtn.on('click',()=>{
             }
     
     
+        }).catch((error)=>{
+            throw error
         });
 
     break;
@@ -203,6 +196,10 @@ loginBtn.on('click',()=>{
     default:
         alert('This action is not recognized')
         break;
+}
+}
+catch(error){
+ toast({message:error,title:'Attention',bg:'bg-warning'});
 }
 })
 

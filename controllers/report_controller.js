@@ -12,7 +12,7 @@ const report = async(bok)=>{
     4. return info 
     */
     try{
-        console.log(bok)
+        // console.log(bok)
         const thisMonth = daysInMonth()
         let monthStart = [thisMonth.year,thisMonth.month,'01'].join('-');
         let monthEnd = thisMonth.full
@@ -100,5 +100,6 @@ const countStream = async (req,res)=>{
 
 
 module.exports={
-    countStream
+    countStream,
+    report
 }

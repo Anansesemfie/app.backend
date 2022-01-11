@@ -726,6 +726,31 @@ const position = $(`${loc}`);
    <button type="button" class="cat cat_green" id="updateInfo" >Update Password</button>
    <div class="status error"></div>
 
+  <!--account details -->
+  <h3>Bank Account Details </h3>
+  <div class=" form-floating mb-3">
+<input type="text" name="accountName" id="accountName" class="form-control" placeholder="Account Name" required="required">
+<label for="password">Account Holder's name</label>
+
+</div>
+
+<div class=" form-floating mb-3">
+<input type="text" name="accountNumber" id="accountNumber" class="form-control" placeholder="Account Number" required="required">
+<label for="password">Account Number</label>
+
+</div>
+
+<div class=" form-floating mb-3">
+<input type="text" name="accountBranch" id="accountBranch" class="form-control" placeholder="Account Branch" required="required">
+<label for="password">Account branch</label>
+
+</div>
+
+
+
+<button type="button" class="cat cat_green" id="updateAccount" >Update Account Details</button>
+
+
       </div>
       
 
@@ -736,7 +761,7 @@ const position = $(`${loc}`);
        <input class="toggle-state" type="checkbox" id="logDetails" name="check" value="check" />
        <div class="indicator"></div>
      </div>
-     <div class="label-text">Edit Login details</div>
+     <div class="label-text">Edit Additional details</div>
    </label>
      `);
     }

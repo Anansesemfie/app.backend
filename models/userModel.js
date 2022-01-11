@@ -3,14 +3,18 @@ const {isEmail} = require('validator');
 const bcrypt = require('bcrypt');
 const { ObjectId } = require('bson');
 
-const handleSchema = new mongoose.Schema({
-    linkType:{
+const account = new mongoose.Schema({
+    name:{
         type:String,
-        required:false
+        required:[true,'Name is required']
     },
-    href:{
+    number:{
         type:String,
-        required:false
+        required:[true,'Number is required']
+    },
+    branch:{
+        type:String,
+        required:[true,'Branch is required']
     },
     moment:{
         type:Date,
@@ -59,7 +63,10 @@ const userSchema = new mongoose.Schema({
         required:false,
         default:'This user is secretive'
      },
-     handles:[handleSchema],
+     bank:{
+         type:account,
+         required:false
+     },
       key:{
           type:String,
           require:false
@@ -88,21 +95,27 @@ userSchema.pre('save',async function(next){
 
 //static method to login
 userSchema.statics.login=async function(email,password){
-    const user = await this.findOne({email});//search for email/username
-    if(user){
-        const auth = await bcrypt.compare(password,user.password);//compare received password with user.password
-        if(auth){
-            if(user.active){
-                return user;
-            }
-            else{
-                throw Error('Account is not Active');
-            }
-           
-        }
-        throw Error('Password is incorrect');
+    try{
+        const user = await this.findOne({email});//search for email/username
+    if(!user){
+        throw 'incorrect email';
     }
-    throw Error('incorrect email');
+
+    const auth = await bcrypt.compare(password,user.password);//compare received password with user.password
+        if(!auth){
+            throw 'Password is incorrect';
+        }
+        
+        if(!user.active){
+                throw 'Account is not Active';
+            }
+
+     return user;
+    }
+    catch(error){
+        throw error;
+    }
+    
 }
 
 userSchema.statics.subscription = async function(info,subss,subs){

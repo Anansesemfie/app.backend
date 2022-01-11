@@ -83,16 +83,18 @@ const createToken =(id)=>{
 
 //new User.................................................................................................................
 const signup_post = async (req,res)=>{
-    if(req.cookies.jwt){
+   
+    try{
+         if(req.cookies.jwt){
         res.redirect('/');
     }
     const {email,password,username,account} = req.body;
-    try{
+        let myAccount='';
         if(!account){
-            account='Consumer';
+            myAccount='Consumer';
         }
         
-        const user = await User.create({email,password,username,account});
+        const user = await User.create({email,password,username,account:myAccount});
         
         if(!user){
             throw 'Error while creating account'
@@ -137,11 +139,11 @@ const signup_post = async (req,res)=>{
 
             
             utils.mailer(mail)
-            res.status(200).json({user:upUser._id});
+            res.status(200).json({status:'Successful'});
            
     }
     catch(err){
-    
+    console.log(err);
        const errors= handleErrors(err);
         res.status(400).json({error:errors});
         // throw err;
@@ -152,20 +154,26 @@ const signup_post = async (req,res)=>{
 
 //Signin user..............................................................................................................
 const login_post = async (req,res)=>{//login controller
-    const {email,password} =req.body;
+   
     try {
-        
+         const {email,password,source} =req.body;
+        console.log(source,email,password);
         const user = await User.login(email,password);
+
         const token = createToken(user._id);
 
-        res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+        if(source=='Web'){
+            res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+        }
+        
         
         res.status(200).json({user:user._id});
     } 
     catch (err) {
-        const errors = handleErrors(err);
+        // console.log(err);
+        // const errors = handleErrors(err);
         
-        res.status(400).json({errors:errors});
+        res.status(400).json({error:err});
         // throw err;
     }
 }
@@ -264,7 +272,7 @@ const getProfile = async (req,res)=>{//profile details..........................
     try{
         let {user} = req.body;//get user id from link
         let myself = false;
-        console.log(user);
+        // console.log(user);
         if(user=='me'){//myself or not 
             user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
             if(!user){
@@ -474,6 +482,32 @@ const getOwners = async (req,res)=>{
     }
 }
 
+const updateBank = async (req, res) => {
+    try{
+        if(!req.cookies.jwt){
+            throw 'Missing User'
+        }
+        const user = (await utils.decode_JWT(req.cookies.jwt))._id;
+        const {accountName,accountNumber,accountBranch}=req.body;
+
+        const updateAccount = await User.updateOne({_id:user},{bank:{
+            name:accountName,
+            number:accountNumber,
+            branch:accountBranch
+        }});
+
+        if(!updateAccount){
+            throw 'Error empty update account';
+        }
+        res.json({state:'Successful'});
+    }
+    catch(error){
+        console.log(error);
+        res.status(403).json({error});
+
+    }
+}
+
 
 
 //exports
@@ -489,5 +523,6 @@ module.exports={
     updateProfile,
     NewPassword,
     resetPassword,
-    getOwners
+    getOwners,
+    updateBank
 }

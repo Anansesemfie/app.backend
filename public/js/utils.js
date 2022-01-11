@@ -457,6 +457,42 @@ const updatePassword =async (password)=>{//Update Password......................
         }
 }
 
+const updateBank =async (bank)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify(bank);
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'PUT',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                let respond = await fetch('/user/bank',requestOptions);
+                
+                if(respond.status>=400){
+                        let res = respond.json()
+                        throw res.error;
+                        // location.assign('/');
+                }
+
+                return respond.json()
+        
+
+
+        }
+        catch(error){
+
+                throw error;
+
+        }
+
+}
+
 const userBooks = async (user)=>{
         try{
                 if(!user.user){//if no user
