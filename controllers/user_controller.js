@@ -22,7 +22,7 @@ const handleErrors=(err)=>{
     if(err.code === 11000){
         errors.email="Email already used"
 
-        return errors;
+        // return errors;
     }
 
     //incorrect email
@@ -88,13 +88,13 @@ const signup_post = async (req,res)=>{
          if(req.cookies.jwt){
         res.redirect('/');
     }
-    const {email,password,username,account} = req.body;
-        let myAccount='';
+    let {email,password,username,account} = req.body;
+        // let myAccount='';
         if(!account){
-            myAccount='Consumer';
+            account='Consumer';
         }
         
-        const user = await User.create({email,password,username,account:myAccount});
+        const user = await User.create({email,password,username,account});
         
         if(!user){
             throw 'Error while creating account'
@@ -143,8 +143,13 @@ const signup_post = async (req,res)=>{
            
     }
     catch(err){
-    console.log(err);
-       const errors= handleErrors(err);
+        let errors = err
+        if(err.code ===11000){
+            errors ="Email is already used"
+            
+        }
+console.log(err);
+    //   = handleErrors(err);
         res.status(400).json({error:errors});
         // throw err;
     }
