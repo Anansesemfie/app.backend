@@ -131,27 +131,44 @@ const updateChapter = async(req,res)=>{
 
 const getChapters = async (req,res)=>{
     try{
-        const {bookID} = req.body;
-        console.log(req.body);
+        const {bookID,userID} = req.body;
+        // console.log(req.body);
+        let user;
 
         if(!bookID){
 
             throw 'Invalid book';
         }
 
+        if(req.cookies.jwt){
+            user = (await decode_JWT(req.cookies.jwt))._id;
+        }
+        else if(userID){
+
+            user=userID;
+        }
+        else{
+            user=null;
+        }
+
         const chaps = await chapter.find({book:bookID},exempt);
+        if(!chaps){
+            throw 'Invalid book';
+        }
+
         let validChaps=[];
         let message='';
 
-        if(!req.cookies.jwt){
+        if(!user){
             for (let i = 0; i < 1; i++) {
                 validChaps.push(chaps[i]);
                 
             }
         }
         else{
-            const user = (await decode_JWT(req.cookies.jwt))._id;
+             
             //check subscription 
+            // console.log(user);
             let userSub = await User.findOne({_id:user,active:true});//get user details
             if(!userSub){
                 throw 'User is invalid';
@@ -184,9 +201,9 @@ const getChapters = async (req,res)=>{
 
         res.json({chapters:validChaps,info:message});
     }
-    catch(err){
-        
-        res.status(403).json({error:err});
+    catch(error){
+        // console.log(error);
+        res.status(403).json({error:error});
 
     }
 }

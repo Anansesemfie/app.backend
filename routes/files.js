@@ -3,7 +3,7 @@ const {readFile} = require('../controllers/files_controller');
 
 const router = Router(); // initialize router 
 
-router.get('/:file',readFile);
+router.post('/',readFile);
 
 
 

@@ -10,12 +10,11 @@ const User = require('../models/userModel');
 
 const readFile = async (req,res)=>{
   try{
-    const file = req.params.file;
-    
-    let length='';
+    const {chapterID,userID} = req.body;
+    let user;
 
         //file path
-        const filePath = await chapter.findById({_id:file});
+        const filePath = await chapter.findById({_id:chapterID});
         if(!filePath){
           throw 'File was not found';
         }
@@ -24,11 +23,22 @@ const readFile = async (req,res)=>{
       type:filePath.mimetype,
       title:filePath.title,
     }
+
+    if(req.cookies.jwt){
+      user = await decode_JWT(req.cookies.jwt);
+
+    }
+    else if(userID){
+      user=userID
+    }
+    else{
+      user=null;
+    }
         
 
 
-        if(req.cookies.jwt){//if signed record played once
-           let user = await decode_JWT(req.cookies.jwt);
+        if(user){//if signed record played once
+           console.log(user);
            let userSub = await User.findOne({_id:user,active:true});//get user details
           if(!userSub.subscription){
             audio.length=0.3;
@@ -37,9 +47,7 @@ const readFile = async (req,res)=>{
         else{
           
           
-          //check subscription status
-                       
-                        
+          //check subscription status      
                         
                           const sub = await subscribing.valid(userSub.subscription);
                         if(!sub){
@@ -56,15 +64,13 @@ const readFile = async (req,res)=>{
                         let see = await bookSeen.findOne({user:user._id,bookID:filePath.book}); //get my seen reaction
 
                         if(!see.played){//check if played already
-                          let seen = await bookSeen.findByIdAndUpdate({_id:see._id},{played:true});//mark as played
+                          let seen = await bookSeen.updateOne({_id:see._id},{played:true});//mark as played
                           if(!seen){
                             throw 'Error while registering played';
                           }
-                          let record= await book.findByIdAndUpdate({_id:seen.bookID},{$inc:{played:1}});//increase book played by 1
-                                  if(record){
-                                    res.end(); 
-                                  }
-                                  else{
+                          let record= await book.updateOne({_id:seen.bookID},{$inc:{played:1}});//increase book played by 1
+                                  if(!record){
+                                    
                                       throw 'Could not record seen';
                                   }
                         }
@@ -92,7 +98,7 @@ const readFile = async (req,res)=>{
 
 
         
-        console.log(audio)
+        // console.log(audio)
         res.json({audio})
   }
   catch(error){
