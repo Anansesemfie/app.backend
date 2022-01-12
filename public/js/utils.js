@@ -284,7 +284,23 @@ const getComments = async (book)=>{
 //media stuff
 const getFile = async (chapter)=>{
         try{
-                let response = await fetch(`/file/${chapter}`, {method:'GET'});
+
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({
+                 chapterID:chapter
+                });
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'POST',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                let response = await fetch(`/file/`,requestOptions);
                 if(response.status>=400){
                         let err = await response.json();
                         throw err.error;
