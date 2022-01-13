@@ -156,14 +156,24 @@ const getChapters = async (req,res)=>{
             throw 'Invalid book';
         }
 
-        let validChaps=[];
+        let validChaps;
         let message='';
 
         if(!user){
-            for (let i = 0; i < 1; i++) {
-                validChaps.push(chaps[i]);
+             let returnedChaps = chaps.filter((chap) => {
+                if(chap.title == "Sample"){
+                return chap
+                }
                 
-            }
+                });
+
+                if(returnedChaps.length==0||returnedChaps.length>1){
+                    let myBook =[chaps[0]]
+                    returnedChaps=myBook;
+                }
+           
+                validChaps=returnedChaps;
+            
         }
         else{
              
@@ -183,15 +193,31 @@ const getChapters = async (req,res)=>{
                 let subscription = await subscribing.valid(userSub.subscription);
             // console.log(subscription);
             if(!subscription.active){
-                console.log(chaps.length);
-                validChaps.push(chaps[0]);
+                let returnedChaps = chaps.filter((chap) => {
+                    if(chap.title == "Sample"){
+                    return chap
+                    }
+                    
+                    });
+    
+                    if(returnedChaps.length==0||returnedChaps.length>1){
+                        let myBook =[chaps[0]]
+                        returnedChaps=myBook;
+                    }
+               
+                    validChaps=returnedChaps;
+
                 message=subscription.info;
             }
             else{
-               chaps.forEach(each=>{
-                validChaps.push(each);
+
+               validChaps = chaps.filter((chap)=>{
+                   if(chap.title!="Sample"){
+                       return chap;
+                   }
+               });
+
                 message=subscription.info;
-            }); 
             }
             }
             
@@ -202,7 +228,7 @@ const getChapters = async (req,res)=>{
         res.json({chapters:validChaps,info:message});
     }
     catch(error){
-        // console.log(error);
+        console.log(error);
         res.status(403).json({error:error});
 
     }

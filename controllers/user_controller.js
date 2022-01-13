@@ -4,68 +4,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
 const bcrypt = require('bcrypt');
-const exempt = "-_id -__v -password -key";
-//handle errors
-const handleErrors=(err)=>{
-    console.log(err.message,err.code);
-
-    let errors ={
-        email:'',
-        password:'',
-        username:'',
-        account:'',
-        status:''
-
-    }
-
-    //duplicate error code
-    if(err.code === 11000){
-        errors.email="Email already used"
-
-        // return errors;
-    }
-
-    //incorrect email
-    if(err.message === 'incorrect email'){
-        errors.email = 'That email is incorrect';
-    }
-
-
-    //incorrect password
-    if(err.message === 'Password is incorrect'||err.message==='Minimum password length is 6 characters'){
-        errors.password = err.message;
-    }
-
-    //username
-    if(err.message==='username is required'){
-        errors.username='Username was not received'
-    }
-
-    //inactive
-    if(err.message==='Account is not Active'){
-        errors.status = err.message;
-    }
-
-    //account type
-    if(err.message==='Please Select account type'){
-        errors.account = 'Choose an account type';
-    }
-
-     //account creating
-    if(err.message==='Error while creating account'){
-        errors.account = 'Something went wrong while setting account up';
-    }
-
-    //validation errors
-    // if(err.message.includes('user validation failed'))
-    // {
-    //     Object.values(err.errors).forEach(({properties})=>{
-    //        errors[properties.path]=properties.message;
-    //     });
-    // }
-
-    return errors;
-}
+const exempt = "-_id -__v -password -key -subscription";
 
 const maxAge = 3*24*60*60;
 //JWT
@@ -150,7 +89,7 @@ const signup_post = async (req,res)=>{
         }
 console.log(err);
     //   = handleErrors(err);
-        res.status(400).json({error:errors});
+        res.status(403).json({error:errors});
         // throw err;
     }
 }
@@ -162,23 +101,45 @@ const login_post = async (req,res)=>{//login controller
    
     try {
          const {email,password,source} =req.body;
+          let subscription;
         console.log(source,email,password);
-        const user = await User.login(email,password);
-
-        const token = createToken(user._id);
-
-        if(source=='Web'){
-            res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+        const thisUser = await User.login(email,password);
+        if(!thisUser){
+            throw 'Error logging in'
+        }
+        if(thisUser.subscription){
+            subscription= await subscribing.valid(thisUser.subscription)
+        }
+        else{
+            subscription=false
         }
         
+
+        const token = createToken(thisUser._id);
+        let user ={
+            userID: thisUser._id,
+            username: thisUser.username,
+            profile_picture:thisUser.dp,
+            email: thisUser.email
+
+        }
+        if(source=='Web'||source==undefined){
+            delete user.userID;
+            delete user.profile_picture;
+            delete user.email;
+            delete user.userID;
+
+            res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+        }
+        console.log(user);
         
-        res.status(200).json({user:user._id});
+        res.status(200).json({user,subscription});
     } 
     catch (err) {
         // console.log(err);
         // const errors = handleErrors(err);
         
-        res.status(400).json({error:err});
+        res.status(403).json({error:err});
         // throw err;
     }
 }
@@ -298,6 +259,7 @@ const getProfile = async (req,res)=>{//profile details..........................
     }
     catch(error){
     console.log(error);
+    res.status(403).json({error})
     }
 }
 
@@ -336,24 +298,29 @@ const updateProfile = async(req,res)=>{//updating user profile..................
         res.redirect('/user/profile/me');
     }
     catch(error){
-        res.status(403).send(error);
+        res.status(403).json({error});
     }
 }
 
 const NewPassword =async(req,res)=>{//update password.......................................................................................................................
     try{
+        let {password} = req.body;
         if(!req.cookies.jwt){//if user is logged in
             throw 'No user';
         }
         const user = (await utils.decode_JWT(req.cookies.jwt))._id;
         // const user ='12334567';
 
-        let password = req.body.password;
+        
         if(password){
             const salt = await bcrypt.genSalt();//gen salt
             password = await bcrypt.hash(password,salt);
 
-            let passRes = await User.findByIdAndUpdate({_id:user},{password});
+            const passRes = await User.updateOne({_id:user},{password});
+
+            if(!passRes){
+                throw 'Error updating password'
+            }
 
             res.status(200).json({done:true});
 
@@ -365,7 +332,7 @@ const NewPassword =async(req,res)=>{//update password...........................
     }
     catch(error){
         console.log(error);
-        res.status(403).json({done:false});
+        res.status(403).json({error});
     }
 }
 
@@ -389,7 +356,10 @@ const resetPassword = async(req,res)=>{//reset password.........................
         console.log(password);
         let passRes = await User.findByIdAndUpdate({_id:user_name._id},{password},{useFindAndModify:false});
 
-        if(passRes){//successfully set new password
+        if(!passRes){
+            throw `Couldn't reset password`;
+        }
+            //successfully set new password
 
             let html = `
             <div style="background-color:white; width:100%; height:auto;">
@@ -422,10 +392,7 @@ const resetPassword = async(req,res)=>{//reset password.........................
     await utils.mailer(mail);
        res.status(201).json({user:`Account reseted successfully, check email ${email}`});
     
-        }
-        else{
-            throw `Couldn't reset password`;
-        }
+            
 
 
 
@@ -482,8 +449,8 @@ const getOwners = async (req,res)=>{
         
     }
     catch(error){
-        console.log(error);
-        res.status(400).json({error});
+        // console.log(error);
+        res.status(403).json({error});
     }
 }
 
