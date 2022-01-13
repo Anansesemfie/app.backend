@@ -99,7 +99,7 @@ const readFile = async (req,res)=>{
         }
         else{
           audio.length=0.3;
-          if(filePath.title=="Sample chapter"){
+          if(filePath.title=="Sample"){
             audio.length=1;
           }
             audio.message='Log in to get more';
