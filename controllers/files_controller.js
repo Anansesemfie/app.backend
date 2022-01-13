@@ -41,7 +41,11 @@ const readFile = async (req,res)=>{
            console.log(user);
            let userSub = await User.findOne({_id:user,active:true});//get user details
           if(!userSub.subscription){
+            
             audio.length=0.3;
+            if(filePath.title=="Sample"){
+              audio.length=1;
+            }
             audio.message='Subscribe to a plan';
         }
         else{
@@ -57,6 +61,9 @@ const readFile = async (req,res)=>{
                         if(!sub.active){//inactive subscription
 
                           audio.length=0.3;
+                          if(filePath.title=="Sample"){
+                            audio.length=1;
+                          }
                           audio.message=sub.info;
                       }
                       else{//active subscription
@@ -92,6 +99,9 @@ const readFile = async (req,res)=>{
         }
         else{
           audio.length=0.3;
+          if(filePath.title=="Sample chapter"){
+            audio.length=1;
+          }
             audio.message='Log in to get more';
 
         }
