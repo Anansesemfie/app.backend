@@ -197,24 +197,31 @@ const postSeen = async (req,res)=>{
             throw 'Log in is required'
         }
 
-        const book = req.params.book;
+        const Book = req.params.book;
        
         // console.log(book,user);
 
-        const see = await bookSeen.findOne({bookID:book,user:user});
+        // locate book
+        const thisBook = await book.findOne({_id:Book});
+        if(!thisBook){
+            throw 'Book not found';
+        }
+
+        const see = await bookSeen.findOne({bookID:Book,user:user});
         if(!see){
             //create new doc
-            const seen = await bookSeen.create({bookID:book,user:user});
+            const seen = await bookSeen.create({bookID:Book,user:user});
             if(!seen){
                 throw 'Seen was not created';
                
             }
         }
 
-        res.end();
+        res.status(200).json({status:"Success"});
 
     }
     catch(err){
+        console.log(err);
         res.status(403).json({error:err});
     }
 }
