@@ -25,7 +25,7 @@ const readFile = async (req,res)=>{
     }
 
     if(req.cookies.jwt){
-      user = await decode_JWT(req.cookies.jwt);
+      user = (await decode_JWT(req.cookies.jwt))._id;
 
     }
     else if(userID){
@@ -68,8 +68,7 @@ const readFile = async (req,res)=>{
                       }
                       else{//active subscription
                         
-                        let see = await bookSeen.findOne({user:user._id,bookID:filePath.book}); //get my seen reaction
-
+                        let see = await bookSeen.findOne({user:user,bookID:filePath.book}); //get my seen reaction
                         if(!see.played){//check if played already
                           let seen = await bookSeen.updateOne({_id:see._id},{played:true});//mark as played
                           if(!seen){
