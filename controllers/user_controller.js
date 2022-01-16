@@ -248,9 +248,12 @@ const getProfile = async (req,res)=>{//profile details..........................
             
 
         }
-        if(user==(await utils.decode_JWT(req.cookies.jwt))._id){
+        if(req.cookies.jwt){
+            if(user==(await utils.decode_JWT(req.cookies.jwt))._id){
             myself=true;
         }
+        }
+        
     
         //get user details
         const userBck = await User.find({_id:user},exempt);
@@ -258,7 +261,7 @@ const getProfile = async (req,res)=>{//profile details..........................
         res.json({user:userBck,myself});
     }
     catch(error){
-    console.log(error);
+    // console.log(error);
     res.status(403).json({error})
     }
 }
