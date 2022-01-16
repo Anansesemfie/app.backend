@@ -4,6 +4,10 @@ const bcrypt = require('bcrypt');
 const { ObjectId } = require('bson');
 
 const account = new mongoose.Schema({
+    bank:{
+        type:String,
+        required:[true,'Banck name required']
+    },
     name:{
         type:String,
         required:[true,'Name is required']

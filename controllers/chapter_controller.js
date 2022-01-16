@@ -181,7 +181,7 @@ const getChapters = async (req,res)=>{
             // console.log(user);
             let userSub = await User.findOne({_id:user,active:true});//get user details
             if(!userSub){
-                throw 'User is invalid';
+                throw 'An Active User was not found';
             }
             
             if(!userSub.subscription){

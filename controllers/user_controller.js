@@ -463,9 +463,10 @@ const updateBank = async (req, res) => {
             throw 'Missing User'
         }
         const user = (await utils.decode_JWT(req.cookies.jwt))._id;
-        const {accountName,accountNumber,accountBranch}=req.body;
+        const {accountName,accountNumber,accountBranch,bankName}=req.body;
 
         const updateAccount = await User.updateOne({_id:user},{bank:{
+            bank:bankName,
             name:accountName,
             number:accountNumber,
             branch:accountBranch

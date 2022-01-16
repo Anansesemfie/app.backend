@@ -729,6 +729,12 @@ const position = $(`${loc}`);
   <!--account details -->
   <h3>Bank Account Details </h3>
   <div class=" form-floating mb-3">
+<input type="text" name="bankName" id="bankName" class="form-control" placeholder="Bank Name" required="required">
+<label for="password">Bank</label>
+
+</div>
+
+  <div class=" form-floating mb-3">
 <input type="text" name="accountName" id="accountName" class="form-control" placeholder="Account Name" required="required">
 <label for="password">Account Holder's name</label>
 

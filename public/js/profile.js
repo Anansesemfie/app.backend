@@ -172,6 +172,7 @@ const showEdit= async()=>{
         $('#Ubio').val($('#user_bio').text());//user name
 
         //account info
+         $('#bankName').val(account.bank);//account name
         $('#accountName').val(account.name);//account name
         $('#accountNumber').val(account.number); //account number
         $('#accountBranch').val(account.branch); //account branch
@@ -276,7 +277,9 @@ const editEvents =()=>{
             let accountName = $('#accountName').val();
             let accountNumber = $('#accountNumber').val();
             let accountBranch = $('#accountBranch').val();
-            const bank = await updateBank({accountName, accountNumber,accountBranch});
+            let bankName =$('#bankName').val();
+
+            const bank = await updateBank({accountName, accountNumber,accountBranch,bankName});
             if(!bank){
                 throw 'Error updating bank account details'
             }

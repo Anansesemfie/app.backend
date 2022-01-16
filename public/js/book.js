@@ -279,6 +279,7 @@ const loadChapters = async () =>{//load chapters if any.........................
                 owner_events();
             }
             back = true
+            
         }
         return back;
     }
