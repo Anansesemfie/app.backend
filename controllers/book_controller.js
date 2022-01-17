@@ -308,7 +308,7 @@ const Get_mine= async (req,res)=>{
     if(!me){
       throw 'User not found';
     }
-        const likes = await bookReact.find({user:me._id}).sort({"_id":-1});;//search for all liked books
+        const likes = await bookReact.find({user:me._id,action:"Like"}).sort({"_id":-1});;//search for all liked books
         if(!likes){
           throw 'Error getting liked books';
         }
