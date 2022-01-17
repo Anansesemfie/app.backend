@@ -279,6 +279,37 @@ const getComments = async (book)=>{
         }
 }
 
+const dropComment = async (id)=>{
+        try{
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({
+                 commentID:id
+                });
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'PUT',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+        let respond = await fetch('/react/comment/drop',requestOptions);
+        if(respond.status>400){
+                let err = await respond.json();
+                throw err.error;
+        }
+
+                return true
+
+
+        }
+        catch(error){
+                throw error;
+        }
+}
 
 
 //media stuff

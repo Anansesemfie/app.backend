@@ -182,10 +182,31 @@ const get_seen = async ()=>{//get seen
     
 }
 
-
+const listenComs =async()=>{
+    try{
+        const coms = document.querySelectorAll('#dropComment');
+                coms.forEach((com)=>{
+                    // console.log(com);
+                    com.addEventListener('click',()=>{
+                        let comID = com.getAttribute("data-id")
+                        let decide = confirm('Delete this comment');
+                        if(decide){
+                    // console.log(comID);
+                    dropCom(comID);
+                        }
+                    });
+                });
+    }
+    catch(error){
+        throw error
+    }
+    
+}
 
 const get_comments = async ()=>{//get all comments
     try {
+        
+
         const coms = await getComments(book);
         if(coms){
             $('#comments').text('');
@@ -204,6 +225,7 @@ const get_comments = async ()=>{//get all comments
 
                 // console.log(msg);
             })
+            await listenComs();
 
         }
         else{
@@ -231,6 +253,7 @@ const post_comment = async()=>{
         }
        
         comment.val('');
+        get_comments();
         return true;
         
 
@@ -242,6 +265,21 @@ const post_comment = async()=>{
         }
         
         toast({message:msg,title:'Comment Problem',bg:'bg-warning'});
+    }
+}
+
+const dropCom= async (id)=>{
+    try{
+        const commentDrop = await dropComment(id);
+        if(!commentDrop){
+            throw 'Error deleting comment'
+        }
+        toast({message:'Comment deleted successfully',title:'Comment',bg:'bg-success'});
+        await get_comments();
+
+    }
+    catch(error){
+        throw error
     }
 }
 
@@ -322,20 +360,22 @@ const playChapter = async (chapt)=>{
         $(document).ready(async ()=>{
 
          try{        
+              //drop comment
+       
 
             
         const green = await loadBook();
-        post_seen();
-        reactions();
-        get_seen();
-        get_comments();
+        await post_seen();
+        await reactions();
+        await get_seen();
+        await get_comments();
         setInterval(() => {
             reactions();
             get_seen();
             get_comments();
         }, 10000);
         
-        Event(); //register events 
+        Events(); //register events 
 
        toastHolder(); // toast holder
        $('.toast').toast('show');
@@ -403,7 +443,7 @@ const playChapter = async (chapt)=>{
         });
 
 
-        const Event = async ()=>{
+        const Events = async ()=>{
 
 
             $('#comment_go').on('click touchstart',async ()=>{//add comment
@@ -480,6 +520,8 @@ const playChapter = async (chapt)=>{
             //     alert(`Key pressed ${name} \r\n Key code value: ${code}`);
                 
             //   }, false);
+           
+
 
         }
 

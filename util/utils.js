@@ -54,6 +54,7 @@ const mailer=(mail)=>{
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
         process.env.HOST="http://localhost:5000/";
         process.env.SECRET="sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600"
+        process.env.RATE =0.05;
       }
       // console.log(process.env.DB);
       // else{

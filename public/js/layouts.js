@@ -515,10 +515,11 @@ const addCommentIN = ()=>{
 
 const addCommentOut = (loc,msg_details)=>{
     let position = $(`#${loc}`);
-    console.log(msg_details);
+    let time=new Date(msg_details.time)
+    let nTime=(time.toString()).slice(0,24);
     let btn =``;
     if(msg_details.self){
-      btn=`<button type="button" class="btn btn-danger" id="dropComment" data-id="${msg_details.id}" title="drop comment"><i class="far fa-trash-alt"></i></button>`
+      btn=`<button type="button" class="btn btn-inline-danger" id="dropComment" data-id="${msg_details.id}" title="drop comment"><i class="far fa-trash-alt"></i></button>`
     }
 
     position.append(`
@@ -531,7 +532,7 @@ const addCommentOut = (loc,msg_details)=>{
       <div class="msg-bubble">
         <div class="msg-info">
           <a href="/user/profile/${msg_details.user}" class="msg-info-name">${msg_details.username}</a>
-          <div class="msg-info-time">${msg_details.time}</div>
+          <div class="msg-info-time">${nTime}</div>
           ${btn}
         </div>
 
