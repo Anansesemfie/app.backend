@@ -148,6 +148,10 @@ const getComments = async (req,res)=>{
         if(!thisBook){//no book was in request
             throw 'Book ID missing'
         }
+        let user;
+        if(req.cookies.jwt){
+            user= (await decode_JWT(req.cookies.jwt))._id;
+        }
 
         //get comments
         const comments = await bookComment.aggregate([{$match:{bookID:ObjectId(thisBook)}},{$lookup:{
@@ -166,18 +170,22 @@ const getComments = async (req,res)=>{
             if(!com.commenter.dp){
                 com.commenter.dp='/images/dp.png';               
             }
-            // com.self=false;
-            // if(com.comment._id==user)
+            com.self=false;
+           
+            if(com.commenter[0]._id==user){
+                com.self=true;
+            }
 
             // console.log(com.commenter.dp);
         });
 
 
-        res.json({comments})
+        res.status(200).json({comments})
 ;
         // db.users.aggregate([{$match:{"_id":"60def21ef6b0386590386672"}},{$lookup:{from:"books", localField:"_id", foreignField:"uploader", as:"User_books"}}]).pretty()
         }
     catch(err){
+        console.log(err);
         res.status(403).json({error:err});
 
     }

@@ -195,7 +195,9 @@ const get_comments = async ()=>{//get all comments
                     user:comet.commenter[0]._id,
                     username:comet.commenter[0].username,
                     time:comet.moment,
-                    comment:comet.comment
+                    comment:comet.comment,
+                    id:comet._id,
+                    self: comet.self
                 }
 
                 addCommentOut('comments',msg);
