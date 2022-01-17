@@ -162,11 +162,13 @@ const getComments = async (req,res)=>{
         // });
 
         comments.forEach(com=>{
+            
             if(!com.commenter.dp){
-                com.commenter.dp='/images/dp.png';
-                
-
+                com.commenter.dp='/images/dp.png';               
             }
+            // com.self=false;
+            // if(com.comment._id==user)
+
             // console.log(com.commenter.dp);
         });
 
@@ -178,6 +180,45 @@ const getComments = async (req,res)=>{
     catch(err){
         res.status(403).json({error:err});
 
+    }
+}
+
+const dropComment = async(req,res)=>{
+    try{
+        let user;
+        if(req.cookies.jwt){
+           user = (await decode_JWT(req.cookies.jwt))._id;
+           
+        }
+        else if(req.body.userID){
+            user = req.body.userID;
+        }
+        else{
+
+            throw 'Log in is required'
+        }
+        const comm_id = req.body.commentID;
+
+        //locate comment 
+        const comment = await bookComment.findOne({_id: comm_id});
+        if(!comment){
+            throw "Error retrieving comment";
+        }
+
+        if(user!=comment.user){//not comment owner
+            throw 'Unauthorized user access';
+        }
+
+       const removeCom = await bookComment.deleteOne({_id:comm_id});
+       if(!removeCom){//could not remove comment
+           throw "Error deleting comment";
+       }
+
+       res.status(200).json({status:"Success"});
+
+    }
+    catch(error){
+        res.status(404).json({error:error});
     }
 }
 
@@ -253,6 +294,7 @@ module.exports={
     getComments,
     getReactions,
     postSeen,
-    getSeen
+    getSeen,
+    dropComment
 
 }
