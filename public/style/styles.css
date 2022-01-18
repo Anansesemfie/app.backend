@@ -1,8 +1,8 @@
-/* html{
+html{
   
-  background-image: linear-gradient(to bottom right, #252527, #000);
+  box-sizing: border-box;
 
-} */
+}
 
 /* prefered styles */
 body{
@@ -883,7 +883,7 @@ border-top-right-radius: 5px;
   max-width: 60%;
   margin-left: 20%;
 }
-
+/* footer */
 footer{
   bottom:0;
   text-align: center;
@@ -900,6 +900,32 @@ footer a:hover{
   color: white;
   border-bottom: chocolate 5px solid;
 }
+
+/* footer */
+
+/* about us */
+.about_title{
+  color: white;
+  font-size: larger;
+  font-weight: bold;
+}
+
+.about_para{
+  color: white;
+  font-size: 2vw;
+}
+.about_contact{
+  display:flex
+}
+.about_contact .address{
+  font-size: 1.75rem;
+  color:white;
+}
+.about_contact i{
+   font-size: xx-large;
+}
+
+/* about us */
 
 .link{
   color:white;
@@ -1154,6 +1180,11 @@ width:2ch;
     margin-left:5%;
     margin-right:5%;
 }
+footer a{
+  
+  font-size: 3vw;
+
+}
 
 .Filter{/*filter page flex-box layout*/
   flex-direction: column;
@@ -1332,6 +1363,14 @@ width:2ch;
 
     #tableDislike,#tablePlayed,#tableTotal{
       font-size: 4vw;
+    }
+
+    .about_para{
+      font-size: 4vw;
+    }
+
+    .about_contact a{
+
     }
 
 }

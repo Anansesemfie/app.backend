@@ -271,6 +271,18 @@ app.get('/',(req,res)=>{
 app.get('/congrats',(req,res)=>{
   res.render('congrats');
 })
+
+app.get('/about_us',(req,res)=>{
+    res.render('about-us');
+  })
+
+  app.get('/privacy_policy',(req,res)=>{
+    res.render('privacy');
+  })
+
+  app.get('/terms_of_use',(req,res)=>{
+    res.render('tandc');
+  })
 // app.get('/sub',(req,res)=>{
     
 // const params = JSON.stringify({

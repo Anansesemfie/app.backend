@@ -337,11 +337,8 @@ function ad_card(book,location){
 
     for (let i = 0; i < book.category.length; i++) {
       
-      categories+=book.category[i];
+      categories+=`<a href="/filter/category${book.category[i]}" class="badge badge-dark">${book.category[i]}</a>`;
 
-      if(i!=(book.category.length-1)){
-        categories+=',';
-      }
       
     }
     //   book.category.forEach(ele=>{
@@ -355,7 +352,7 @@ function ad_card(book,location){
   
       for (let i = 0; i < book.languages.length; i++) {
         
-        langs+=book.languages[i];
+        langs+=`<span class="badge badge-secondary">${book.languages[i]}</span>`;
   
         if(i!=(book.languages.length-1)){
           langs+=',';
@@ -384,7 +381,7 @@ function ad_card(book,location){
           <div class="top-top">
           <!-- book info -->
           <h3>#${book.title}</h3><br>
-          <span title="${categories}">${category}</span><br>
+          <span>${category}</span><br>
           <i class="fas fa-play"></i>: <span>${book.played}</span>
         </div>
 
@@ -397,14 +394,16 @@ function ad_card(book,location){
 
         </div>
         <div class="tooltiptext">
+        <br>
         <div class="cats">
         <div class="row"><i class="fas fa-layer-group fa-1x"></i>- ${categories} </div><hr>
         <div class="row"><i class="fas fa-microphone-alt fa-1x"></i>- ${langs}</div>
         </div>
-        
+        <div class="card bg-dark text-white" style="width:100%;">
         <p class="desc">
         ${book.description}
         </p>
+        </div>
         
         </div>
 
