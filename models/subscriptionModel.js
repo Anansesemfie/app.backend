@@ -251,8 +251,17 @@ const subscriptionSchema = new Schema({//list of subscription types
                     //active subscription
                     switch (sub.status) {
                         case 'Active':
+                            const parent = await subscription.findOne({_id:sub.subscription});
+
+                            console.log(parent)
                             feedBack.active =true;
                             feedBack.info ='Active subscription';
+
+                            if(parent.name=="Welcome"){
+                                feedBack.info ='You are Running a ten(10) day trial';
+                            }
+                            
+
                             break;
                         case 'Inactive':
                             feedBack.active =false;

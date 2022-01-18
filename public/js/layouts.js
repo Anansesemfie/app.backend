@@ -337,7 +337,7 @@ function ad_card(book,location){
 
     for (let i = 0; i < book.category.length; i++) {
       
-      categories+=`<a href="/filter/category${book.category[i]}" class="badge badge-dark">${book.category[i]}</a>`;
+      categories+=`<a href="/filter/category/${book.category[i]}" class="badge badge-dark">${book.category[i]}</a>`;
 
       
     }

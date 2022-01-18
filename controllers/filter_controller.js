@@ -93,9 +93,12 @@ const search = async (req,res)=>{
             else{
                 viaTitle.forEach(book1 => {
                 for(let i=0;i<=books.length;i++){
-                    // console.log(books[i]._id==book1._id);
+                    // console.log(books[i]._id,book1._id);
                     if(books[i]._id!== book1._id){
                         books.push(book1);
+                    }
+                    else{
+                        return
                     }
                 }
             });
@@ -125,7 +128,7 @@ const search = async (req,res)=>{
             }
             
         }
-        console.log(books)
+        // console.log(books)
 
         res.json({books});
 
@@ -133,8 +136,9 @@ const search = async (req,res)=>{
 
     }
     catch(error){
+        console.log(error);
         res.status(403).json({error});
-        // console.log(error);
+        
 
     }
     
