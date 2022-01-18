@@ -916,9 +916,10 @@ footer a:hover{
 }
 .about_contact{
   display:flex
+  
 }
 .about_contact .address{
-  font-size: 1.75rem;
+  /* font-size: 1.75vw; */
   color:white;
 }
 .about_contact i{
@@ -1369,8 +1370,8 @@ footer a{
       font-size: 4vw;
     }
 
-    .about_contact a{
-
+    .about_contact a,.address{
+      font-size: 2vh;
     }
 
 }
