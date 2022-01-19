@@ -307,11 +307,18 @@ const updateProfile = async(req,res)=>{//updating user profile..................
 
 const NewPassword =async(req,res)=>{//update password.......................................................................................................................
     try{
-        let {password} = req.body;
-        if(!req.cookies.jwt){//if user is logged in
+        let {password,userID} = req.body;
+         let user ;
+        if(req.cookies.jwt){//if user is logged in
+            user = (await utils.decode_JWT(req.cookies.jwt))._id;
+        }
+        else if(userID){
+            user = userID
+        }
+            else{
             throw 'No user';
         }
-        const user = (await utils.decode_JWT(req.cookies.jwt))._id;
+      
         // const user ='12334567';
 
         

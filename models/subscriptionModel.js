@@ -253,7 +253,7 @@ const subscriptionSchema = new Schema({//list of subscription types
                         case 'Active':
                             const parent = await subscription.findOne({_id:sub.subscription});
 
-                            console.log(parent)
+                            // console.log(parent)
                             feedBack.active =true;
                             feedBack.info ='Active subscription';
 
