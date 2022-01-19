@@ -35,7 +35,7 @@ const attemptLogin = async (email,password,source)=>{
 
     }
     catch(error){
-        toast({message:error,title:'Account status',bg:'bg-warning'});
+        toast({message:error,title:'Login status',bg:'bg-warning'});
     }
 }
 
@@ -46,7 +46,7 @@ const attemptSignUp = async(email,password,username,account)=>{
         if(!data){
             throw 'Error attempting to Create Account'
         }
-        toast({message:`verication request sent to email: ${email}`,title:'Account status',bg:'bg-success'});
+        toast({message:`verication request sent to email: ${email}`,title:'SignUp status',bg:'bg-success'});
         return true;
 
     }
