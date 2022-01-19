@@ -228,9 +228,9 @@ const Get_book = async (req,res)=>{
  
   res.json({bookBack,creator,owner});
   }
-  catch(err){
-    let erros = handleError(err);
-    res.status(403).json(erros);
+  catch(error){
+    // let erros = handleError(err);
+    res.status(403).json({error});
   }
  
 

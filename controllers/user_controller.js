@@ -32,7 +32,7 @@ const signup_post = async (req,res)=>{
         if(!account){
             account='Consumer';
         }
-        
+        console.log(req.body);
         const user = await User.create({email,password,username,account});
         
         if(!user){

@@ -380,7 +380,7 @@ function ad_card(book,location){
 
           <div class="top-top">
           <!-- book info -->
-          <h3>#${book.title}</h3><br>
+          <h3>${book.title}</h3><br>
           <span>${category}</span><br>
           <i class="fas fa-play"></i>: <span>${book.played}</span>
         </div>
@@ -564,7 +564,7 @@ const addChapter = (data,loc,mine)=>{
                   <div class="card-body">
                   <div class="col-12">
                   
-                  <div class="card-title row"><div title="">#${data.title}</div> <div>${edit}</div>  </div>
+                  <div class="card-title row"><div title="">${data.title}</div> <div>${edit}</div>  </div>
                   <hr>
                   
                   <div>${data.description}</div>
