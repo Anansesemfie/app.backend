@@ -268,12 +268,22 @@ const getProfile = async (req,res)=>{//profile details..........................
 
 const updateProfile = async(req,res)=>{//updating user profile...............................................................................................................
     try{
-        if(!req.cookies.jwt){//if user is logged in
+        // console.log(req.body)
+        let user;
+        if(req.cookies.jwt){//if user is logged in
+            user = (await utils.decode_JWT(req.cookies.jwt))._id;
+        }
+        else if(req.body.userID){
+            user=req.body.userID
+        }
+        else{
             throw 'No user';
         }
-        const user = (await utils.decode_JWT(req.cookies.jwt))._id;
+     
         let uploadValues={};
         const body = req.body;//get body from request
+        
+        
         const file = req.file;//get file details from request after being handled by multer
 
 
@@ -292,7 +302,7 @@ const updateProfile = async(req,res)=>{//updating user profile..................
            
         }
 
-        const updateRes=await User.findByIdAndUpdate({_id:user},uploadValues);
+        const updateRes=await User.updateOne({_id:user},uploadValues);
         
         if(!updateRes){
             throw 'Could not update Profile';
