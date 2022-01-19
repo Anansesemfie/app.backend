@@ -270,8 +270,10 @@ const updateProfile = async(req,res)=>{//updating user profile..................
     try{
         // console.log(req.body)
         let user;
+        let source="Mobile";
         if(req.cookies.jwt){//if user is logged in
             user = (await utils.decode_JWT(req.cookies.jwt))._id;
+            source="Web";
         }
         else if(req.body.userID){
             user=req.body.userID
@@ -307,8 +309,13 @@ const updateProfile = async(req,res)=>{//updating user profile..................
         if(!updateRes){
             throw 'Could not update Profile';
         }
-
-        res.redirect('/user/profile/me');
+        if(source=="Web"){
+            res.redirect('/user/profile/me');
+        }
+        else{
+            res.status(200).json({state:"Success"});
+        }
+        
     }
     catch(error){
         res.status(403).json({error});
