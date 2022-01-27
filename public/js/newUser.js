@@ -55,6 +55,40 @@ const attemptSignUp = async(email,password,username,account)=>{
     }
 }
 
+const resetPassword = async(email)=>{//forgot password
+    try{
+        const data = await forgotPassword(email);
+        if(!data){
+            throw 'Error attempting to Reset Password';
+        }
+        toast({message:`New Password sent to: ${email}`,title:'Forgot Password',bg:'bg-success'});
+        return true;
+
+    }
+    catch(error){
+        // console.log(error);
+        toast({message:error,title:'Forgot Password',bg:'bg-warning'});
+    }
+}
+
+
+const resend_verify = async (email)=>{
+    try{
+        const data = await resendVerification(email);
+        if(!data){
+            throw 'Error attempting to Resend Verification';
+        }
+        toast({message:`New Verification sent to: ${email}`,title:'Account Verification',bg:'bg-success'});
+        return true;
+
+    }
+    catch(error){
+         console.log(error);
+        toast({message:error,title:'Account Verification',bg:'bg-warning'});
+    }
+}
+
+
 
 $(document).ready(async()=>{
     try{
@@ -126,22 +160,65 @@ $(document).ready(async()=>{
         toastHolder(); // toast holder
        $('.toast').toast('show');
 
-       $('#forgot_password').on('click',()=>{
+       $('#forgot_password').on('click',()=>{//forgot password trigger
         $('.modal-body').html('');
         forgotForm('.modal-body');
 
         $('#myModal').modal('toggle');
 
-        $('#proceed_fgt').on('click',async ()=>{
-        let resetted = await forgotPassword();
-        if(resetted){
-            toast({message:resetted.user,title:'Account status',bg:'bg-success'});
-            $('#forgot_email').text('')
-        }
-        else{
-            throw 'Something went wrong';
-        }
+        $('#proceed_fgt').on('click',async ()=>{//forgot password controller
+            try{
+                        const myEmail = $('#forgot_email').val();
+                let resetted = await resetPassword(myEmail);
+                if(!resetted){
+                    throw 'Something went wrong';
+                    
+                }
+                    $('#forgot_email').val('')
+
+            }
+            catch(error){
+                throw error;
+
+            }
+            
        })
+
+
+
+       })
+
+
+       $('#resend_verify').on('click',()=>{//forgot password trigger
+        
+        $('.modal-body').html('');
+        resendForm('.modal-body');
+
+        $('#myModal').modal('toggle');
+
+        $('#proceed_resend').on('click',async ()=>{
+            try{
+              
+                const myEmail = $('#resend_email').val();
+                let resetted = await resend_verify(myEmail);
+
+                if(!resetted){
+                    throw 'Something went wrong';
+                    
+                }
+                    $('#resend_email').val('')
+            }
+            catch(error){
+
+                throw error;
+            }
+            
+
+
+        })
+
+
+
 
        })
 
@@ -205,6 +282,7 @@ $(document).ready(async()=>{
     }
     }
     catch(error){
+        // console.log(error);
      toast({message:error,title:'Attention',bg:'bg-warning'});
     }
     })

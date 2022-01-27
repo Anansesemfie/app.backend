@@ -444,7 +444,7 @@ const audioStorage = multer.memoryStorage();
     }
 
 
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$#%*&';
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$#%*&';
 const genRandCode= ()=>{
     let result = ""
     let charactersLength = characters.length;

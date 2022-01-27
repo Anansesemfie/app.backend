@@ -58,6 +58,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean, 
         default: false
       },
+      loggedin:{
+        type:Boolean,
+        required:true,
+        default:false
+    },
       dp:{
         type:String,
         default:'/images/dp.png',
@@ -113,10 +118,15 @@ userSchema.statics.login=async function(email,password){
         if(!user.active){
                 throw 'Account is not Active';
             }
+        if(user.loggedin){
+            throw "Account logged in already else where"
+        }
+        await this.updateOne({_id:user._id},{loggedin:true});
 
      return user;
     }
     catch(error){
+        console.log(error);
         throw error;
     }
     
@@ -129,8 +139,13 @@ userSchema.statics.subscription = async function(info,subss,subs){
         if(!user){
             throw 'User is either not active or not found';
         }
+        if(user.subscription){
+            console.log('Not a new user')
+            return;
 
-        let sub = await subs.findOne({_id:info.subscription,active:true});
+        }
+        else{
+            let sub = await subs.findOne({_id:info.subscription,active:true});
         console.log(sub);
         if(!sub){
             throw 'Subscription is not active';
@@ -150,6 +165,7 @@ userSchema.statics.subscription = async function(info,subss,subs){
         }
         return newSub;
 
+        }
         
     }
     catch(error){

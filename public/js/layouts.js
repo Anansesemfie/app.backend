@@ -791,7 +791,7 @@ const position = $(`${loc}`);
      <div class=" form-floating mb-3">
      <h3>Reset Password </h3>
      <label for="email">Email</label><br>
-     <input type="Text" name="email" id="forgot_email" class="form-control" placeholder="Enter the Email for loggining into your account" title="Changing username wiil make it difficult for your audience to locate you">
+     <input type="Text" name="email" id="forgot_email" class="form-control" placeholder="Enter the Email for loggining into your account" title="Enter the Email you used to create your account">
      <div class="error" id="fgtEmail_error"></div>
      <hr>
      
@@ -800,6 +800,23 @@ const position = $(`${loc}`);
      </div>
      `);
  }  
+
+ const resendForm = (loc)=>{
+
+  const position = $(`${loc}`);
+   position.append(`
+   <div class=" form-floating mb-3">
+   <h3>Resend Verification Mail </h3>
+   <label for="email">Email</label><br>
+   <input type="Text" name="email" id="resend_email" class="form-control" placeholder="Enter the Email for loggining into your account" title="Enter the Email you used to create your account">
+   <div class="error" id="fgtEmail_error"></div>
+   <hr>
+   
+
+   <button type="submit" id="proceed_resend" class="cat cat_green" >Proceed</button>
+   </div>
+   `);
+}  
 
 
  const addSubscription = (loc,details)=>{

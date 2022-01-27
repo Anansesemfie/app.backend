@@ -147,15 +147,51 @@ const login_post = async (req,res)=>{//login controller
 
 
 const logout_get = async (req,res)=>{//logout ....................................................................................................
-    res.cookie('jwt','',{maxAge:1,httpOnly:true});
-    res.redirect('/');
+    try{
+        let user;
+        let source="mobile";
+        if(req.cookies.jwt){
+            user = (await utils.decode_JWT(req.cookies.jwt))._id;
+            source="Web";
+        }
+        else if(req.params.user){
+            user = req.params.user;
+        }
+        else{
+            throw 'User not found';
+        }
+
+        //update login status
+        const loginUpdate = await User.updateOne({_id:user},{loggedin:false});
+        if(!loginUpdate){
+            throw "Error updating login status";
+        }
+
+        if(source=="Web"){
+            res.cookie('jwt','',{maxAge:1,httpOnly:true});
+            res.redirect('/');
+        }
+        else{
+            res.status(200).json({status:"Success"});
+        }
+
+        
+
+    }
+    catch(error){
+        res.status(403).json({error})
+    }
+    
 }
 
 const  login_signup = async (req,res)=>{//Login and signup page.............................................................................................
     if(req.cookies.jwt){
         res.redirect('/');
     }
-    res.render('login_signup');
+    else{
+         res.render('login_signup');
+    }
+   
 }
 
 const verify_acct= async (req,res)=>{//Verify Account.........................................................................................................
@@ -431,8 +467,72 @@ const resetPassword = async(req,res)=>{//reset password.........................
     }
 }
 
+const reVerifyEmail = async(req,res)=>{//resend verification mail ...........................................................
+    try{
+        if(req.cookies.jwt){//if user already logged in
+            throw 'This is not allowed'
+        }
+        const {email}=req.body;//get email from request
 
-const getOwners = async (req,res)=>{
+        const user_name = await User.findOne({email});//look for email
+        if(!user_name){//user not found
+            throw 'email not found';
+        }
+        if(user_name.active){
+            throw "Email Already verified";
+        }
+
+        const key = createToken(user_name._id);
+            const upUser= await User.updateOne({_id:user_name._id},{key})
+
+
+            if(!upUser){
+                throw 'Account Setup issues';
+            }
+            
+                 let html = `
+                 <div style="background-color:white; width:100%; height:auto;">
+                 <img src="${utils.service.host}/images/logo_d.png" style="width:20%;">
+                 </div><hr>
+                 <a href='${utils.service.host}user/verify/${key}' style='
+                 background-image: linear-gradient(
+                    90deg, rgb(97, 174, 197), rgb(224, 194, 19));
+                color: rgb(255, 255, 255);
+                border-radius: 4px;
+                padding: 15px 32px;
+                text-align: center;
+            '>Please verify your Account</a>
+            <div style="background-color:black; color:white; margin-top:5%;">
+            copyright Anansesemfie
+       </div>
+            
+            `;
+            
+            let mail = {
+            "receiver":email,
+            "subject":"Verify User Account",
+            "text":"Account Verification",
+            "html":html
+        }
+
+        
+        
+        
+
+            
+            utils.mailer(mail)
+            res.status(200).json({status:'Successful'});
+           
+
+    }
+    catch(error){
+        res.status(403).json({error});
+    }
+
+}
+
+
+const getOwners = async (req,res)=>{//get all account type owners..............................................
     try{
        
         
@@ -524,5 +624,6 @@ module.exports={
     NewPassword,
     resetPassword,
     getOwners,
-    updateBank
+    updateBank,
+    reVerifyEmail
 }

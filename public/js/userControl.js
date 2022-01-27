@@ -48,9 +48,9 @@ const SignUp = async(user)=>{
 
 
 
-const forgotPassword = async ()=>{
+const forgotPassword = async (myEmail)=>{
     try{    
-        const myEmail = $('#forgot_email').val();
+        
 
         const myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
@@ -70,9 +70,44 @@ const forgotPassword = async ()=>{
                 if(respond.status>=400){
                 throw respond.json().error;
                 }
-                else{   
-                        return respond.json();
+                 
+                return respond.json();
+                
+
+    }
+    catch(error){
+        throw error;
+    }
+}
+
+
+const resendVerification=async(myEmail)=>{
+    try{
+
+            const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+                
+                const raw = JSON.stringify({email:myEmail});
+                // console.log(raw);
+                
+                const requestOptions = {
+                  method: 'PUT',
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: 'follow'
+                };
+
+                let respond = await fetch('/user/reverify',requestOptions);
+                
+                if(respond.status>=400){
+
+                let res =await respond.json();
+                    // console.log(res);
+                throw res.error
+
                 }
+                  
+                 return respond.json();
 
     }
     catch(error){

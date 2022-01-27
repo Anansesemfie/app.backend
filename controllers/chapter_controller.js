@@ -223,7 +223,7 @@ const getChapters = async (req,res)=>{
             
             
         }
-        // console.log(validChaps,message);
+        console.log(validChaps,message);
 
         res.json({chapters:validChaps,info:message});
     }
