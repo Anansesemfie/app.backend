@@ -146,7 +146,7 @@ const login_post = async (req,res)=>{//login controller
 
 
 
-const logout_get = async (req,res)=>{//logout ....................................................................................................
+const logout_get = async (req,res)=>{ //logout ....................................................................................................
     try{
         let user;
         let source="mobile";
