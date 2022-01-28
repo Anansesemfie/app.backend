@@ -131,7 +131,7 @@ app.on('subscriptions',async ()=>{
        `;
        
        let mail = {
-       "receiver":'mancuniamoe@gmail.com',
+       "receiver":utils.service.mail,
        "subject":"Server Error",
        "text":"Internal server error",
        "html":html
@@ -200,7 +200,7 @@ app.on('payout',async ()=>{
        `;
        
        let mail = {
-       "receiver":'mancuniamoe@gmail.com',
+       "receiver":utils.service.mail,
        "subject":"Payouts",
        "text":"Owner List",
        "html":html
@@ -227,7 +227,7 @@ app.on('payout',async ()=>{
        `;
        
        let mail = {
-       "receiver":'mancuniamoe@gmail.com',
+       "receiver":utils.service.mail,
        "subject":"Server Error",
        "text":"Internal server error",
        "html":html

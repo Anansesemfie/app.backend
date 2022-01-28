@@ -55,6 +55,7 @@ const mailer=(mail)=>{
         process.env.HOST="http://localhost:5000/";
         process.env.SECRET="sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600"
         process.env.RATE =0.05;
+        process.env.MYMAIL ="mancunaimoe@gmail.com"
       }
       // console.log(process.env.DB);
       // else{
