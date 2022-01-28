@@ -154,8 +154,8 @@ const logout_get = async (req,res)=>{ //logout .................................
             user = (await utils.decode_JWT(req.cookies.jwt))._id;
             source="Web";
         }
-        else if(req.params.user){
-            user = req.params.user;
+        else if(req.query.user){
+            user = req.query.user;
         }
         else{
             throw 'User not found';

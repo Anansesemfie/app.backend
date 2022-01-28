@@ -19,7 +19,7 @@ router.put('/bank',updateBank);
 router.put('/reverify',reVerifyEmail);
 
 
-router.get('/logout/:user',logout_get);
+router.get('/logout',logout_get);
 router.get('/verify/:id',verify_acct);
 
 router.get('/',login_signup);//Login sign up page...........

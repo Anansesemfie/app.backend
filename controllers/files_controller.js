@@ -39,7 +39,10 @@ const readFile = async (req,res)=>{
 
         if(user){//if signed record played once
            console.log(user);
-           let userSub = await User.findOne({_id:user,active:true});//get user details
+           let userSub = await User.findOne({_id:user,active:true,loggedin:true});//get user details
+           if(!userSub){
+             throw 'User not found or not logged in';
+           }
           if(!userSub.subscription){
             
             audio.length=0.3;

@@ -64,10 +64,11 @@ const mailer=(mail)=>{
       
 
 const service={
-    "port":process.env.PORT|| 5000,
-    "host":process.env.HOST/*||"localhost"*/,
-    "DB":process.env.DB/*||"mongodb://localhost:27017/Ananse_fie"*/,
-    "secret":process.env.SECRET
+    port:process.env.PORT|| 5000,
+    host:process.env.HOST/*||"localhost"*/,
+    DB:process.env.DB/*||"mongodb://localhost:27017/Ananse_fie"*/,
+    secret:process.env.SECRET,
+    mail:process.env.MYMAIL
 }
 
 //JSON web Token 
