@@ -4,7 +4,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
 const bcrypt = require('bcrypt');
-const exempt = "-_id -__v -password -key -subscription";
+const exempt = "-_id -__v -password -key";
 
 const maxAge = 3*24*60*60;
 //JWT
@@ -274,14 +274,13 @@ const getProfile = async (req,res)=>{//profile details..........................
     try{
         let {user} = req.body;//get user id from link
         let myself = false;
+        let subscription;
         // console.log(user);
         if(user=='me'){//myself or not 
             user = (await utils.decode_JWT(req.cookies.jwt))._id;//get current user
             if(!user){
                throw 'user invalid';
-            }
-    
-            
+            }  
 
         }
         if(req.cookies.jwt){
@@ -292,9 +291,17 @@ const getProfile = async (req,res)=>{//profile details..........................
         
     
         //get user details
-        const userBck = await User.find({_id:user},exempt);
+        const userBck = await User.findOne({_id:user},exempt);
+
+        console.log(userBck);
+        if(userBck.subscription){
+            subscription= await subscribing.valid(userBck.subscription)
+        }
+        else{
+            subscription=false
+        }
       
-        res.json({user:userBck,myself});
+        res.json({user:userBck,myself,subscription});
     }
     catch(error){
     // console.log(error);

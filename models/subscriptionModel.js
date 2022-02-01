@@ -236,9 +236,9 @@ const subscriptionSchema = new Schema({//list of subscription types
             feedBack.info ='subscription not found';
         }
         else{
-            // console.log(id);
+            console.log(id);
             const sub = await this.findOne({_id:id});//locate subscription
-           
+           console.log(sub);
             if(!sub){
                 throw 'Error locating subscription';
             }
@@ -247,11 +247,11 @@ const subscriptionSchema = new Schema({//list of subscription types
 
             switch (sub.active) {
                 case true:
-                    console.log(id,sub);
+                    // console.log(id,sub);
                     //active subscription
                     switch (sub.status) {
                         case 'Active':
-                            const parent = await subscription.findOne({_id:sub.subscription});
+                            let parent = await subscription.findOne({_id:sub.subscription});
 
                             // console.log(parent)
                             feedBack.active =true;
@@ -278,8 +278,13 @@ const subscriptionSchema = new Schema({//list of subscription types
             
                 default:
                     console.log('false');
+                    let parent = await subscription.findOne({_id:sub.subscription});
+                    
                     feedBack.active=false;
                     feedBack.info ='Subscription Expired'
+                    if(parent.name=="Welcome"){
+                        feedBack.info ='Your ten(10) day trial has expired';
+                    }
                     break;
             }
 
