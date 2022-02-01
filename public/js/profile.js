@@ -29,8 +29,8 @@ const setUser = async (user)=>{
         if(user.myself){//this is my profile
             edit.css('display','block');
 
-            if (user.user[0].bank){//if account details are available
-                account = user.user[0].bank;
+            if (user.user.bank){//if account details are available
+                account = user.user.bank;
             }
             
         }
@@ -51,13 +51,13 @@ const setUser = async (user)=>{
 
         //handles...................
         // console.log(user.myself)
-        let newDP = user.user[0].dp;
+        let newDP = user.user.dp;
         dp.attr('src',newDP);//dp
         cover.css('background-image',`url('${newDP}')`)
-        nom.text(user.user[0].username);//username
-        mail.text(user.user[0].email);//email
-        if(user.user[0].bio){
-            bio.text(user.user[0].bio);
+        nom.text(user.user.username);//username
+        mail.text(user.user.email);//email
+        if(user.user.bio){
+            bio.text(user.user.bio);
         }
         else{
             bio.text('This user is secretive');

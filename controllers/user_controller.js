@@ -6,7 +6,7 @@ const utils = require('../util/utils');
 const bcrypt = require('bcrypt');
 const exempt = "-_id -__v -password -key";
 
-const maxAge = 3*24*60*60;
+const maxAge = 30*24*60*60;
 //JWT
 const createToken =(id)=>{
     return jwt.sign({id},utils.service.secret,{
@@ -293,7 +293,7 @@ const getProfile = async (req,res)=>{//profile details..........................
         //get user details
         const userBck = await User.findOne({_id:user},exempt);
 
-        console.log(userBck);
+        // console.log(userBck);
         if(userBck.subscription){
             subscription= await subscribing.valid(userBck.subscription)
         }
