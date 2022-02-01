@@ -138,6 +138,26 @@ bookSeenSchema.statics.countSeen = async function (data) {
     }
 }
 
+bookReactSchema.statics.allReactions=async function (data) {
+    try{
+        if(!data) throw 'Invalid Book ID';
+
+        const commentCount = await bookComment.countDocuments({bookID:data});
+        const likedCount = await this.countDocuments({bookID:data,action:'Like'});
+        const playedCount = await bookSeen.countDocuments({bookID:data,played:true});
+
+        return {
+            comments:commentCount,
+            likes:likedCount,
+            played:playedCount
+        }
+
+    }
+    catch(error){
+        throw error;
+    }
+}
+
 
 
 //add comment

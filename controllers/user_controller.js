@@ -6,7 +6,7 @@ const utils = require('../util/utils');
 const bcrypt = require('bcrypt');
 const exempt = "-_id -__v -password -key";
 
-const maxAge = 30*24*60*60;
+const maxAge = 730*24*60*60;
 //JWT
 const createToken =(id)=>{
     return jwt.sign({id},utils.service.secret,{

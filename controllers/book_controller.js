@@ -225,6 +225,7 @@ const Get_book = async (req,res)=>{
     res.redirect('/');
   }
   }
+  let booCount = bookReact
  
   res.json({bookBack,creator,owner});
   }
@@ -277,9 +278,29 @@ const Get_books =async (req,res)=>{
         }
 
      
-    const books = await book.find(reqBody,exempt).sort({"_id":-1});;
+    const books = await book.find(reqBody,exempt).sort({"_id":-1});
 
-      res.json({books});
+    // for (let i = 0; i < books.length-1; i++) {
+    //   const id = books[i]._id;
+    //   const reactions = await bookReact.allReactions(id);
+      
+    //   books[i].played=reactions.played;
+    //   books[i].comments = reactions.comments;
+    //   books[i].likes = reactions.likes
+    //   console.log(books[i].likes, reactions);
+    // }
+// console.log(books.length);
+//     books.forEach(async(book)=>{
+
+//       let reactions = await bookReact.allReactions(book._id);
+//       books.played = reactions.played;
+//       books.comments = reactions.comments;
+//       books.likes = reactions.likes
+//       // console.log(books.likes, reactions);
+
+//     });
+
+      res.status(200).json({books});
 
   }
   catch(error){
