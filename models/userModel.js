@@ -1,7 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
+const{currentTime}=require('../util/utils');
 const {isEmail} = require('validator');
 const bcrypt = require('bcrypt');
 const { ObjectId } = require('bson');
+
 
 const account = new mongoose.Schema({
     bank:{
@@ -22,7 +24,7 @@ const account = new mongoose.Schema({
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 },{
     timestamp:true
@@ -87,7 +89,7 @@ const userSchema = new mongoose.Schema({
       },
       moment:{
           type:Date,
-          default:mongoose.now()
+          default:currentTime()
       }
 });
 
@@ -139,13 +141,9 @@ userSchema.statics.subscription = async function(info,subss,subs){
         if(!user){
             throw 'User is either not active or not found';
         }
-        if(user.subscription){
-            console.log('Not a new user')
-            return;
-
-        }
-        else{
+        
             let sub = await subs.findOne({_id:info.subscription,active:true});
+            
         console.log(sub);
         if(!sub){
             throw 'Subscription is not active';
@@ -165,7 +163,7 @@ userSchema.statics.subscription = async function(info,subss,subs){
         }
         return newSub;
 
-        }
+        
         
     }
     catch(error){
@@ -173,17 +171,33 @@ userSchema.statics.subscription = async function(info,subss,subs){
     }
 }
 
-userSchema.statics.info = async function(id){
+userSchema.statics.info = async function(data){
+    let user;
+    console.log(data);
+    if(!data.key){
+        throw 'Key missing';
+    }
+    if(data.type=='mail'){
+        let userBymail = await this.findOne({email:data.key});
+
+        user = userBymail._id;
+    }
+    else{
+        user = data.key;
+    }
+   
+       const thisUser = await this.findById({_id:user,active:true});
+            
     // console.log(id);
-    const user = await this.findById({_id:id,Active:true});
+  
     // console.log(user);
-    if(!user){
+    if(!thisUser){
         return null;
     }
-
+    console.log('here',thisUser);
     return {
-        email: user.email,
-        id: user._id,
+        email: thisUser.email,
+        id: thisUser._id,
     }
 }
 

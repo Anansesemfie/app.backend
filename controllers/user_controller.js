@@ -1,18 +1,13 @@
 const {subscribing,subscription} = require('../models/subscriptionModel');
 
 const User = require('../models/userModel');
-const jwt = require('jsonwebtoken');
 const utils = require('../util/utils'); 
 const bcrypt = require('bcrypt');
 const exempt = "-_id -__v -password -key";
 
 const maxAge = 730*24*60*60;
 //JWT
-const createToken =(id)=>{
-    return jwt.sign({id},utils.service.secret,{
-        expiresIn: maxAge
-    });
-}
+
 
 //decode JWT
 
@@ -39,7 +34,7 @@ const signup_post = async (req,res)=>{
             throw 'Error while creating account'
 
         }
-            const key = createToken(user._id);
+            const key = await utils.createToken(user._id);
             const upUser= await User.updateOne({_id:user._id},{key})
 
 
@@ -115,7 +110,7 @@ const login_post = async (req,res)=>{//login controller
         }
         
 
-        const token = createToken(thisUser._id);
+        const token = await utils.createToken(thisUser._id);
         let user ={
             userID: thisUser._id,
             username: thisUser.username,
@@ -489,7 +484,7 @@ const reVerifyEmail = async(req,res)=>{//resend verification mail ..............
             throw "Email Already verified";
         }
 
-        const key = createToken(user_name._id);
+        const key = utils.createToken(user_name._id);
             const upUser= await User.updateOne({_id:user_name._id},{key})
 
 

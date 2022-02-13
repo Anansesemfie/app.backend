@@ -1,3 +1,8 @@
+//query string from URL
+const queryString = window.location.search;
+const parameters = new URLSearchParams(queryString);
+const mail = parameters.get('email');
+
 
  const subBtn = document.querySelectorAll('#subButton');
 
@@ -6,7 +11,11 @@ var PreviousUrl; /* global variable that will store the
                     url currently in the secondary window */
 
  const openPopup =(url)=>{
-     let newUrl =`/subscribe/new?subscriptionsKey=${url}`
+    let newUrl;
+     newUrl=`/subscribe/new?subscriptionsKey=${url}`;
+     if(mail){
+        newUrl=`/subscribe/new?subscriptionsKey=${url}&mail=${mail}`;
+     }
   if(windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open(newUrl, "SingleSecondaryWindowName",
          "resizable,scrollbars,status");

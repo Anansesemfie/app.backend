@@ -1,5 +1,6 @@
 const { ObjectId } = require('bson');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
+const{currentTime}=require('../util/utils');
 
 const Schema = mongoose.Schema
 
@@ -52,7 +53,7 @@ const bookSchema = new Schema({
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     },
     played:{
         type:Number,

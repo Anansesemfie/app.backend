@@ -337,7 +337,7 @@ function ad_card(book,location){
 
     for (let i = 0; i < book.category.length; i++) {
       
-      categories+=`<a href="/filter/category/${book.category[i]}" class="badge badge-dark">${book.category[i]}</a>`;
+      categories+=`<a href="/filter/category/${book.category[i]}" class="badge badge-light">${book.category[i]}</a>`;
 
       
     }
@@ -352,7 +352,7 @@ function ad_card(book,location){
   
       for (let i = 0; i < book.languages.length; i++) {
         
-        langs+=`<span class="badge badge-secondary">${book.languages[i]}</span>`;
+        langs+=`<span class="badge badge-light">${book.languages[i]}</span>`;
   
         if(i!=(book.languages.length-1)){
           langs+=',';
@@ -395,11 +395,12 @@ function ad_card(book,location){
         </div>
         <div class="tooltiptext">
         <br>
-        <div class="cats">
-        <div class="row"><i class="fas fa-layer-group fa-1x"></i>- ${categories} </div><hr>
-        <div class="row"><i class="fas fa-microphone-alt fa-1x"></i>- ${langs}</div>
+        <div class="card bg-dark cats" style="width:inherit;">
+        <div class="row"><i class="fas fa-layer-group fa-1x text-white"></i>- ${categories} </div><hr>
+        <div class="row"><i class="fas fa-microphone-alt fa-1x text-white"></i>- ${langs}</div><br>
         </div>
-        <div class="card bg-dark text-white" style="width:100%;">
+        <br>
+        <div class="card bg-dark text-white" style="width:inherit;">
         <p class="desc">
         ${book.description}
         </p>

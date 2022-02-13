@@ -1,5 +1,6 @@
 const { ObjectId } = require('bson');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
+const{currentTime}=require('../util/utils');
 // const { findById, findOne } = require('./userModel');
 
 const Schema = mongoose.Schema
@@ -43,7 +44,7 @@ const subscriptionSchema = new Schema({//list of subscription types
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 
 },{
@@ -75,7 +76,7 @@ const subscriptionSchema = new Schema({//list of subscription types
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 
 },{
@@ -110,7 +111,7 @@ const subscriptionSchema = new Schema({//list of subscription types
 
  //some static functions for subscriptions
 
- subscribedSchema.statics.openSubscribe = async function (details,subs){//new subscription
+ subscribedSchema.statics.openSubscribe = async function (details){//new subscription
      try{
         // const chkRef = await this.find({ref:details.ref});
         // if(chkRef){//reference already exists
@@ -120,7 +121,7 @@ const subscriptionSchema = new Schema({//list of subscription types
         //VARS
         const subscription_ID = details.subscription;
         // console.log(details);
-        const chkSubs = await subs.findOne({_id:subscription_ID});
+        const chkSubs = await subscription.findOne({_id:subscription_ID});
 
         if(!chkSubs){
             throw 'This subscription does not exist';
@@ -129,13 +130,13 @@ const subscriptionSchema = new Schema({//list of subscription types
 
         //data from schema
         // const maxUsers = chkSubs.users;
-        const subscription = chkSubs._id;
+        const _subscription = chkSubs._id;
 
         //data from req
         const user = details.user;
         const ref = details.ref;
 
-        const addSub = await this.create({subscription,user,ref});
+        const addSub = await this.create({subscription:_subscription,user,ref});
 
         if(!addSub){
             throw 'Error adding Subscription';

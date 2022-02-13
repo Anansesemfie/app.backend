@@ -1,5 +1,6 @@
 const { ObjectId } = require('bson');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
+const{currentTime}=require('../util/utils');
 
 const Schema = mongoose.Schema
 
@@ -19,7 +20,7 @@ const bookReactSchema = new Schema({
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 });
 
@@ -46,7 +47,7 @@ const bookCommentSchema = new Schema({
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 });
 
@@ -65,7 +66,7 @@ const bookSeenSchema = new Schema({
     },
     moment:{
         type:Date,
-        default:mongoose.now()
+        default:currentTime()
     }
 })
 bookReactSchema.statics.countReact = async function (data) {

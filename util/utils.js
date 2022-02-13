@@ -71,7 +71,16 @@ const service={
     mail:process.env.MYMAIL
 }
 
+
 //JSON web Token 
+const maxAge = 730*24*60*60;
+const createToken = async (id)=>{
+  return await jwt.sign({id},service.secret,{
+      expiresIn: maxAge
+  });
+}
+
+
 const decode_JWT=async (code)=>{
   const token = code;
   //check token
@@ -503,6 +512,11 @@ const calculateMoney = (played,dislike)=>{
   }
 }
 
+const currentTime = ()=>{
+  var isoDate = new Date()
+  return isoDate.toISOString();
+}
+
 
 
 
@@ -511,6 +525,7 @@ const calculateMoney = (played,dislike)=>{
 module.exports={
   mailer,
   service,
+  createToken,
   decode_JWT,
   uploadCover,
   uploadAudio,
@@ -523,5 +538,6 @@ module.exports={
   genRandCode,
   milliToggle,
   mailTemplate,
-  calculateMoney
+  calculateMoney,
+  currentTime
 }

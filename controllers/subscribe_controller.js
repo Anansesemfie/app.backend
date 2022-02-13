@@ -5,23 +5,11 @@ const User = require('../models/userModel');
 
 
 const {initializePayment, verifyPayment} = require('../util/paystack')(request);
-const {decode_JWT,milliToggle} = require('../util/utils');
+const {decode_JWT,milliToggle,createToken} = require('../util/utils');
 
 const exempt =' -__v -_id -active -moment';
 
 //aux functions
-
-// const dateDiff = async(time)=>{
-//     try{
-//         if
-
-//     }
-//     catch(error){
-
-//     }
-// }
-
-
 
 //route controllers 
 const getPage = async(req,res)=>{
@@ -138,12 +126,23 @@ const postSubscription =async(req,res)=>{
 const Subscribe = async (req,res)=>{
     try{
         console.log('just now ');
-       
-        if(!req.cookies.jwt){
+        let user;
+        if(req.cookies.jwt){
+            user=(await decode_JWT(req.cookies.jwt))._id
+        }
+        else if(req.query.mail){
+            let key=req.query.mail;
+            const thisUser = await User.info({type:'mail',key});
+            if(!thisUser){
+                throw 'Mail was not found as well as user';
+            }
+            user = thisUser.id;
+        }
+        else{
             throw 'User Missing';
         }
 
-        const user =await decode_JWT(req.cookies.jwt)
+         
 
         const subName = req.query.subscriptionsKey;
         if(!subName){
@@ -155,10 +154,10 @@ const Subscribe = async (req,res)=>{
         if(!thisSub){
             throw 'Something else happened';
         }
+        console.log(user);
+        const thisUser = await User.info({type:'id',key:user});
 
-        const thisUser = await User.info(user._id);
-
-        // console.log(thisSub);
+        console.log(thisSub);
         //subscription was found
         const Amnt = (thisSub.amount)*100;
        
@@ -173,13 +172,13 @@ const Subscribe = async (req,res)=>{
             realAmnt = Amnt.toString();
         }
         //  console.log(realAmnt);
-
+        const userEnc = await createToken(user);
 
         const sending = {
             amount:realAmnt,
             email:thisUser.email,
             metadata:{
-            user_id:req.cookies.jwt,
+            user_id:userEnc,
             subscription:subName
         }
 
@@ -199,7 +198,7 @@ const Subscribe = async (req,res)=>{
 
     }
     catch(error){
-        // console.log(error);
+        console.log(error);
         // res.status(403).json({error});
         res.render('instruction',{error});
     }
@@ -211,10 +210,10 @@ const Subscribe = async (req,res)=>{
 const afterPayment =async(req,res) => {
     try{
         const ref = req.query.reference;
-        if(!req.cookies.jwt){
-            throw 'User Missing';
-        }
-        const user = await decode_JWT(req.cookies.jwt);
+        // if(!req.cookies.jwt){
+        //     throw 'User Missing';
+        // }
+        // const user = await decode_JWT(req.cookies.jwt);
 
     
     verifyPayment(ref, async (error,body)=>{
@@ -229,11 +228,11 @@ const afterPayment =async(req,res) => {
 
        if(response.status){//a successful payment
         const data = response.data.metadata
-        const metaUser =await decode_JWT(data.user_id);
-        console.log(user._id==metaUser._id);
-
-        if(user._id!=metaUser._id){//check user who payed and current user
-            throw `User identities don't match`
+        const metaUser =(await decode_JWT(data.user_id))._id;
+        // console.log(user._id==metaUser._id);
+        const thisUser = await User.info({type:'id',key:metaUser});
+        if(!thisUser){//check user who payed and current user
+            throw `User identity does not match any User`
         }
 
         // check for reference
@@ -253,9 +252,9 @@ const afterPayment =async(req,res) => {
         // create new subscription_instance
         let newSub= await subscribing.openSubscribe({
             ref:ref,
-            user:user._id,
+            user:metaUser,
             subscription:subInfo.id
-        },subscription);
+        });
 
         if(!newSub){//error while creating a new subscription instance
             throw `Error while while subscribing`;
@@ -264,9 +263,12 @@ const afterPayment =async(req,res) => {
         console.log(newSub);
         //active subscription for user
         let updateUser= await User.subscription({
-            user:user._id,
+            user:metaUser,
             subscription:newSub.toString()
         },subscription,subscribing);
+        if(!updateUser){
+            throw 'Could not update user'
+        }
 
         console.log(updateUser);
 

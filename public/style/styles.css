@@ -19,6 +19,13 @@ body{
 
    
 }
+hr{
+  max-width:90% important;
+  background-color:chocolate;
+  text-align:left;
+  margin-left:5%;
+  margin-right:5%
+}
 
 .search{
   position: fixed;
@@ -364,6 +371,7 @@ body{
  .jstBook{
   width: 100%;
   height: 50%;
+  
   border-radius: 26px;
   /* transform: skew(0deg,1deg); */
   transition: 0.5s;
@@ -379,6 +387,7 @@ body{
   width: inherit;
   min-height: 300px;
   max-height: 300px;
+  border:4px solid rgb(0, 0, 0);
   border-radius: 10px;
   transition: 1s;
   object-fit: cover;
@@ -389,17 +398,18 @@ body{
    font-size: medium;
    font-weight: bolder;
    display: none;
-   transition: 1s;
+  
    background-color: rgba(0, 0, 0, 0.5);
+  transition: 0.5s;
  }
 
 
  .parentDiv .tooltiptext {
   visibility: hidden;
-  width: inherit;
+  width: 90%;
   max-height: 300px;
-  /* background-color: rebeccapurple; */
-  background-image: linear-gradient(90deg, rgb(230, 233, 235), rgba(237, 238, 241, 0.63));
+  background-color:rgba(0, 0, 0, 0.3);
+  /* background-image: linear-gradient(90deg, rgb(230, 233, 235), rgba(237, 238, 241, 0.63)); */
   color: rgb(5, 5, 5);
   text-align: center;
   border-radius: 6px;
