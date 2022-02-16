@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const{ bookReact} = require('../models/reactionModel');
 
 const {mailer,decode_JWT,service,createFolderDIr,createImageDIr} = require('../util/utils'); 
-const exempt = '-__v -status -folder -uploader';
+const exempt = '-__v -status -folder';
 
 
 
@@ -204,9 +204,8 @@ const Get_book = async (req,res)=>{
     
     let user = await decode_JWT(req.cookies.jwt);
   
-//  console.log(bookBack);
+ console.log(`book uploader id:${bookBack.uploader}`,`user id:${user._id}`);
   if(bookBack.uploader==user._id){
-   
     creator=true;
   }
  if(bookBack.owner==user._id){
@@ -225,7 +224,7 @@ const Get_book = async (req,res)=>{
     res.redirect('/');
   }
   }
-  let booCount = bookReact
+  // let booCount = bookReact
  
   res.json({bookBack,creator,owner});
   }
