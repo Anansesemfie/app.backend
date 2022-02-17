@@ -207,6 +207,7 @@ const calculateTime = (secs) => {
                     audio.pause();
                     audio.src='';
                     audtitle.text(info);
+                    toast({message:info,title:'Anansesem fie Says',bg:'bg-info'});
                     playPauseButton.html(`<i class="fas fa-play fa-2x"></i>`);
                     
 

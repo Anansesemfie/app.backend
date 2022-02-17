@@ -136,6 +136,7 @@ const getChapters = async(book)=>{
                 }
 
                 let data = await result.json();
+                // console.log(data.chapters);
                 
                 return {chapters:data.chapters,info:data.info};
                 

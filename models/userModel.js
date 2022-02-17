@@ -173,12 +173,15 @@ userSchema.statics.subscription = async function(info,subss,subs){
 
 userSchema.statics.info = async function(data){
     let user;
-    console.log(data);
+    // console.log(data);
     if(!data.key){
         throw 'Key missing';
     }
     if(data.type=='mail'){
         let userBymail = await this.findOne({email:data.key});
+        if(!userBymail){
+            throw `${data.key} is an Invalid email`
+        }
 
         user = userBymail._id;
     }
@@ -194,7 +197,7 @@ userSchema.statics.info = async function(data){
     if(!thisUser){
         return null;
     }
-    console.log('here',thisUser);
+    // console.log('here',thisUser);
     return {
         email: thisUser.email,
         id: thisUser._id,

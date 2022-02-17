@@ -289,7 +289,7 @@ const loadChapters = async () =>{//load chapters if any.........................
     try{
        let back;
         const details = await getChapters(book);
-        //  console.log('in load',details);
+         console.log(details.chapters);
         if(!details.chapters){
             $('#Chapters').html('');
             $('#Chapters').append(`

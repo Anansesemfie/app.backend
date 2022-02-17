@@ -223,9 +223,15 @@ const getChapters = async (req,res)=>{
             
             
         }
-        console.log(validChaps,message);
+        // console.log(validChaps,message);
+        if(validChaps[0]==undefined){
+            res.json({chapters:[],info:message});
+        }
+        else{
+            res.json({chapters:validChaps,info:message});
+        }
 
-        res.json({chapters:validChaps,info:message});
+        
     }
     catch(error){
         console.log(error);

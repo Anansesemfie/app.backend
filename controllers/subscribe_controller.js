@@ -154,10 +154,10 @@ const Subscribe = async (req,res)=>{
         if(!thisSub){
             throw 'Something else happened';
         }
-        console.log(user);
+        // console.log(user);
         const thisUser = await User.info({type:'id',key:user});
 
-        console.log(thisSub);
+        // console.log(thisSub);
         //subscription was found
         const Amnt = (thisSub.amount)*100;
        

@@ -11,6 +11,8 @@ const bio = $('#user_bio');//user bio
 const Ubks = $('#user_books');//user books
 const __books = $('#__books')//book count
 const cover = $('.cover');
+const subState = $('#subState');//subscription color
+const subInfo = $('#subInfo');//subscription info
 
 //hidden
 const edit = $('#user_edit');//if user? edit
@@ -31,6 +33,15 @@ const setUser = async (user)=>{
 
             if (user.user.bank){//if account details are available
                 account = user.user.bank;
+            }
+
+            subState.css({'color': 'white', 'border-radius':'10px', 'background-color' : '#00D84A'});
+            subInfo.text(user.subscription.info)
+            if(!user.subscription.active){
+                subState.css({'background-color' : '#E8BD0D'});
+                subInfo.append(`
+                <a class="button btn cat" href="/subscribe">Activate a new Subscription</a>
+                `)
             }
             
         }
@@ -61,6 +72,9 @@ const setUser = async (user)=>{
         }
         else{
             bio.text('This user is secretive');
+        }
+        if(user.user.account=="Consumer"){
+            $('#upBooks').css({'display':'none'});
         }
 
         return {myself:user.myself};

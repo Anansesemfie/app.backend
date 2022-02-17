@@ -20,7 +20,7 @@ body{
    
 }
 hr{
-  max-width:90% important;
+  width:65% !important;
   background-color:chocolate;
   text-align:left;
   margin-left:5%;
@@ -143,7 +143,7 @@ hr{
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    transition-delay: 0.2s;
+    transition: 0.2s;
   }
 
   .button:hover{
@@ -171,7 +171,7 @@ hr{
     border-width: 1px;
     border-style: outset;
     color:white;
-    transition-delay: 1s;
+    transition: 1s;
   }
   .cat_green{
     background-image: linear-gradient(90deg, rgb(5, 94, 136), rgba(10, 33, 240, 0.404));

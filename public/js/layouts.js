@@ -686,17 +686,16 @@ const position = $(`${loc}`);
                   
                   
      <div class=" form-floating mb-3">
-     <h3>Profile Details </h3>
+    
+     <div style="display:flex;"><h3>Profile Details </h3> <hr></div>
          <form action="/user/update" enctype="multipart/form-data" method="POST">
        
        <input type="file" name="dp_cover" class="form-control">
-       <label for="userName">Profile Photo</label><br>
-       <hr>
+       <label for="userName">Profile Photo</label>
        
           <div class="username error"></div>
        <input type="Text" name="username" id="Uname" class="form-control" placeholder="User Name" title="Changing username wiil make it difficult for your audience to locate you">
-       <label for="userName">User Name</label><br>
-       <hr>
+       <label for="userName">User Name</label>
        
        <textarea name="bio" id="Ubio" class="form-control" placeholder="biograph" >
 
@@ -712,7 +711,8 @@ const position = $(`${loc}`);
  
       <div class=" form-floating mb-3" id="userLog" style=" display: none;
       transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-      <h3>Login Details </h3>
+      
+      <div style="display:flex;"><h3>Login Details </h3><hr></div>
       <!-- password_1 -->
       <div class=" form-floating mb-3">
           <div class="password error"></div>
@@ -733,22 +733,23 @@ const position = $(`${loc}`);
    <div class="status error"></div>
 
   <!--account details -->
-  <h3>Bank Account Details </h3>
+  
+  <div style="display:flex;"><h3>Bank Details </h3><hr></div>
   <div class=" form-floating mb-3">
 <input type="text" name="bankName" id="bankName" class="form-control" placeholder="Bank Name" required="required">
-<label for="password">Bank</label>
+<label for="bankName">Bank</label>
 
 </div>
 
   <div class=" form-floating mb-3">
 <input type="text" name="accountName" id="accountName" class="form-control" placeholder="Account Name" required="required">
-<label for="password">Account Holder's name</label>
+<label for="accountName">Account Holder's name</label>
 
 </div>
 
 <div class=" form-floating mb-3">
 <input type="text" name="accountNumber" id="accountNumber" class="form-control" placeholder="Account Number" required="required">
-<label for="password">Account Number</label>
+<label for="accountNumber">Account Number</label>
 
 </div>
 
