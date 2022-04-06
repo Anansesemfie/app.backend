@@ -1,6 +1,9 @@
 html{
-  
+  /* background-color:#3e3e41; */
   box-sizing: border-box;
+  scrollbar-width:thin;;
+  scroll-behavior: smooth;
+  scrollbar-color: black rgb(149, 146, 146) ;
 
 }
 
@@ -101,7 +104,7 @@ hr{
 
 /* width */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 0.5vw;
     height: 5px;
     
     
@@ -899,7 +902,7 @@ footer{
   text-align: center;
   margin-top: 120px;
   color: rgb(255, 255, 255);
-  background-image: linear-gradient(90deg, rgba(37, 37, 37, 0.884), rgba(5, 5, 5, 0.027));
+  /* background-image: linear-gradient(90deg, rgba(37, 37, 37, 0.884), rgba(5, 5, 5, 0.027)); */
 }
 footer a{
   color:white;

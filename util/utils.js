@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // const { isNull } = require('util');
 
-const myMail = {"mail":"anansesem.fie@thepostghana.com","password":"nanaasabere1992#"};
+const myMail = {"mail": process.env.SYS_MAIL,"password": process.env.SYS_PASS};
 
 const mailer=(mail)=>{
   let status;
