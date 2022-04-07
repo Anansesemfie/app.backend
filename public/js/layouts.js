@@ -72,7 +72,7 @@ const bookForm = async (loc)=>{
                               <label for="title">Title</label>
                            <input type="text"  name="title" id="title" maxlength=50 class="form-control" required placeholder="Title">
                            <label for="description">Description</label>
-                           <textarea name="description" id="description" cols="30" maxlength=1000 class="form-control" rows="10"></textarea>
+                           <textarea required name="description" id="description" cols="30" maxlength=1000 class="form-control" rows="10"></textarea>
                           </div>
                           <!-- cover image here -->
                           <div class="col-6">
