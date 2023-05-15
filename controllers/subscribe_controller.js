@@ -94,7 +94,6 @@ const postSubscription =async(req,res)=>{
         }
         const body = req.body;
        
-        const oneMnt = 2.628e+9
         const times = body.duration;
         const duration = milliToggle({time:times,return:'toMilliseconds'});
 
@@ -116,7 +115,7 @@ const postSubscription =async(req,res)=>{
         res.json({createSubscription});//return msg
     }
     catch(error){
-        console.log(error);
+        // console.log(error);
         res.status(403).json({error});
     }
 }
@@ -257,10 +256,10 @@ const afterPayment =async(req,res) => {
         });
 
         if(!newSub){//error while creating a new subscription instance
-            throw `Error while while subscribing`;
+            throw `Error while subscribing`;
         }
 
-        console.log(newSub);
+        // console.log(newSub);
         //active subscription for user
         let updateUser= await User.subscription({
             user:metaUser,
@@ -270,7 +269,7 @@ const afterPayment =async(req,res) => {
             throw 'Could not update user'
         }
 
-        console.log(updateUser);
+        // console.log(updateUser);
 
 
 let message =`Subscription successfully activated`

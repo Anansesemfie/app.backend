@@ -52,7 +52,7 @@ const mailer=(mail)=>{
 
       if(process.env.NODE_ENV=="development"){
         process.env.DB="mongodb://localhost:27017/Ananse_fie";
-        process.env.HOST="http://localhost:5000/";
+        process.env.HOST="http://localhost:3000/";
         process.env.SECRET="sk_test_d21da8e4ea8643a9a20ef0df44d782ff71fc5600"
         process.env.RATE =0.05;
         process.env.MYMAIL ="mancunaimoe@gmail.com"
@@ -64,7 +64,7 @@ const mailer=(mail)=>{
       
 
 const service={
-    port:process.env.PORT|| 5000,
+    port:process.env.PORT|| 3000,
     host:process.env.HOST/*||"localhost"*/,
     DB:process.env.DB/*||"mongodb://localhost:27017/Ananse_fie"*/,
     secret:process.env.SECRET,
@@ -443,8 +443,14 @@ const audioStorage = multer.memoryStorage();
             
           data = time * 24 * 60 * 60 * 1000;
           break;
+
+          case 'toMonths':
+            data = time/2629746000
+
+            break;
       
         default:
+          data = (time/(1000 * 60 * 60 * 24))
 
           break;
       }

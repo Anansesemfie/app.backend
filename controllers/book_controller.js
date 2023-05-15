@@ -2,7 +2,7 @@ const { book} = require('../models/bookModel');
 const User = require('../models/userModel');
 const{ bookReact} = require('../models/reactionModel');
 
-const {mailer,decode_JWT,service,createFolderDIr,createImageDIr} = require('../util/utils'); 
+const {decode_JWT,createFolderDIr,createImageDIr} = require('../util/utils'); 
 const exempt = '-__v -status -folder';
 
 

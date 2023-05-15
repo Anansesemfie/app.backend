@@ -52,7 +52,7 @@ app.use(express.static('uploads'));
 app.use(express.json());
 app.use(cookieParser());
 
-// console.log(utils.service.DB);
+console.log(utils.service);
 
 mongoose.Promise=global.Promise;
 //establish connection
@@ -151,7 +151,7 @@ app.on('payout',async ()=>{
         if(!own){
             throw 'Something unsual with owner report'
         }
-        console.log(own);
+        // console.log(own);
         let partHtml;
 
         own.forEach(owe=>{

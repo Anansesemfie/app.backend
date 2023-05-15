@@ -156,7 +156,7 @@ const getChapters = async (req,res)=>{
             throw 'Invalid book';
         }
 
-        let validChaps;
+        let validChaps = [];
         let message='';
 
         if(!user){
@@ -185,7 +185,10 @@ const getChapters = async (req,res)=>{
             }
             
             if(!userSub.subscription){
-                validChaps.push(chaps[0]);
+                if(chaps.length>=1){
+                    validChaps.push(chaps[0]);
+                }
+                
                 message='Subscription not found';
 
             }
