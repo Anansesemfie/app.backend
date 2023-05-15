@@ -838,7 +838,7 @@ const position = $(`${loc}`);
           <div class="amount">Amount: Ghs${details.amount}</div>
           <button style="background-image: linear-gradient(to bottom right, #f0f, ${details.accent});" target="_blank" data-id="${details.name}" id="subButton">Proceed</button>
           <small>
-            Duration: ${Integer(details.duration).toFixed(0)} days <hr />
+            Duration: ${NUMBER(details.duration).toFixed(0)} days <hr />
             Max Users: ${details.users}<hr/>
             Auto Renewal: ${details.autorenew}
           </small>
