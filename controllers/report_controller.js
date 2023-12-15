@@ -1,6 +1,6 @@
 const{ bookReact,bookSeen} = require('../models/reactionModel');
 const { book} = require('../models/bookModel');
-const {mailer,decode_JWT,service,createFileDIr,realDate,daysInMonth,calculateMoney} = require('../util/utils'); 
+const {decode_JWT,daysInMonth,calculateMoney} = require('../util/utils'); 
 
 //private
 const report = async(bok)=>{
@@ -17,7 +17,7 @@ const report = async(bok)=>{
         let monthStart = [thisMonth.year,thisMonth.month,'01'].join('-');
         let monthEnd = thisMonth.full
 
-        console.log(typeof bok._id,monthStart,monthEnd);
+        // console.log(typeof bok._id,monthStart,monthEnd);
         const Dislikes = await bookReact.countReact({book:bok._id,//get dislikes via book id
             start:monthStart,
             end:monthEnd,
@@ -82,7 +82,7 @@ const countStream = async (req,res)=>{
                 }
             
            
-            console.log(Streams);
+            // console.log(Streams);
 
             res.json({Streams});
         }

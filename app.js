@@ -15,7 +15,7 @@ const {checkSubs,checkOwners}= require('./util/Extras');
 // const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const {checkUser,checkAccount,requireAuth} = require('./middleware/authMiddleware');
+const {checkUser} = require('./middleware/authMiddleware');
 
 const utils = require('./util/utils');
 

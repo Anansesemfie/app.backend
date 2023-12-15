@@ -547,9 +547,9 @@ const getOwners = async (req,res)=>{//get all account type owners...............
 
         if(accountType!=undefined&&status!=undefined){
             //there is a body
-            console.log('yes body');
+            // console.log('yes body');
           
-            console.log(req.body);
+            // console.log(req.body);
             Owners= await User.users({
                 accountType,
                 status
