@@ -2,14 +2,10 @@ import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers.js";
 
 const Session = (Mongoose: any) => {
-  return new Mongoose.Schema({
+  const sessions = new Mongoose.Schema({
     user: {
       type: ObjectId,
       required: [true, "User is required"],
-    },
-    token: {
-      type: String,
-      required: [true, "Token is required"],
     },
     duration: {
       type: String,
@@ -24,6 +20,8 @@ const Session = (Mongoose: any) => {
       default: HELPERS.currentTime(),
     },
   });
+
+  return sessions;
 };
 
 export default Session;

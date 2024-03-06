@@ -28,6 +28,7 @@ const Books = (Mongoose: any) => {
       authors: [
         {
           type: String,
+          default: "unknown",
         },
       ],
       category: [
@@ -39,7 +40,13 @@ const Books = (Mongoose: any) => {
       languages: [
         {
           type: ObjectId,
-          ref: "language",
+          ref: "languages",
+        },
+      ],
+      collections: [
+        {
+          type: ObjectId,
+          ref: "collections",
         },
       ],
       folder: {

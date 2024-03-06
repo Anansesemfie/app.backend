@@ -30,13 +30,6 @@ const Collection = (Mongoose: any) => {
       ref: "origin",
       required: [true, "Origin is required"],
     },
-    books: [
-      {
-        type: ObjectId,
-        ref: "Books",
-        required: [true, "External is required"],
-      },
-    ],
     comments: [
       {
         user: ObjectId,

@@ -18,12 +18,13 @@ import Sessions from "./Session.js";
 import Collections from "./Collection.js";
 
 import { UserType } from "../../dto/userDTO.js";
+import { sessionsDTO } from "../../dto/index.js";
 
 Mongoose.connect(MONGODB_URI, {
   autoIndex: true,
 });
 
-export const BookModel = Mongoose.model("Books", Books(Mongoose));
+export const Book = Mongoose.model("Books", Books(Mongoose));
 export const Chapter = Mongoose.model("chapters", Chapters(Mongoose));
 export const Category = Mongoose.model("categories", Categories(Mongoose));
 export const Language = Mongoose.model("languages", Languages(Mongoose));
@@ -34,7 +35,10 @@ export const Comment = Mongoose.model("BookComments", Comments(Mongoose));
 export const Seen = Mongoose.model("BookSeens", BookSeen(Mongoose));
 export const Origin = Mongoose.model("origins", Origins(Mongoose));
 export const External = Mongoose.model("externals", Externals(Mongoose));
-export const Session = Mongoose.model("sessions", Sessions(Mongoose));
+export const Session = Mongoose.model<sessionsDTO>(
+  "session",
+  Sessions(Mongoose)
+);
 export const Collection = Mongoose.model("collections", Collections(Mongoose));
 export const PaymentsAccount = Mongoose.model(
   "paymentsAccount",

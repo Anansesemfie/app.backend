@@ -13,6 +13,8 @@ export const CreateUser = async (req: Request, res: Response) => {
 
 export const LoginUser = async (req: Request, res: Response) => {
   try {
+    if (res.locals.hasToken)
+      res.status(401).json({ message: "Already logged in" });
     let user = req?.body;
     const fetchedUser = await userService.login(user);
     res.status(200).json(fetchedUser);
@@ -21,10 +23,12 @@ export const LoginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const GetAllUsers = async (req: Request, res: Response) => {
+export const LogoutUser = async (req: Request, res: Response) => {
   try {
-    const users = await userService.getUsers();
-    res.status(200).json(users);
+    if (!res.locals.hasToken) throw new Error("User not logged in");
+    const sessionId = res?.locals?.session;
+    const fetchedUser = await userService.logout(sessionId);
+    res.status(200).json(fetchedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

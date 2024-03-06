@@ -35,16 +35,6 @@ class UserRepository {
       throw new Error(error);
     }
   }
-
-  public async getAllUsers(): Promise<UserType[]> {
-    try {
-      const users = await User.find({});
-      console.log({ users });
-      return users;
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
 }
 
 export default new UserRepository();
