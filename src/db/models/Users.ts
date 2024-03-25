@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import HELPERS from "../../utils/helpers.js";
+import HELPERS from "../../utils/helpers";
 import { isEmail, isStrongPassword } from "validator";
 import bcrypt from "bcrypt";
 

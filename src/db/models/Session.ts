@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import HELPERS from "../../utils/helpers.js";
+import HELPERS from "../../utils/helpers";
 
 const Session = (Mongoose: any) => {
   const sessions = new Mongoose.Schema({

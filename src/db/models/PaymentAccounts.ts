@@ -1,4 +1,4 @@
-import HELPERS from "../../utils/helpers.js";
+import HELPERS from "../../utils/helpers";
 
 const Account = (Mongoose: any) => {
   return new Mongoose.Schema(

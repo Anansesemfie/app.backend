@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import HELPERS from "../../utils/helpers.js";
+import HELPERS from "../../utils/helpers";
 
 const Books = (Mongoose: any) => {
   return new Mongoose.Schema(

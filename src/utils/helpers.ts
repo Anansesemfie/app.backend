@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 
-import ErrorHandler, { ErrorEnum } from "./error.js";
-import { SECRET_JWT, SERVER_LOG_FILE } from "./env.js";
+import ErrorHandler, { ErrorEnum } from "./error";
+import { SECRET_JWT, SERVER_LOG_FILE } from "./env";
 const errorHandler = new ErrorHandler();
 class HELPERS {
   public static readonly Chars =

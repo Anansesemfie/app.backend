@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 import { PORT } from "../../utils/env";
 import { CHECKAPPTOKEN } from "../middlewares/CheckApp";
 
-import User from "./userRoute";
-import Book from "./bookRoute";
+import User from "./UserRoute";
+import Book from "./BookRoute";
 import Chapter from "./chapterRoute";
 const router = Router();
 

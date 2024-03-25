@@ -1,5 +1,5 @@
 import express, { Application } from "express";
-import { PORT } from "./utils/env.js";
+import { PORT } from "./utils/env";
 import Mongoose from "./db/models";
 
 import ConsumerRouter from "./api/routes";
@@ -16,7 +16,8 @@ Mongoose.connection
     console.log("Connected to MongoDB");
     app.emit("ready");
   })
-  .on("error", () => {
+  .on("error", (e) => {
+    console.log(e);
     console.log("Couldn't connect to DB");
     app.emit("error");
   });
