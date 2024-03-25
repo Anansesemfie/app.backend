@@ -1,5 +1,5 @@
 import { User } from "../models";
-import { UserType } from "../../dto/userDTO.js";
+import { UserType } from "../../dto/userDTO";
 import HELPERS from "../../utils/helpers";
 
 class UserRepository {

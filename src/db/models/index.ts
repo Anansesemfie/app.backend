@@ -1,24 +1,24 @@
 import Mongoose from "mongoose";
-import { MONGODB_URI } from "../../utils/env.js";
+import { MONGODB_URI } from "../../utils/env";
 
-import Books from "./Books.js";
-import Chapters from "./Chapter.js";
-import Categories from "./Category.js";
-import Languages from "./Languages.js";
-import Users from "./Users.js";
-import PaymentsAccounts from "./PaymentAccounts.js";
-import Subscribers from "./Subscribers.js";
-import Subscriptions from "./Subscriptions.js";
-import Reactions from "./Reaction.js";
-import Comments from "./Comments.js";
-import BookSeen from "./Seen.js";
-import Origins from "./Origins.js";
-import Externals from "./Externals.js";
-import Sessions from "./Session.js";
-import Collections from "./Collection.js";
+import Books from "./Books";
+import Chapters from "./Chapter";
+import Categories from "./Category";
+import Languages from "./Languages";
+import Users from "./Users";
+import PaymentsAccounts from "./PaymentAccounts";
+import Subscribers from "./Subscribers";
+import Subscriptions from "./Subscriptions";
+import Reactions from "./Reaction";
+import Comments from "./Comments";
+import BookSeen from "./Seen";
+import Origins from "./Origins";
+import Externals from "./Externals";
+import Sessions from "./Session";
+import Collections from "./Collection";
 
-import { UserType } from "../../dto/userDTO.js";
-import { sessionsDTO } from "../../dto/index.js";
+import { UserType } from "../../dto/userDTO";
+import { sessionsDTO } from "../../dto/index";
 
 Mongoose.connect(MONGODB_URI, {
   autoIndex: true,

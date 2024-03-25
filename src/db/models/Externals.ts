@@ -1,4 +1,4 @@
-import HELPERS from "../../utils/helpers.js";
+import HELPERS from "../../utils/helpers";
 import { isEmail } from "validator";
 
 const Externals = (Mongoose: any) => {
