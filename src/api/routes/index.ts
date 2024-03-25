@@ -3,7 +3,7 @@ import { PORT } from "../../utils/env";
 import { CHECKAPPTOKEN } from "../middlewares/CheckApp";
 
 import User from "./UserRoute";
-import Book from "./bookRoute";
+import Book from "./BookRoute";
 import Chapter from "./chapterRoute";
 const router = Router();
 
