@@ -16,7 +16,7 @@ class ErrorHandler {
   private static readonly STATUS_ERROR_400: number = 400;
   private static readonly STATUS_ERROR_408: number = 408;
 
-  public fileName: string;
+  public fileName?: string;
 
   constructor(file?: string) {
     this.fileName = file;

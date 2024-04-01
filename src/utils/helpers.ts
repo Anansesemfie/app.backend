@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 
@@ -66,19 +66,22 @@ class HELPERS {
     }
   }
 
-  public static async DECODE_TOKEN(token: string): Promise<string> {
+  public static async DECODE_TOKEN(token: string): Promise<string | undefined> {
     //check token
     if (token) {
       let back: string = "";
 
       try {
-        await jwt.verify(token, SECRET_JWT, (err, decodedToken) => {
-          if (err) {
-            errorHandler.CustomError(ErrorEnum[403], "Invalid Token");
-          } else {
-            back = decodedToken.id;
-          }
-        });
+        const decodedToken: JwtPayload | null = jwt.verify(token, SECRET_JWT) as JwtPayload | null;
+
+        if (decodedToken && decodedToken.id) {
+          back = decodedToken.id;
+        } else {
+          errorHandler.CustomError(ErrorEnum[403], "Invalid Token Data");
+          // If the token is invalid or lacks required properties, throw an error
+          throw new Error("Invalid Token Data");
+        }
+
 
         return back;
       } catch (error: any) {
@@ -115,11 +118,11 @@ class HELPERS {
     }
   }
 
-  public static FILE_DETAILS(file) {
+  public static FILE_DETAILS(file: { name: string; }) {
     try {
       let ext = path.extname(file.name);
       return { extension: ext };
-    } catch (error) {}
+    } catch (error) { }
   }
 }
 
