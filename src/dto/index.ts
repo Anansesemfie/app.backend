@@ -2,9 +2,9 @@ export type sessionsDTO = {
   _id?: string;
   user?: string;
   duration?: number;
-  expiredAt?: Date;
+  expiredAt?: string;
   external?: boolean;
-  moment?: Date;
+  createdAt?: string;
 };
 
 export type bookDTO = {
@@ -21,7 +21,7 @@ export type bookDTO = {
   collections: string[];
   owner: string;
   uploader: string;
-  moment?: Date;
+  createdAt?: Date;
   meta?: {
     played: number;
     views: number;
@@ -38,5 +38,5 @@ export type chapterDTO = {
   file: string;
   mimetype: string;
   book: string;
-  moment?: Date;
+  createdAt?: Date;
 };

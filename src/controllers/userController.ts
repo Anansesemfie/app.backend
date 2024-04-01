@@ -6,7 +6,7 @@ export const CreateUser = async (req: Request, res: Response) => {
     let user = req.body;
     const newUser = await userService.create(user);
     res.status(201).json(newUser);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -18,7 +18,7 @@ export const LoginUser = async (req: Request, res: Response) => {
     let user = req?.body;
     const fetchedUser = await userService.login(user);
     res.status(200).json(fetchedUser);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -29,7 +29,7 @@ export const LogoutUser = async (req: Request, res: Response) => {
     const sessionId = res?.locals?.session;
     const fetchedUser = await userService.logout(sessionId);
     res.status(200).json(fetchedUser);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };

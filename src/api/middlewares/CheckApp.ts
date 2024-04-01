@@ -25,12 +25,12 @@ export async function CHECKAPPTOKEN(
         "Invalid Authorization header format"
       );
 
-    let bearerToken = tokenParts[1];
+    let bearerToken: string | undefined = tokenParts[1];
     bearerToken = await HELPER.DECODE_TOKEN(bearerToken);
     res.locals.session = bearerToken;
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     let errors = await errorHandler.HandleError(
       error?.errorCode,
       error?.message

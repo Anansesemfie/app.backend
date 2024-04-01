@@ -44,7 +44,7 @@ const Subscriptions = (Mongoose: any) => {
         type: String,
         default: "chocolate",
       },
-      moment: {
+      createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
       },

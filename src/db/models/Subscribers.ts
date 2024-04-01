@@ -26,7 +26,7 @@ const Subscribers = (Mongoose: any) => {
         required: [true, "Reference ID is required"],
         unique: [true, "Reference ID exist already"],
       },
-      moment: {
+      createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
       },

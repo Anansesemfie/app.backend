@@ -20,28 +20,28 @@ class SessionService {
       };
 
       return await Repo.create(session);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
   public async getSession(sessionId: string): Promise<sessionsDTO> {
     try {
       return await Repo.fetchOne(sessionId);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
 
   public async endSession(sessionId: string): Promise<string> {
     try {
-      const end = { expiredAt: HELPERS.currentTime() };
+      const end = { expiredAt: HELPERS.currentTime().toString() };
       const session = await Repo.update(sessionId, end);
       console.log("sessionDetails:", session, sessionId);
       if (session) {
         return "Success";
       }
       return "Error";
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
