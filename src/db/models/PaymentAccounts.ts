@@ -19,7 +19,7 @@ const Account = (Mongoose: any) => {
         type: String,
         required: false,
       },
-      moment: {
+      createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
       },

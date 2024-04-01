@@ -11,7 +11,7 @@ class ChapterService {
         HELPERS.loggerInfo.success
       } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
       return chapters;
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
@@ -29,7 +29,7 @@ class ChapterService {
         HELPERS.loggerInfo.success
       } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;
       return chapter;
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;

@@ -17,7 +17,7 @@ const Externals = (Mongoose: any) => {
       required: false,
       default: true,
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

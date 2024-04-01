@@ -15,7 +15,6 @@ import BookSeen from "./Seen";
 import Origins from "./Origins";
 import Externals from "./Externals";
 import Sessions from "./Session";
-import Collections from "./Collection";
 
 import { UserType } from "../../dto/userDTO";
 import { sessionsDTO } from "../../dto/index";
@@ -39,7 +38,6 @@ export const Session = Mongoose.model<sessionsDTO>(
   "session",
   Sessions(Mongoose)
 );
-export const Collection = Mongoose.model("collections", Collections(Mongoose));
 export const PaymentsAccount = Mongoose.model(
   "paymentsAccount",
   PaymentsAccounts(Mongoose)

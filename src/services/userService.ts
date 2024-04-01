@@ -11,7 +11,7 @@ class UserService {
   public async create(user: UserType): Promise<UserType> {
     try {
       return await Repo.create(user);
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${HELPERS.loggerInfo.error} creating ${
         user.username
       } @ ${HELPERS.currentTime()}`;
@@ -28,10 +28,10 @@ class UserService {
       this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
-      if (bcrypt.compare(user?.password, fetchedUser.password)) {
+      if (await bcrypt.compare(user?.password, fetchedUser.password)) {
         return await this.formatForReturn(fetchedUser);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
@@ -49,7 +49,7 @@ class UserService {
         HELPERS.loggerInfo.success
       } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
       return session;
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
@@ -62,7 +62,7 @@ class UserService {
 
   private async formatForReturn(user: UserType): Promise<userReturn> {
     try {
-      const token = await Session.create(user?._id);
+      const token = await Session.create(user?._id as string);
       return {
         email: user.email,
         username: user.username,
@@ -74,7 +74,7 @@ class UserService {
           id: user.subscription ? user.subscription.toString() : "",
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }

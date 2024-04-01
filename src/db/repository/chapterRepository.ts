@@ -6,7 +6,7 @@ class ChapterRepository {
     try {
       const chapters = await Chapter.find({ book: bookId });
       return chapters;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
@@ -15,7 +15,7 @@ class ChapterRepository {
     try {
       const chapter = await Chapter.findOne({ _id: chapterId });
       return chapter;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }

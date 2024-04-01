@@ -4,7 +4,7 @@ class BookRepository {
   public async create(book: bookDTO): Promise<bookDTO> {
     try {
       return await Book.create(book);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
@@ -15,7 +15,7 @@ class BookRepository {
         _id: bookId,
       });
       return fetchedBook;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
@@ -25,7 +25,7 @@ class BookRepository {
         new: true,
       });
       return updatedBook;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
@@ -34,7 +34,7 @@ class BookRepository {
     try {
       const fetchedBooks = await Book.find({ status: "Active" });
       return fetchedBooks;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }

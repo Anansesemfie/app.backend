@@ -16,7 +16,7 @@ const Comments = (Mongoose: any) => {
       required: [true, "Comment is empty"],
       maxlength: [100, "Comment too long"],
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

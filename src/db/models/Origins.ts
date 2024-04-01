@@ -20,7 +20,7 @@ const Origins = (Mongoose: any) => {
       type: Boolean,
       default: true,
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

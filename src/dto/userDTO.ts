@@ -8,7 +8,7 @@ export type UserType = {
   dp: string;
   bio: string;
   subscription?: string;
-  moment?: string;
+  createdAt?: string;
 };
 
 export type userReturn = {

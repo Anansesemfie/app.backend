@@ -49,25 +49,24 @@ const Users = (Mongoose: any) => {
       type: ObjectId,
       required: false,
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },
   });
 
-  
   USER.pre("save", async function (next: () => void) {
     const salt = await bcrypt.genSalt();
 
-    this.password = await bcrypt.hash(this.password, salt);
+    USER.password = await bcrypt.hash(USER.password, salt);
 
     next();
   });
 
-  USER.pre("update", async function (next) {
+  USER.pre("update", async function (next: () => void) {
     const salt = await bcrypt.genSalt();
 
-    this.password = await bcrypt.hash(this.password, salt);
+    USER.password = await bcrypt.hash(USER.password, salt);
 
     next();
   });

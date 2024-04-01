@@ -5,22 +5,25 @@ class SessionRepository {
   public async create(session: sessionsDTO): Promise<sessionsDTO> {
     try {
       return await Session.create(session);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
-  public async fetchOne(sessionId: string): Promise<sessionsDTO> {
+  public async fetchOne(sessionId: string): Promise<sessionsDTO | any> {
     try {
       const fetchedSession = await Session.findOne({
         _id: sessionId,
       });
       return fetchedSession;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }
 
-  public async update(sessionId: string, session): Promise<sessionsDTO> {
+  public async update(
+    sessionId: string,
+    session: sessionsDTO
+  ): Promise<sessionsDTO | any> {
     try {
       const updatedSession = await Session.findOneAndUpdate(
         { _id: sessionId },
@@ -30,7 +33,7 @@ class SessionRepository {
         }
       );
       return updatedSession;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   }

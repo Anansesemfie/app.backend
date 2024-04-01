@@ -15,7 +15,7 @@ const Session = (Mongoose: any) => {
       type: Date,
     },
     external: Boolean,
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

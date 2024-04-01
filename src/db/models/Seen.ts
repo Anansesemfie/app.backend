@@ -15,7 +15,7 @@ const Seen = (Mongoose: any) => {
       type: Boolean,
       default: false,
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

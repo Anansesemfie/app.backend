@@ -15,7 +15,7 @@ const Reaction = (Mongoose: any) => {
       type: String,
       default: "Like",
     },
-    moment: {
+    createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },

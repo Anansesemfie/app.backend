@@ -21,7 +21,7 @@ const chapters = (Mongoose: any) => {
         type: ObjectId,
         required: [true, "Missing Book"],
       },
-      moment: {
+      createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
       },
