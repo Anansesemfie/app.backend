@@ -7,8 +7,7 @@ const Types = (Mongoose:any)=>{
                 required: [true, "Types Title missing"]
             },
             desc: {
-                type:String,
-                required: [true, "Desc missing"],
+                type:String
 
             }
         },
