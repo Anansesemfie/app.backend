@@ -8,6 +8,7 @@ import Session from "./sessionService";
 
 class UserService {
   private logInfo: string = "";
+
   public async create(user: UserType): Promise<UserType> {
     try {
       return await Repo.create(user);
@@ -78,6 +79,17 @@ class UserService {
       throw new Error(error);
     }
   }
+
+  public async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const userId = await Session.validateResetToken(token);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await Repo.updatePassword(userId, hashedPassword);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
 }
 
 export default new UserService();

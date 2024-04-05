@@ -37,6 +37,19 @@ class SessionRepository {
       throw new Error(error);
     }
   }
+
+  public async fetchOneByToken(token: string): Promise<sessionsDTO | any> {
+    try {
+      const fetchedSession = await Session.findOne({
+        token: token,
+        expiredAt: { $gt: new Date() }
+      });
+      return fetchedSession;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
 }
 
 export default new SessionRepository();

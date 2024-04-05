@@ -1,6 +1,7 @@
 import { User } from "../models";
 import { UserType } from "../../dto/userDTO";
 import HELPERS from "../../utils/helpers";
+import bcrypt from 'bcrypt'
 
 class UserRepository {
   public async create(user: UserType): Promise<UserType> {
@@ -34,6 +35,21 @@ class UserRepository {
       throw new Error(error);
     }
   }
+
+  public async updatePassword(userId: string, newPassword: string): Promise<any> {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { password: hashedPassword },
+        { new: true }
+      );
+      return updatedUser;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
 }
 
 export default new UserRepository();

@@ -8,15 +8,16 @@ class SessionService {
     duration: 5000,
     external: false,
   };
-  public async create(
-    userID: string,
-    options: { duration: number; external: boolean } = this.options
+  public async create(userID: string, options: { duration: number; external: boolean } = this.options
   ): Promise<sessionsDTO> {
     try {
+      const now = new Date();
+      const expirationTime = new Date(now.getTime() + options.duration).toString();
       const session: sessionsDTO = {
         user: userID,
         external: options?.external,
         duration: options?.duration,
+        expiredAt: expirationTime
       };
 
       return await Repo.create(session);
@@ -41,6 +42,18 @@ class SessionService {
         return "Success";
       }
       return "Error";
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  public async validateResetToken(token: string): Promise<string> {
+    try {
+      const session: sessionsDTO | any = await Repo.fetchOneByToken(token);
+      if (!session || new Date(session.expiredAt) < new Date()) {
+        throw new Error("Invalid or expired token");
+      }
+      return session.user;
     } catch (error: any) {
       throw new Error(error);
     }
