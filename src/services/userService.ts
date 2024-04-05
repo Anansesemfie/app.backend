@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import Session from "./sessionService";
 
 class UserService {
+  
   private logInfo: string = "";
 
   public async create(user: UserType): Promise<UserType> {
@@ -85,9 +86,43 @@ class UserService {
       const userId = await Session.validateResetToken(token);
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await Repo.updatePassword(userId, hashedPassword);
-    } catch (error) {
+    } catch (error:any) {
       throw new Error(error);
     }
+  }
+
+
+  public async requestPasswordReset(email: string): Promise<void> {
+    try {
+      const user = await Repo.fetchOneByEmail(email);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      const token = await this.generatePasswordResetToken(user.email);
+      await this.sendPasswordResetEmail(user.email, token);
+    } catch (error:any) {
+      throw new Error(error);
+    }
+  }
+
+  private async generatePasswordResetToken(email: string): Promise<string> {
+    // Generate a unique token (you can use libraries like crypto or uuid)
+    const token = this.generateUniqueToken();
+    // await storeTokenInDatabase(email, token);
+
+    return token;
+  }
+
+ private  generateUniqueToken(): string {
+    // Generate a random string
+    const randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const timestamp = Date.now().toString(36);
+    return randomString + timestamp;
+  }
+
+  private async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+    // Send an email to the user containing a link with the password reset token embedded
+    // await sendEmail(email, `Password Reset Link: https://anansesemfie.com/reset-password?token=${token}`);
   }
 
 }

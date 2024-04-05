@@ -50,6 +50,14 @@ class UserRepository {
     }
   }
 
+  public async fetchOneByEmail(email: string): Promise<UserType | null> {
+    try {
+      return await User.findOne({ email });
+    } catch (error:any) {
+      throw new Error(error);
+    }
+  }
+
 }
 
 export default new UserRepository();
