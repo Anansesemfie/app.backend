@@ -59,6 +59,23 @@ class UserService {
       this.logInfo = "";
     }
   }
+  public async fetchUser(userId: string) {
+    try {
+      const fetchedUser = await Repo.fetchUser(userId);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
+      return fetchedUser;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
+      throw new Error(error);
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
 
   private async formatForReturn(user: UserType): Promise<userReturn> {
     try {

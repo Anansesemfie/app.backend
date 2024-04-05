@@ -13,7 +13,7 @@ export const CreateUser = async (req: Request, res: Response) => {
 
 export const LoginUser = async (req: Request, res: Response) => {
   try {
-    if (res.locals.hasToken)
+    if (res.locals.userId)
       res.status(401).json({ message: "Already logged in" });
     let user = req?.body;
     const fetchedUser = await userService.login(user);
@@ -25,7 +25,7 @@ export const LoginUser = async (req: Request, res: Response) => {
 
 export const LogoutUser = async (req: Request, res: Response) => {
   try {
-    if (!res.locals.hasToken) throw new Error("User not logged in");
+    if (!res.locals.userId) throw new Error("User not logged in");
     const sessionId = res?.locals?.session;
     const fetchedUser = await userService.logout(sessionId);
     res.status(200).json(fetchedUser);

@@ -23,29 +23,24 @@ class HELPERS {
     return dayjs().format("YYYY-MM-DD HH:mm:ss");
   }
 
-  public static async logger(
-    message: string,
-    file: string = "logs.log"
-  ): Promise<void> {
+  public static async logger(message: string): Promise<void> {
     try {
       message = "#" + message + "\n";
       let dir = `${__dirname}${SERVER_LOG_FILE}`;
-      console.log("log_file", dir);
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
       }
-      fs.appendFile(dir + file, message, async (err): Promise<void> => {
+      fs.appendFile(dir + "logs.log", message, async (err): Promise<void> => {
         if (err) {
-          console.log("Error", err);
           throw await errorHandler.CustomError(
             ErrorEnum[500],
-            `Error Writing File to file: ${file}`
+            `Error Writing File to file: ${dir}`
           );
         }
       });
     } catch (error) {
-      console.log("Error logger", error);
+      console.log(error);
       throw error;
     }
   }
@@ -55,7 +50,7 @@ class HELPERS {
   public static async ENCODE_Token(id: string = ""): Promise<string> {
     try {
       if (!id) id = await HELPERS.genRandCode();
-      return await jwt.sign({ id }, SECRET_JWT, {
+      return jwt.sign({ id }, SECRET_JWT, {
         expiresIn: HELPERS.SessionMaxAge(),
       });
     } catch (error) {
@@ -67,26 +62,25 @@ class HELPERS {
   }
 
   public static async DECODE_TOKEN(token: string): Promise<string | undefined> {
-    //check token
-    if (token) {
-      let back: string = "";
+    try {
+      if (token) {
+        const decodedToken: JwtPayload | null = jwt.verify(
+          token,
+          SECRET_JWT
+        ) as JwtPayload | null;
 
-      try {
-        const decodedToken: JwtPayload | null = jwt.verify(token, SECRET_JWT) as JwtPayload | null;
-
-        if (decodedToken && decodedToken.id) {
-          back = decodedToken.id;
+        if (decodedToken?.id) {
+          return decodedToken.id;
         } else {
           errorHandler.CustomError(ErrorEnum[403], "Invalid Token Data");
           // If the token is invalid or lacks required properties, throw an error
           throw new Error("Invalid Token Data");
         }
-
-
-        return back;
-      } catch (error: any) {
-        throw error;
       }
+
+      return;
+    } catch (error: any) {
+      throw error;
     }
   }
 
@@ -118,11 +112,11 @@ class HELPERS {
     }
   }
 
-  public static FILE_DETAILS(file: { name: string; }) {
+  public static FILE_DETAILS(file: { name: string }) {
     try {
       let ext = path.extname(file.name);
       return { extension: ext };
-    } catch (error) { }
+    } catch (error) {}
   }
 }
 

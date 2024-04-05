@@ -4,4 +4,5 @@ npm-debug.log
 /*.env
 /uploads
 /dist
+/src/utils/logs
 /public/images/profile_display

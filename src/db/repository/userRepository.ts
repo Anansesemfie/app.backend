@@ -34,6 +34,15 @@ class UserRepository {
       throw new Error(error);
     }
   }
+
+  public async fetchUser(userId: string) {
+    try {
+      const fetchedUser = await User.findOne({ _id: userId });
+      return fetchedUser;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 }
 
 export default new UserRepository();

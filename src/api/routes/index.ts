@@ -5,6 +5,7 @@ import { CHECKAPPTOKEN } from "../middlewares/CheckApp";
 import User from "./UserRoute";
 import Book from "./BookRoute";
 import Chapter from "./chapterRoute";
+import Play from "./userPlayRoute";
 const router = Router();
 
 router.get("/", (req: Request, res: Response) => {
@@ -21,5 +22,6 @@ router.get("/", (req: Request, res: Response) => {
 router.use("/user", CHECKAPPTOKEN, User);
 router.use("/books", CHECKAPPTOKEN, Book);
 router.use("/books/chapter", CHECKAPPTOKEN, Chapter);
+router.use("/books/chapter/play", CHECKAPPTOKEN, Play);
 
 export default router;

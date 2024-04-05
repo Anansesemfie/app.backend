@@ -27,7 +27,7 @@ export async function CHECKAPPTOKEN(
 
     let bearerToken: string | undefined = tokenParts[1];
     bearerToken = await HELPER.DECODE_TOKEN(bearerToken);
-    res.locals.session = bearerToken;
+    res.locals.userId = bearerToken;
 
     next();
   } catch (error: any) {

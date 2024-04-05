@@ -15,6 +15,10 @@ const Seen = (Mongoose: any) => {
       type: Boolean,
       default: false,
     },
+    subscription: {
+      type: ObjectId,
+      required: false,
+    },
     createdAt: {
       type: Date,
       default: HELPERS.currentTime(),

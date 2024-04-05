@@ -40,3 +40,11 @@ export type chapterDTO = {
   book: string;
   createdAt?: Date;
 };
+
+export type seenDTO = {
+  _id?: string;
+  user: string;
+  bookId: string;
+  played?: boolean;
+  createdAt?: string;
+};
