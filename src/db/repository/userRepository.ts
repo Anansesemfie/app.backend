@@ -36,6 +36,16 @@ class UserRepository {
     }
   }
 
+
+  public async fetchUser(userId: string) {
+    try {
+      const fetchedUser = await User.findOne({ _id: userId });
+      return fetchedUser;
+    }
+       catch (error: any) {
+      throw new Error(error);
+    }
+  }
   public async updatePassword(userId: string, newPassword: string): Promise<any> {
     try {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -50,6 +60,7 @@ class UserRepository {
     }
   }
 
+
   public async fetchOneByEmail(email: string): Promise<UserType | null> {
     try {
       return await User.findOne({ email });
@@ -57,7 +68,6 @@ class UserRepository {
       throw new Error(error);
     }
   }
-
 }
 
 export default new UserRepository();

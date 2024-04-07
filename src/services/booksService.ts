@@ -1,10 +1,11 @@
 import Repo from "../db/repository/booksRepository";
+import seenService from "./seenService";
 import { bookDTO } from "../dto";
 import HELPERS from "../utils/helpers";
 
 class BookService {
   private logInfo = "";
-  public async getBooks(): Promise<bookDTO[]> {
+  public async fetchBooks(): Promise<bookDTO[]> {
     try {
       const books = await Repo.fetchAll();
       this.logInfo = `${
@@ -22,9 +23,14 @@ class BookService {
     }
   }
 
-  public async getBook(bookId: string): Promise<bookDTO> {
+  public async fetchBook(
+    bookId: string,
+    userId: string = ""
+  ): Promise<bookDTO> {
     try {
       const book = await Repo.fetchOne(bookId);
+      if (book && userId)
+        seenService.createNewSeen(book?._id as string, userId);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching book @ ${HELPERS.currentTime()}`;

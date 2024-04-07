@@ -11,9 +11,19 @@ class ChapterRepository {
     }
   }
 
-  public async getChapter(chapterId: string): Promise<chapterDTO> {
+  public async getChapterById(chapterId: string): Promise<chapterDTO> {
     try {
       const chapter = await Chapter.findOne({ _id: chapterId });
+      return chapter;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+  public async getChapterByTitle(
+    chapterTitle: string = "sample"
+  ): Promise<chapterDTO> {
+    try {
+      const chapter = await Chapter.findOne({ title: chapterTitle });
       return chapter;
     } catch (error: any) {
       throw new Error(error);
