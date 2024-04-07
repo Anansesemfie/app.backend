@@ -33,3 +33,24 @@ export const LogoutUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const resetPassword = async(req:Request, res:Response)=>{
+  try {
+    const { token, newPassword } = req.body;
+    await userService.resetPassword(token, newPassword);
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error:any) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+export const forgotPassword = async(req:Request, res:Response)=>{
+  try {
+    const {email} = req.body;
+    await userService.requestPasswordReset(email);
+    res.status(200).json({ message: 'Password reset email sent successfully' });
+  } catch (error:any) {
+    res.status(500).json({message: error.message});
+  }
+}

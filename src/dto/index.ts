@@ -2,7 +2,7 @@ export type sessionsDTO = {
   _id?: string;
   user?: string;
   duration?: number;
-  expiredAt?: string;
+  expiredAt: String;
   external?: boolean;
   createdAt?: string;
 };

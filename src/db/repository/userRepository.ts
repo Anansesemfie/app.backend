@@ -1,6 +1,7 @@
 import { User } from "../models";
 import { UserType } from "../../dto/userDTO";
 import HELPERS from "../../utils/helpers";
+import bcrypt from 'bcrypt'
 
 class UserRepository {
   public async create(user: UserType): Promise<UserType> {
@@ -35,11 +36,35 @@ class UserRepository {
     }
   }
 
+
   public async fetchUser(userId: string) {
     try {
       const fetchedUser = await User.findOne({ _id: userId });
       return fetchedUser;
+    }
+       catch (error: any) {
+      throw new Error(error);
+    }
+  }
+  public async updatePassword(userId: string, newPassword: string): Promise<any> {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { password: hashedPassword },
+        { new: true }
+      );
+      return updatedUser;
     } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+
+  public async fetchOneByEmail(email: string): Promise<UserType | null> {
+    try {
+      return await User.findOne({ email });
+    } catch (error:any) {
       throw new Error(error);
     }
   }
