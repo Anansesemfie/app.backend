@@ -1,5 +1,5 @@
 import Repo from "../db/repository/userRepository";
-import { UserType, userReturn } from "../dto/userDTO";
+import { UserType } from "../dto";
 
 import HELPERS from "../utils/helpers";
 import bcrypt from "bcrypt";
@@ -61,7 +61,7 @@ class UserService {
       this.logInfo = "";
     }
   }
-  public async fetchUser(userId: string) {
+  public async fetchUser(userId: string): Promise<UserType | null> {
     try {
       const fetchedUser = await Repo.fetchUser(userId);
       this.logInfo = `${
@@ -79,7 +79,7 @@ class UserService {
     }
   }
 
-  private async formatForReturn(user: UserType): Promise<userReturn> {
+  private async formatForReturn(user: UserType): Promise<any> {
     try {
       const token = await Session.create(user?._id as string);
       return {

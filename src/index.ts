@@ -2,7 +2,7 @@ import express, { Application } from "express";
 import { PORT } from "./utils/env";
 import Mongoose from "./db/models";
 
-import ConsumerRouter from "./api/routes";
+import ConsumerRouter from "./api/routes/consumer";
 
 const app: Application = express();
 

@@ -118,6 +118,46 @@ class HELPERS {
       return { extension: ext };
     } catch (error) {}
   }
+
+  public static millisecondsToDays(milliseconds: number): number {
+    // There are 86,400,000 milliseconds in a day
+    const millisecondsInDay: number = 24 * 60 * 60 * 1000;
+
+    // Calculate days by dividing milliseconds by milliseconds in a day
+    const days: number = milliseconds / millisecondsInDay;
+
+    return days;
+  }
+
+  public static countDaysBetweenDates(
+    dateString1: string,
+    dateString2: string
+  ): number {
+    // Convert date strings to Date objects
+    const date1: Date = new Date(dateString1);
+    const date2: Date = new Date(dateString2);
+
+    // Convert both dates to UTC to ensure consistent calculation
+    const utcDate1: number = Date.UTC(
+      date1.getFullYear(),
+      date1.getMonth(),
+      date1.getDate()
+    );
+    const utcDate2: number = Date.UTC(
+      date2.getFullYear(),
+      date2.getMonth(),
+      date2.getDate()
+    );
+
+    // Calculate the difference in milliseconds
+    const millisecondsDifference: number = Math.abs(utcDate2 - utcDate1);
+
+    // Convert milliseconds to days
+    const daysDifference: number =
+      millisecondsDifference / (1000 * 60 * 60 * 24);
+
+    return Math.floor(daysDifference);
+  }
 }
 
 export default HELPERS;

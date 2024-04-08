@@ -12,7 +12,9 @@ export const getBooks = async (req: Request, res: Response) => {
 
 export const getBook = async (req: Request, res: Response) => {
   try {
-    const book = await booksService.fetchBook(req.params.bookId);
+    const bookId = req.params.bookId;
+    const sessionId = req.params.sessionId;
+    const book = await booksService.fetchBook(bookId, sessionId);
     res.status(200).json(book);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

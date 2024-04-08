@@ -1,4 +1,4 @@
-import { Play } from "../../controllers/playController";
+import { Play } from "../../../controllers/playController";
 import { Router } from "express";
 
 const router = Router();

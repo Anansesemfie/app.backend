@@ -18,7 +18,7 @@ const Subscriptions = (Mongoose: any) => {
         default: false,
       },
       duration: {
-        type: String,
+        type: Number,
         default: "2592000000",
       },
       users: {
