@@ -16,8 +16,7 @@ import Origins from "./Origins";
 import Externals from "./Externals";
 import Sessions from "./Session";
 
-import { UserType } from "../../dto/userDTO";
-import { sessionsDTO } from "../../dto/index";
+import { sessionsDTO, UserType } from "../../dto/index";
 
 Mongoose.connect(MONGODB_URI, {
   autoIndex: true,
@@ -28,7 +27,7 @@ export const Chapter = Mongoose.model("chapters", Chapters(Mongoose));
 export const Category = Mongoose.model("categories", Categories(Mongoose));
 export const Language = Mongoose.model("languages", Languages(Mongoose));
 export const User = Mongoose.model<UserType>("users", Users(Mongoose));
-export const Subscriber = Mongoose.model("subscribeds", Subscribers(Mongoose));
+export const Subscriber = Mongoose.model("subscribers", Subscribers(Mongoose));
 export const Reaction = Mongoose.model("BookReacts", Reactions(Mongoose));
 export const Comment = Mongoose.model("BookComments", Comments(Mongoose));
 export const Seen = Mongoose.model("BookSeens", BookSeen(Mongoose));

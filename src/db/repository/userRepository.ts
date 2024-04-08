@@ -1,5 +1,5 @@
 import { User } from "../models";
-import { UserType } from "../../dto/userDTO";
+import { UserType } from "../../dto/";
 import HELPERS from "../../utils/helpers";
 import bcrypt from 'bcrypt'
 

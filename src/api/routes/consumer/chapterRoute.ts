@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getChapters, getChapter } from "../../controllers/chapterController";
+import {
+  getChapters,
+  getChapter,
+} from "../../../controllers/chapterController";
 const router = Router();
 
 router.get("/:bookId", getChapters);

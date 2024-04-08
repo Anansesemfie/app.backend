@@ -5,7 +5,7 @@ const Subscribers = (Mongoose: any) => {
   return new Mongoose.Schema(
     {
       //active and inactive subscriptions
-      subscription: {
+      parent: {
         type: ObjectId,
         required: [true, "missing subscription key"],
       },
