@@ -2,7 +2,7 @@ export type sessionsDTO = {
   _id?: string;
   user?: string;
   duration?: number;
-  expiredAt: String;
+  expiredAt: string;
   external?: boolean;
   createdAt?: string;
 };
@@ -45,7 +45,8 @@ export type seenDTO = {
   _id?: string;
   user: string;
   bookId: string;
-  played?: boolean;
+  seenAt?: Date;
+  playedAt?: string;
   createdAt?: string;
 };
 

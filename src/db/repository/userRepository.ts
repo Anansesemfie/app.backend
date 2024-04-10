@@ -1,71 +1,54 @@
 import { User } from "../models";
 import { UserType } from "../../dto/";
-import HELPERS from "../../utils/helpers";
-import bcrypt from 'bcrypt'
+import errHandler, { ErrorEnum } from "../../utils/error";
 
 class UserRepository {
   public async create(user: UserType): Promise<UserType> {
     try {
       return await User.create(user);
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error creating user");
     }
   }
 
-  public async fetchOne(user: {
-    email: string;
-    password: string;
-  }): Promise<any> {
+  public async Login(email: string): Promise<any> {
     try {
-      console.log("email:", user);
-      const fetchedUser = await User.findOne({ email: user?.email });
+      const fetchedUser = await User.findOne({ email: email });
       return fetchedUser;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error getting user");
     }
   }
 
-  public async update(user: UserType, userId: string): Promise<any> {
+  public async update(payload: {}, userId: string): Promise<any> {
     try {
-      const updatedUser = await User.findOneAndUpdate({ _id: userId }, user, {
-        new: true,
-      });
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        payload,
+        {
+          new: true,
+        }
+      );
       return updatedUser;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error updating user");
     }
   }
-
 
   public async fetchUser(userId: string) {
     try {
       const fetchedUser = await User.findOne({ _id: userId });
       return fetchedUser;
-    }
-       catch (error: any) {
-      throw new Error(error);
-    }
-  }
-  public async updatePassword(userId: string, newPassword: string): Promise<any> {
-    try {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { password: hashedPassword },
-        { new: true }
-      );
-      return updatedUser;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error fetching user");
     }
   }
-
 
   public async fetchOneByEmail(email: string): Promise<UserType | null> {
     try {
       return await User.findOne({ email });
-    } catch (error:any) {
-      throw new Error(error);
+    } catch (error: any) {
+      throw await errHandler.CustomError(ErrorEnum[400], "Error fetching user");
     }
   }
 }

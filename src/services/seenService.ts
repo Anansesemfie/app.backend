@@ -8,8 +8,11 @@ class SeenService {
     try {
       const oldSeen = await seenRepository.fetchOne(bookId, userId);
       if (oldSeen) return oldSeen;
-
-      const seen = await seenRepository.create({ bookId, user: userId });
+      const newSeen: seenDTO = {
+        user: userId,
+        bookId: bookId,
+      };
+      const seen = await seenRepository.create(newSeen);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } creating new seen @ ${HELPERS.currentTime()}`;

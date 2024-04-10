@@ -3,9 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 
-import ErrorHandler, { ErrorEnum } from "./error";
+import errorHandler, { ErrorEnum } from "./error";
 import { SECRET_JWT, SERVER_LOG_FILE } from "./env";
-const errorHandler = new ErrorHandler();
 class HELPERS {
   public static readonly Chars =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
