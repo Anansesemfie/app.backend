@@ -20,9 +20,9 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-router.use("/auth", CHECKAPPTOKEN, User);
+router.use("/user", CHECKAPPTOKEN, User);
 router.use("/books", CHECKAPPTOKEN, Book);
 router.use("/book/chapter", CHECKAPPTOKEN, Chapter);
-router.use("/book/chapter/play", CHECKAPPTOKEN, Play);
+router.use("/chapter/play", CHECKAPPTOKEN, Play);
 
 export default router;

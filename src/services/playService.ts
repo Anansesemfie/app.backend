@@ -42,21 +42,26 @@ class PlayService {
     try {
       const session = await sessionService.getSession(sessionId);
       const user = await userService.fetchUser(session.user as string);
+      //no subscription currently linked
       if (!user?.subscription)
-        //no subscription currently linked
         return await this.unAuthorizedUserPlay(chapterId, user?._id);
-      const subscription = subscribersService.validateSubscription(
-        user?.subscription as string
+
+      const subscription = await subscribersService.validateSubscription(
+        user?.subscription
       );
+
+      // no active subscription
       if (!subscription)
-        // no active subscription
         return await this.unAuthorizedUserPlay(chapterId, user?._id);
 
       const chapter = await chapterService.fetchChapter(chapterId);
+
       await seenService.updateSeen(chapter?.book, user._id as string, {
         played: true,
         subscription: user?.subscription,
       });
+
+      this.logInfo = `${HELPERS.loggerInfo.success} authorized user played chapter: ${chapter?._id}`;
       return {
         chapter,
         playTime: 1,

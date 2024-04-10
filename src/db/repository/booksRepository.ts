@@ -1,11 +1,13 @@
 import { Book } from "../models";
 import { bookDTO } from "../../dto";
+import errHandler, { ErrorEnum } from "../../utils/error";
+
 class BookRepository {
   public async create(book: bookDTO): Promise<bookDTO> {
     try {
       return await Book.create(book);
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error creating book");
     }
   }
 
@@ -16,7 +18,7 @@ class BookRepository {
       });
       return fetchedBook;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error fetching book");
     }
   }
   public async update(book: bookDTO, bookId: string): Promise<bookDTO> {
@@ -26,7 +28,7 @@ class BookRepository {
       });
       return updatedBook;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(ErrorEnum[400], "Error updating book");
     }
   }
 
@@ -35,7 +37,10 @@ class BookRepository {
       const fetchedBooks = await Book.find({ status: "Active" });
       return fetchedBooks;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error fetching books"
+      );
     }
   }
 }

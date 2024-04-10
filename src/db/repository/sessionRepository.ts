@@ -42,14 +42,13 @@ class SessionRepository {
     try {
       const fetchedSession = await Session.findOne({
         token: token,
-        expiredAt: { $gt: new Date() }
+        // expiredAt: { $gt: new Date() },
       });
       return fetchedSession;
     } catch (error: any) {
       throw new Error(error);
     }
   }
-
 }
 
 export default new SessionRepository();

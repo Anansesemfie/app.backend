@@ -27,7 +27,7 @@ class SeenRepository {
     }
   }
 
-  public async update(params: seenDTO, payload: {}): Promise<seenDTO> {
+  public async update(params: {}, payload: {}): Promise<seenDTO> {
     try {
       const updatedSeen = await Seen.findOneAndUpdate(params, payload);
       return updatedSeen;

@@ -1,13 +1,18 @@
 import userService from "../services/userService";
 import { Request, Response } from "express";
 
+import errorHandler from "../utils/error";
 export const CreateUser = async (req: Request, res: Response) => {
   try {
     let user = req.body;
     const newUser = await userService.create(user);
     res.status(201).json(newUser);
   } catch (error: any) {
-    res.status(401).json({ message: error.message });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
 };
 
@@ -19,7 +24,11 @@ export const LoginUser = async (req: Request, res: Response) => {
     const fetchedUser = await userService.login(user);
     res.status(200).json(fetchedUser);
   } catch (error: any) {
-    res.status(401).json({ message: error.message });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
 };
 
@@ -30,27 +39,38 @@ export const LogoutUser = async (req: Request, res: Response) => {
     const fetchedUser = await userService.logout(sessionId);
     res.status(200).json(fetchedUser);
   } catch (error: any) {
-    res.status(401).json({ message: error.message });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
 };
 
-
-export const resetPassword = async(req:Request, res:Response)=>{
+export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, newPassword } = req.body;
     await userService.resetPassword(token, newPassword);
-    res.status(200).json({ message: 'Password reset successful' });
-  } catch (error:any) {
-    res.status(500).json({message: error.message});
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
-}
+};
 
-export const forgotPassword = async(req:Request, res:Response)=>{
+export const forgotPassword = async (req: Request, res: Response) => {
   try {
-    const {email} = req.body;
+    const { email } = req.body;
     await userService.requestPasswordReset(email);
-    res.status(200).json({ message: 'Password reset email sent successfully' });
-  } catch (error:any) {
-    res.status(500).json({message: error.message});
+    res.status(200).json({ message: "Password reset email sent successfully" });
+  } catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
-}
+};

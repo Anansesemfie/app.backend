@@ -1,5 +1,6 @@
 import { Chapter } from "../models";
 import { chapterDTO } from "../../dto";
+import errHandler, { ErrorEnum } from "../../utils/error";
 
 class ChapterRepository {
   public async getChapters(bookId: string): Promise<chapterDTO[]> {
@@ -7,7 +8,10 @@ class ChapterRepository {
       const chapters = await Chapter.find({ book: bookId });
       return chapters;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error fetching chapters"
+      );
     }
   }
 
@@ -16,7 +20,10 @@ class ChapterRepository {
       const chapter = await Chapter.findOne({ _id: chapterId });
       return chapter;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error fetching chapter"
+      );
     }
   }
   public async getChapterByTitle(
@@ -26,7 +33,10 @@ class ChapterRepository {
       const chapter = await Chapter.findOne({ title: chapterTitle });
       return chapter;
     } catch (error: any) {
-      throw new Error(error);
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error fetching chapter"
+      );
     }
   }
 }

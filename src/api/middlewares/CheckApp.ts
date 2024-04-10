@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import ErrorHandler, { ErrorEnum } from "../../utils/error";
+import errorHandler, { ErrorEnum } from "../../utils/error";
 import HELPER from "../../utils/helpers";
-
-const errorHandler = new ErrorHandler();
 
 export async function CHECKAPPTOKEN(
   req: Request,
@@ -11,11 +9,10 @@ export async function CHECKAPPTOKEN(
 ) {
   try {
     const authorizationHeader = req.headers["authorization"];
-
     if (!authorizationHeader) {
-      return (res.locals.hasToken = false);
+      res.locals.sessionId = null;
+      return next();
     }
-    res.locals.hasToken = true;
     // Extract the token from the Authorization header
     const tokenParts = authorizationHeader.split(" ");
 
