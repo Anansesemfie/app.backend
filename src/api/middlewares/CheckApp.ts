@@ -13,7 +13,8 @@ export async function CHECKAPPTOKEN(
     const authorizationHeader = req.headers["authorization"];
 
     if (!authorizationHeader) {
-      return (res.locals.hasToken = false);
+      res.locals.hasToken = false
+      return next();
     }
     res.locals.hasToken = true;
     // Extract the token from the Authorization header
