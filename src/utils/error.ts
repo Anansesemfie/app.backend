@@ -9,14 +9,14 @@ export enum ErrorEnum {
 }
 
 class ErrorHandler {
-  private static readonly STATUS_ERROR_404: number = ErrorEnum["NotFound"];
+  private static readonly STATUS_ERROR_404: number = 404;
   private static readonly STATUS_ERROR_500: number = 500;
   private static readonly STATUS_ERROR_403: number = 403;
   private static readonly STATUS_ERROR_401: number = 401;
   private static readonly STATUS_ERROR_400: number = 400;
   private static readonly STATUS_ERROR_408: number = 408;
 
-  public fileName: string;
+  public fileName?: string;
 
   constructor(file?: string) {
     this.fileName = file;
@@ -26,7 +26,7 @@ class ErrorHandler {
     errorMessage: string
   ): Promise<{ code: string; message: string }> {
     try {
-      return await { code: error, message: errorMessage };
+      return { code: error, message: errorMessage };
     } catch (error) {
       throw new Error("Unknown");
     }
@@ -89,4 +89,4 @@ class ErrorHandler {
   }
 }
 
-export default ErrorHandler;
+export default new ErrorHandler();

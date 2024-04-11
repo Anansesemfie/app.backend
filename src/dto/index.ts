@@ -2,9 +2,9 @@ export type sessionsDTO = {
   _id?: string;
   user?: string;
   duration?: number;
-  expiredAt?: Date;
+  expiredAt: string;
   external?: boolean;
-  moment?: Date;
+  createdAt?: string;
 };
 
 export type bookDTO = {
@@ -21,7 +21,7 @@ export type bookDTO = {
   collections: string[];
   owner: string;
   uploader: string;
-  moment?: Date;
+  createdAt?: Date;
   meta?: {
     played: number;
     views: number;
@@ -38,5 +38,50 @@ export type chapterDTO = {
   file: string;
   mimetype: string;
   book: string;
-  moment?: Date;
+  createdAt?: Date;
+};
+
+export type seenDTO = {
+  _id?: string;
+  user: string;
+  bookId: string;
+  seenAt?: Date;
+  playedAt?: string;
+  createdAt?: string;
+};
+
+export type subscriberDTO = {
+  _id?: string;
+  parent: string;
+  user: string;
+  active: boolean;
+  ref: string;
+  createdAt?: string;
+};
+
+export type subscriptionsDTO = {
+  _id?: string;
+  name: string;
+  active: boolean;
+  visible: boolean;
+  duration: number;
+  users: number;
+  autorenew: boolean;
+  amount: number;
+  origin: string;
+  accent: string;
+  createdAt?: string;
+};
+
+export type UserType = {
+  _id?: string;
+  email: string;
+  password: string;
+  username: string;
+  account: string;
+  active: boolean;
+  dp: string;
+  bio: string;
+  subscription?: string;
+  createdAt?: string;
 };

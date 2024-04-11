@@ -11,7 +11,7 @@ class ChapterService {
         HELPERS.loggerInfo.success
       } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
       return chapters;
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
@@ -22,14 +22,19 @@ class ChapterService {
     }
   }
 
-  public async fetchChapter(chapterId: string): Promise<chapterDTO> {
+  public async fetchChapter(
+    chapterId: string,
+    substring: string = ""
+  ): Promise<chapterDTO> {
     try {
-      const chapter = await Repo.getChapter(chapterId);
+      const chapter = chapterId
+        ? await Repo.getChapterById(chapterId)
+        : await Repo.getChapterByTitle(substring);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;
       return chapter;
-    } catch (error) {
+    } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;

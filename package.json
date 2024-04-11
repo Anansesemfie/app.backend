@@ -7,7 +7,7 @@
   "scripts": {
     "test": "nodemon app.js",
     "start": "nodemon dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc -p .",
     "start-prod": "export NODE_ENV=production; node dist/index.js"
   },
@@ -17,10 +17,16 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/bson": "^4.2.0",
     "@types/express": "^4.17.20",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.8.10",
-    "ts-node": "^10.9.1",
+    "@types/request": "^2.48.12",
+    "@types/validator": "^13.11.9",
     "nodemon": "^3.1.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -34,7 +40,7 @@
     "multer": "^1.4.4",
     "nodemailer": "^6.7.2",
     "request": "^2.88.2",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "validator": "^13.7.0"
   }

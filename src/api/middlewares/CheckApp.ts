@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import ErrorHandler, { ErrorEnum } from "../../utils/error";
+import errorHandler, { ErrorEnum } from "../../utils/error";
 import HELPER from "../../utils/helpers";
-
-const errorHandler = new ErrorHandler();
 
 export async function CHECKAPPTOKEN(
   req: Request,
@@ -11,12 +9,10 @@ export async function CHECKAPPTOKEN(
 ) {
   try {
     const authorizationHeader = req.headers["authorization"];
-
     if (!authorizationHeader) {
-      res.locals.hasToken = false
+      res.locals.sessionId = null;
       return next();
     }
-    res.locals.hasToken = true;
     // Extract the token from the Authorization header
     const tokenParts = authorizationHeader.split(" ");
 
@@ -26,12 +22,12 @@ export async function CHECKAPPTOKEN(
         "Invalid Authorization header format"
       );
 
-    let bearerToken = tokenParts[1];
+    let bearerToken: string | undefined = tokenParts[1];
     bearerToken = await HELPER.DECODE_TOKEN(bearerToken);
-    res.locals.session = bearerToken;
+    res.locals.sessionId = bearerToken;
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     let errors = await errorHandler.HandleError(
       error?.errorCode,
       error?.message
