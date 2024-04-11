@@ -8,6 +8,8 @@ export const CreateUser = async (req: Request, res: Response) => {
     const newUser = await userService.create(user);
     res.status(201).json(newUser);
   } catch (error: any) {
+    console.log(error);
+    
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.errorCode,
       error?.message

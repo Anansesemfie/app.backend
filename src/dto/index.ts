@@ -83,5 +83,7 @@ export type UserType = {
   dp: string;
   bio: string;
   subscription?: string;
+  verificationCode?: string;
+  verified?: boolean;
   createdAt?: string;
 };

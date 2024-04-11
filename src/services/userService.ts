@@ -12,7 +12,10 @@ class UserService {
 
   public async create(user: UserType): Promise<UserType> {
     try {
-      return await Repo.create(user);
+      const password = await bcrypt.hash(user.password, 10);
+      const verificationCode = HELPERS.generateVerificationCode();
+      const userWithHashedPassword = { ...user, password: password, verificationCode };
+      return await Repo.create(userWithHashedPassword);
     } catch (error: any) {
       this.logInfo = `${HELPERS.loggerInfo.error} creating ${
         user.username

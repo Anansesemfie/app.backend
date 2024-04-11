@@ -49,19 +49,32 @@ const Users = (Mongoose: any) => {
       type: ObjectId,
       required: false,
     },
+    verificationCode:{
+      type:String,
+      require: true,
+    },
+    verified:{
+      type: Boolean,
+      require: false,
+      default: false
+    },
     createdAt: {
       type: Date,
       default: HELPERS.currentTime(),
     },
   });
 
-  USER.pre("save", async function (next: () => void) {
-    const salt = await bcrypt.genSalt();
-
-    USER.password = await bcrypt.hash(USER.password, salt);
-
-    next();
-  });
+  // USER.pre("save", async function (next: () => void) {
+    
+  //   try {
+  //     const user = this; // Reference to the document being saved
+  //     const salt = await bcrypt.genSalt();
+  //     user.password = await bcrypt.hash(user.password, salt);
+  //     next();
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // });
 
   USER.pre("update", async function (next: () => void) {
     const salt = await bcrypt.genSalt();

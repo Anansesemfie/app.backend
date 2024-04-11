@@ -18,7 +18,7 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-router.use("/user", CHECKAPPTOKEN, User);
+router.use("/auth", CHECKAPPTOKEN, User);
 router.use("/books", CHECKAPPTOKEN, Book);
 router.use("/books/chapter", CHECKAPPTOKEN, Chapter);
 

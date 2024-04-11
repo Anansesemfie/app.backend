@@ -7,6 +7,8 @@ class UserRepository {
     try {
       return await User.create(user);
     } catch (error: any) {
+      console.log(error);
+      
       throw await errHandler.CustomError(ErrorEnum[400], "Error creating user");
     }
   }
