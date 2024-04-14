@@ -3,8 +3,9 @@ import seenService from "./seenService";
 import userService from "./userService";
 import sessionService from "./sessionService";
 
-import { bookDTO } from "../dto";
+import { bookDTO, bookUpdateDTO } from "../dto";
 import HELPERS from "../utils/helpers";
+import errorHandler, { ErrorEnum } from "../utils/error";
 
 class BookService {
   private logInfo = "";
@@ -19,7 +20,7 @@ class BookService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;
-      throw new Error(error);
+      throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";
@@ -31,6 +32,8 @@ class BookService {
     sessionId: string = ""
   ): Promise<bookDTO> {
     try {
+      if (!bookId)
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
       const book = await Repo.fetchOne(bookId);
       if (sessionId) {
         // check for seen record or create seen record
@@ -47,7 +50,30 @@ class BookService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching book @ ${HELPERS.currentTime()}`;
-      throw new Error(error);
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
+  public async updateBook(
+    bookID: string,
+    book: bookUpdateDTO
+  ): Promise<bookDTO> {
+    try {
+      if (!bookID) {
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+      }
+      const updatedBook = await Repo.update(bookID, book);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } updating book @ ${HELPERS.currentTime()}`;
+      return updatedBook;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } updating book @ ${HELPERS.currentTime()}`;
+      throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";

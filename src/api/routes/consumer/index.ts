@@ -6,6 +6,7 @@ import User from "./UserRoute";
 import Book from "./BookRoute";
 import Chapter from "./chapterRoute";
 import Play from "./userPlayRoute";
+import Route from "./ReactionRoute";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.get("/", (req: Request, res: Response) => {
 router.use("/user", CHECKAPPTOKEN, User);
 router.use("/books", CHECKAPPTOKEN, Book);
 router.use("/book/chapter", CHECKAPPTOKEN, Chapter);
+router.use("/book/reaction", CHECKAPPTOKEN, Route);
 router.use("/chapter/play", CHECKAPPTOKEN, Play);
 
 export default router;

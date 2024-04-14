@@ -1,4 +1,5 @@
 import booksService from "../services/booksService";
+import errorHandler from "../utils/error";
 import { Request, Response } from "express";
 
 export const getBooks = async (req: Request, res: Response) => {
@@ -6,7 +7,11 @@ export const getBooks = async (req: Request, res: Response) => {
     const books = await booksService.fetchBooks();
     res.status(200).json(books);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
 };
 
@@ -17,6 +22,10 @@ export const getBook = async (req: Request, res: Response) => {
     const book = await booksService.fetchBook(bookId, sessionId);
     res.status(200).json(book);
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.errorCode,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
   }
 };

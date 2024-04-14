@@ -9,7 +9,7 @@ class SubscriberService {
     try {
       return await subscribersRepository.create(subscription);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -20,7 +20,7 @@ class SubscriberService {
       );
       return fetchedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -35,7 +35,7 @@ class SubscriberService {
       );
       return updatedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -54,7 +54,7 @@ class SubscriberService {
       return daysGone <= duration;
     } catch (error: any) {
       console.log({ error });
-      throw new Error(error);
+      throw error;
     }
   }
 }

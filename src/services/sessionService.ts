@@ -8,28 +8,32 @@ class SessionService {
     duration: 5000,
     external: false,
   };
-  public async create(userID: string, options: { duration: number; external: boolean } = this.options
+  public async create(
+    userID: string,
+    options: { duration: number; external: boolean } = this.options
   ): Promise<sessionsDTO> {
     try {
       const now = new Date();
-      const expirationTime = new Date(now.getTime() + options.duration).toString();
+      const expirationTime = new Date(
+        now.getTime() + options.duration
+      ).toString();
       const session: sessionsDTO = {
         user: userID,
         external: options?.external,
         duration: options?.duration,
-        expiredAt: expirationTime
+        expiredAt: expirationTime,
       };
 
       return await Repo.create(session);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async getSession(sessionId: string): Promise<sessionsDTO> {
     try {
       return await Repo.fetchOne(sessionId);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -43,7 +47,7 @@ class SessionService {
       }
       return "Error";
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -55,7 +59,7 @@ class SessionService {
       }
       return session.user;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

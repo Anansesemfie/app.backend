@@ -9,7 +9,7 @@ class SubscriptionService {
     try {
       return await Subscription.create(subscription);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async fetchOne(subscriptionId: string): Promise<subscriptionsDTO> {
@@ -19,7 +19,7 @@ class SubscriptionService {
       });
       return fetchedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async fetchAllSubscriptions(): Promise<subscriptionsDTO[]> {
@@ -30,7 +30,7 @@ class SubscriptionService {
       });
       return fetchedSubscriptions;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async update(
@@ -47,7 +47,7 @@ class SubscriptionService {
       );
       return updatedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

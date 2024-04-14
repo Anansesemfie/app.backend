@@ -32,7 +32,7 @@ class PlayService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;
-      throw new Error(error);
+      throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";
@@ -70,7 +70,7 @@ class PlayService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;
-      throw new Error(error);
+      throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";

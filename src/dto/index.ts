@@ -11,7 +11,7 @@ export type bookDTO = {
   _id?: string;
   title: string;
   description: string;
-  status: string;
+  status: "Active" | "Inactive";
   snippet?: string;
   authors?: string[];
   category: string[];
@@ -29,6 +29,18 @@ export type bookDTO = {
     dislikes: number;
     comments: number;
   };
+};
+
+export type bookUpdateDTO = bookDTO & {
+  owner?: string;
+  uploader?: string;
+  title?: string;
+  description?: string;
+  status?: "Active" | "Inactive";
+  category?: string[];
+  languages?: string[];
+  folder?: string;
+  cover?: string;
 };
 
 export type chapterDTO = {
@@ -84,4 +96,13 @@ export type UserType = {
   bio: string;
   subscription?: string;
   createdAt?: string;
+};
+
+export type ReactionType = {
+  _id?: string;
+  bookID: string;
+  user: string;
+  action: "Liked" | "Disliked";
+  createdAt?: string;
+  deletedAt?: string;
 };
