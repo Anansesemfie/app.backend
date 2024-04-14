@@ -79,6 +79,74 @@ class BookService {
       this.logInfo = "";
     }
   }
+
+  public async updateBookMeta(
+    bookId: string,
+    metaAction: { meta: string; action: "Plus" | "Minus" }
+  ) {
+    try {
+      const book = await this.fetchBook(bookId);
+      const newMeta = await this.mutateBookMeta(
+        book?.meta as {
+          played: number;
+          views: number;
+          likes: number;
+          dislikes: number;
+          comments: number;
+        },
+        metaAction
+      );
+      book.meta = newMeta;
+      const updatedBook = await this.updateBook(bookId, book);
+    } catch (error) {
+      throw await errorHandler.CustomError(ErrorEnum[500], "Invalid action");
+    }
+  }
+
+  private async mutateBookMeta(
+    bookMeta: {
+      played: number;
+      views: number;
+      likes: number;
+      dislikes: number;
+      comments: number;
+    },
+    { meta, action }: { meta: string; action: "Plus" | "Minus" }
+  ) {
+    try {
+      const newBookMeta = {
+        played: bookMeta.played ?? 0,
+        views: bookMeta.views ?? 0,
+        likes: bookMeta.likes ?? 0,
+        dislikes: bookMeta.dislikes ?? 0,
+        comments: bookMeta.comments ?? 0,
+      };
+      switch (meta) {
+        case "comments":
+        case "comment":
+          action == "Plus" ? newBookMeta.comments++ : newBookMeta.comments--;
+          break;
+        case "likes":
+          action == "Plus" ? newBookMeta.likes++ : newBookMeta.likes--;
+          break;
+        case "views":
+          action == "Plus" ? newBookMeta.views++ : newBookMeta.views--;
+          break;
+        case "played":
+          action == "Plus" ? newBookMeta.played++ : newBookMeta.played--;
+          break;
+        default:
+          throw await errorHandler.CustomError(
+            ErrorEnum[500],
+            "Invalid action"
+          );
+      }
+      console.log({ newBookMeta });
+      return newBookMeta;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new BookService();
