@@ -8,7 +8,7 @@ class SubscriptionsRepository {
     try {
       return await Subscription.create(subscription);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async getSubscription(
@@ -20,7 +20,7 @@ class SubscriptionsRepository {
       });
       return subscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

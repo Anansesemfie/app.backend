@@ -6,7 +6,7 @@ class SessionRepository {
     try {
       return await Session.create(session);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async fetchOne(sessionId: string): Promise<sessionsDTO | any> {
@@ -16,7 +16,7 @@ class SessionRepository {
       });
       return fetchedSession;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -34,7 +34,7 @@ class SessionRepository {
       );
       return updatedSession;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -46,7 +46,7 @@ class SessionRepository {
       });
       return fetchedSession;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

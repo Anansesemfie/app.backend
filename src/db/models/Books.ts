@@ -75,8 +75,6 @@ const Books = (Mongoose: any) => {
       meta: {
         played: Number,
         views: Number,
-        likes: Number,
-        dislikes: Number,
         comments: Number,
       },
     },

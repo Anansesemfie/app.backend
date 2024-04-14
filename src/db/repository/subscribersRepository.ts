@@ -6,7 +6,7 @@ class SubscriberRepository {
     try {
       return await Subscriber.create(subscription);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -17,7 +17,7 @@ class SubscriberRepository {
       });
       return fetchedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -35,7 +35,7 @@ class SubscriberRepository {
       );
       return updatedSubscription;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

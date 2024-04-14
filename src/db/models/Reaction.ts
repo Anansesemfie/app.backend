@@ -19,6 +19,9 @@ const Reaction = (Mongoose: any) => {
       type: Date,
       default: HELPERS.currentTime(),
     },
+    deletedAt: {
+      type: String,
+    },
   });
 };
 

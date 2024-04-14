@@ -6,7 +6,7 @@ class SeenRepository {
     try {
       return await Seen.create(seen);
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
   public async fetch(bookId: string): Promise<seenDTO[]> {
@@ -14,7 +14,7 @@ class SeenRepository {
       const seens = await Seen.find({ bookId: bookId });
       return seens;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -23,7 +23,7 @@ class SeenRepository {
       const seen = await Seen.findOne({ bookId: bookId, user: userId });
       return seen;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -32,7 +32,7 @@ class SeenRepository {
       const updatedSeen = await Seen.findOneAndUpdate(params, payload);
       return updatedSeen;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 }

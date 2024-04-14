@@ -1,5 +1,5 @@
 import { Book } from "../models";
-import { bookDTO } from "../../dto";
+import { bookDTO, bookUpdateDTO } from "../../dto";
 import errHandler, { ErrorEnum } from "../../utils/error";
 
 class BookRepository {
@@ -21,7 +21,7 @@ class BookRepository {
       throw await errHandler.CustomError(ErrorEnum[400], "Error fetching book");
     }
   }
-  public async update(book: bookDTO, bookId: string): Promise<bookDTO> {
+  public async update(bookId: string, book: bookUpdateDTO): Promise<bookDTO> {
     try {
       const updatedBook = await Book.findOneAndUpdate({ _id: bookId }, book, {
         new: true,
