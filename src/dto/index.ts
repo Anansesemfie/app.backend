@@ -106,3 +106,12 @@ export type ReactionType = {
   createdAt?: string;
   deletedAt?: string;
 };
+
+export type CommentType = {
+  _id?: string;
+  bookID: string;
+  user: string;
+  comment: string;
+  createdAt?: string;
+  deletedAt?: string;
+};

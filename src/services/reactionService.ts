@@ -1,7 +1,6 @@
 import { ReactionType } from "../dto";
 import reactionRepository from "../db/repository/reactionRepository";
 import sessionService from "./sessionService";
-import booksService from "./booksService";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import HELPERS from "../utils/helpers";
 

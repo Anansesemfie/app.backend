@@ -157,6 +157,13 @@ class HELPERS {
 
     return Math.floor(daysDifference);
   }
+  public static hasSpecialCharacters(text: string): boolean {
+    // Define a regular expression pattern to match special characters
+    const specialCharsRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+
+    // Test if the text contains any special characters
+    return specialCharsRegex.test(text);
+  }
 }
 
 export default HELPERS;

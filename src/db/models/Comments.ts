@@ -20,6 +20,9 @@ const Comments = (Mongoose: any) => {
       type: Date,
       default: HELPERS.currentTime(),
     },
+    deletedAt: {
+      type: String,
+    },
   });
 };
 
