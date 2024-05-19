@@ -1,19 +1,44 @@
 import Repo from "../db/repository/userRepository";
 import { UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
+import { APP_BASE_URL } from "../utils/env";
 
 import HELPERS from "../utils/helpers";
-import bcrypt from "bcrypt";
+import bcrypt, { genSalt } from "bcrypt";
 
 import Session from "./sessionService";
+import EmailService from "./emailService";
 
 class UserService {
   private logInfo: string = "";
 
   public async create(user: UserType): Promise<UserType> {
     try {
-      return await Repo.create(user);
+      const salt = await bcrypt.genSalt();
+
+      user.password = await bcrypt.hash(user.password, salt);
+      const newUser = await Repo.create(user);
+      const verificationCode = await this.generateVerification(
+        newUser._id as string
+      );
+      const HTML = `Hello <b>${newUser.username}</b>, verify your account <br/>
+      <button onClick=(copyText(${verificationCode})) >Copy verification Code</button> <br/>
+      and <a href="${APP_BASE_URL}">goto app </a> or
+      `;
+      await EmailService.sendEmail(
+        {
+          to: newUser.email,
+          subject: "Verify Account",
+          html: HTML,
+        },
+        {
+          link: `${APP_BASE_URL}?verificationCode=${verificationCode}`,
+          label: "Verify Account",
+        }
+      );
+      return newUser;
     } catch (error: any) {
+      console.log({ error });
       this.logInfo = `${HELPERS.loggerInfo.error} creating ${
         user.username
       } @ ${HELPERS.currentTime()}`;
@@ -143,6 +168,31 @@ class UserService {
   ): Promise<void> {
     // Send an email to the user containing a link with the password reset token embedded
     // await sendEmail(email, `Password Reset Link: https://anansesemfie.com/reset-password?token=${token}`);
+  }
+
+  private async generateVerification(userId: string) {
+    try {
+      const token = HELPERS.genRandCode();
+      await Repo.update(
+        {
+          key: token,
+        },
+        userId
+      );
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } creating verification code for useerId: ${userId} @ ${HELPERS.currentTime()}`;
+
+      return HELPERS.ENCODE_Token(token);
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
   }
 }
 
