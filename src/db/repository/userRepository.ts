@@ -7,7 +7,23 @@ class UserRepository {
     try {
       return await User.create(user);
     } catch (error: any) {
-      throw await errHandler.CustomError(ErrorEnum[400], "Error creating user");
+      switch (error?.code) {
+        case 11000:
+          throw await errHandler.CustomError(
+            ErrorEnum[401],
+            "Email already exists"
+          );
+        case 11001:
+          throw await errHandler.CustomError(
+            ErrorEnum[401],
+            "Username already exists"
+          );
+        default:
+          throw await errHandler.CustomError(
+            ErrorEnum[400],
+            "Error creating user"
+          );
+      }
     }
   }
 
@@ -31,7 +47,23 @@ class UserRepository {
       );
       return updatedUser;
     } catch (error: any) {
-      throw await errHandler.CustomError(ErrorEnum[400], "Error updating user");
+      switch (error?.code) {
+        case 11000:
+          throw await errHandler.CustomError(
+            ErrorEnum[401],
+            "Email already exists"
+          );
+        case 11001:
+          throw await errHandler.CustomError(
+            ErrorEnum[401],
+            "Username already exists"
+          );
+        default:
+          throw await errHandler.CustomError(
+            ErrorEnum[400],
+            "Error updating user"
+          );
+      }
     }
   }
 

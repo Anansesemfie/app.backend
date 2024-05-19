@@ -25,8 +25,8 @@ const Users = (Mongoose: any) => {
       required: [true, "username is required"],
     },
     account: {
-      type: String,
-      required: [true, "Please Select account type"],
+      type: Number,
+      default: 0,
     },
     active: {
       type: Boolean,
@@ -53,22 +53,6 @@ const Users = (Mongoose: any) => {
       type: Date,
       default: HELPERS.currentTime(),
     },
-  });
-
-  USER.pre("save", async function (next: () => void) {
-    const salt = await bcrypt.genSalt();
-
-    USER.password = await bcrypt.hash(USER.password, salt);
-
-    next();
-  });
-
-  USER.pre("update", async function (next: () => void) {
-    const salt = await bcrypt.genSalt();
-
-    USER.password = await bcrypt.hash(USER.password, salt);
-
-    next();
   });
 
   return USER;

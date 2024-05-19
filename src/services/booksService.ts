@@ -97,7 +97,7 @@ class BookService {
         metaAction
       );
       book.meta = newMeta;
-      const updatedBook = await this.updateBook(bookId, book);
+      await this.updateBook(bookId, book);
     } catch (error) {
       throw await errorHandler.CustomError(ErrorEnum[500], "Invalid action");
     }

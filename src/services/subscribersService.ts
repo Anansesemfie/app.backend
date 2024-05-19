@@ -48,7 +48,7 @@ class SubscriberService {
 
       const daysGone = HELPERS.countDaysBetweenDates(
         child?.createdAt as string,
-        HELPERS.currentTime()
+        HELPERS.currentTime(false) as string
       );
 
       return daysGone <= duration;

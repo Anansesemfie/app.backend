@@ -18,8 +18,12 @@ class HELPERS {
     error: "#Error",
     warning: "#Warning",
   } as const;
-  public static currentTime(): string {
-    return dayjs().format("YYYY-MM-DD HH:mm:ss");
+  public static currentTime(
+    format: boolean = true,
+    formatBy: string = "YYYY-MM-DD HH:mm:ss"
+  ): Date | string {
+    if (format) return dayjs().format(formatBy);
+    return dayjs().toISOString();
   }
 
   public static async logger(message: string): Promise<void> {
@@ -96,7 +100,7 @@ class HELPERS {
     }
   }
 
-  public static async genRandCode(size: number = 16): Promise<string> {
+  public static genRandCode(size: number = 16): string {
     try {
       let result = "";
       for (let i = 0; i < size; i++) {
@@ -107,7 +111,7 @@ class HELPERS {
       if (result.length < size) throw new Error(ErrorEnum[500]);
       return result;
     } catch (error) {
-      throw await errorHandler.CustomError(ErrorEnum[500], "Try again later");
+      throw errorHandler.CustomError(ErrorEnum[500], "Try again later");
     }
   }
 

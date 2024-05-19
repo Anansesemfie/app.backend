@@ -36,7 +36,6 @@ class ErrorHandler {
     error: string,
     message = ""
   ): Promise<{ code: number; message: string; exMessage: string }> {
-    console.log("message", error);
     switch (error) {
       case ErrorEnum[408]:
         return {
