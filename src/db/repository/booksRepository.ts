@@ -58,7 +58,6 @@ class BookRepository {
 
   public async findByLanguage(language: string): Promise<BookType[]> {
     try {
-      console.log({ language });
       const matchedBooks = await Book.find({ languages:language  });
       return matchedBooks;
     } catch (error: any) {
