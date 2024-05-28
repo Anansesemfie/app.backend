@@ -1,5 +1,5 @@
 import Repo from "../db/repository/sessionRepository";
-import { sessionsDTO } from "../dto";
+import { SessionType } from "../dto";
 import HELPERS from "../utils/helpers";
 
 class SessionService {
@@ -11,13 +11,13 @@ class SessionService {
   public async create(
     userID: string,
     options: { duration: number; external: boolean } = this.options
-  ): Promise<sessionsDTO> {
+  ): Promise<SessionType> {
     try {
       const now = new Date();
       const expirationTime = new Date(
         now.getTime() + options.duration
       ).toString();
-      const session: sessionsDTO = {
+      const session: SessionType = {
         user: userID,
         external: options?.external,
         duration: options?.duration,
@@ -29,7 +29,7 @@ class SessionService {
       throw error;
     }
   }
-  public async getSession(sessionId: string): Promise<sessionsDTO> {
+  public async getSession(sessionId: string): Promise<SessionType> {
     try {
       return await Repo.fetchOne(sessionId);
     } catch (error: any) {
@@ -53,7 +53,7 @@ class SessionService {
 
   public async validateResetToken(token: string): Promise<string> {
     try {
-      const session: sessionsDTO | any = await Repo.fetchOneByToken(token);
+      const session: SessionType | any = await Repo.fetchOneByToken(token);
       if (!session || new Date(session.expiredAt) < new Date()) {
         throw new Error("Invalid or expired token");
       }

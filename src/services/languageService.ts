@@ -1,0 +1,49 @@
+import repo from "../db/repository/languageRepository";
+import { LanguageType } from "../dto";
+import errorHandler, { ErrorEnum } from "../utils/error";
+
+class LanguageService {
+
+    public async createLanguage(language:LanguageType,sessionID:string ) {
+        try{
+            if(sessionID) throw await errorHandler.CustomError(ErrorEnum[403], "Invalid session ID");
+            const lang = await repo.create(language);
+            return lang;
+        }
+        catch(error:any){
+            throw error;
+        }
+    }
+
+  public async getAllLanguages() {
+    try {
+      const langs = await repo.getAll();
+      if (!langs){
+        throw await errorHandler.CustomError(
+          ErrorEnum[404],
+          "Language not found"
+        );}
+        return langs;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async getLanguageById(language: string) {
+    try {
+      const lang = await repo.getById(language);
+      console.log({ lang });
+      if (!lang) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[404],
+          "Language not found"
+        );
+      }
+      return lang;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+}
+
+export default new LanguageService();

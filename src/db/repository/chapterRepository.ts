@@ -1,9 +1,9 @@
 import { Chapter } from "../models";
-import { chapterDTO } from "../../dto";
+import { ChapterType } from "../../dto";
 import errHandler, { ErrorEnum } from "../../utils/error";
 
 class ChapterRepository {
-  public async getChapters(bookId: string): Promise<chapterDTO[]> {
+  public async getChapters(bookId: string): Promise<ChapterType[]> {
     try {
       const chapters = await Chapter.find({ book: bookId });
       return chapters;
@@ -15,7 +15,7 @@ class ChapterRepository {
     }
   }
 
-  public async getChapterById(chapterId: string): Promise<chapterDTO> {
+  public async getChapterById(chapterId: string): Promise<ChapterType> {
     try {
       const chapter = await Chapter.findOne({ _id: chapterId });
       return chapter;
@@ -28,7 +28,7 @@ class ChapterRepository {
   }
   public async getChapterByTitle(
     chapterTitle: string = "sample"
-  ): Promise<chapterDTO> {
+  ): Promise<ChapterType> {
     try {
       const chapter = await Chapter.findOne({ title: chapterTitle });
       return chapter;
@@ -36,6 +36,20 @@ class ChapterRepository {
       throw await errHandler.CustomError(
         ErrorEnum[400],
         "Error fetching chapter"
+      );
+    }
+  }
+
+  public async searchByKeyword(keyword: string): Promise<ChapterType[]> {
+    try {
+      const matchedBooks = await Chapter.find({
+        title: { $regex: keyword, $options: "i" },
+      });
+      return matchedBooks;
+    } catch (error: any) {
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error searching books"
       );
     }
   }

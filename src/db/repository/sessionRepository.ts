@@ -1,15 +1,15 @@
-import { sessionsDTO } from "../../dto";
+import { SessionType } from "../../dto";
 import { Session } from "../models";
 
 class SessionRepository {
-  public async create(session: sessionsDTO): Promise<sessionsDTO> {
+  public async create(session: SessionType): Promise<SessionType> {
     try {
       return await Session.create(session);
     } catch (error: any) {
       throw error;
     }
   }
-  public async fetchOne(sessionId: string): Promise<sessionsDTO | any> {
+  public async fetchOne(sessionId: string): Promise<SessionType | any> {
     try {
       const fetchedSession = await Session.findOne({
         _id: sessionId,
@@ -22,8 +22,8 @@ class SessionRepository {
 
   public async update(
     sessionId: string,
-    session: sessionsDTO
-  ): Promise<sessionsDTO | any> {
+    session: SessionType
+  ): Promise<SessionType | any> {
     try {
       const updatedSession = await Session.findOneAndUpdate(
         { _id: sessionId },
@@ -38,7 +38,7 @@ class SessionRepository {
     }
   }
 
-  public async fetchOneByToken(token: string): Promise<sessionsDTO | any> {
+  public async fetchOneByToken(token: string): Promise<SessionType | any> {
     try {
       const fetchedSession = await Session.findOne({
         token: token,

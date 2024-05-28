@@ -16,7 +16,7 @@ import Origins from "./Origins";
 import Externals from "./Externals";
 import Sessions from "./Session";
 
-import { sessionsDTO, UserType } from "../../dto/index";
+import { SessionType, UserType } from "../../dto/index";
 
 Mongoose.connect(MONGODB_URI, {
   autoIndex: true,
@@ -33,7 +33,7 @@ export const Comment = Mongoose.model("BookComments", Comments(Mongoose));
 export const Seen = Mongoose.model("BookSeens", BookSeen(Mongoose));
 export const Origin = Mongoose.model("origins", Origins(Mongoose));
 export const External = Mongoose.model("externals", Externals(Mongoose));
-export const Session = Mongoose.model<sessionsDTO>(
+export const Session = Mongoose.model<SessionType>(
   "session",
   Sessions(Mongoose)
 );

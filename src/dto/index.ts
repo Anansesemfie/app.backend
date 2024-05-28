@@ -1,4 +1,4 @@
-export type sessionsDTO = {
+export type SessionType = {
   _id?: string;
   user?: string;
   duration?: number;
@@ -7,7 +7,7 @@ export type sessionsDTO = {
   createdAt?: string;
 };
 
-export type bookDTO = {
+export type BookType = {
   _id?: string;
   title: string;
   description: string;
@@ -31,7 +31,7 @@ export type bookDTO = {
   };
 };
 
-export type bookUpdateDTO = bookDTO & {
+export type BookUpdateType = BookType & {
   owner?: string;
   uploader?: string;
   title?: string;
@@ -43,7 +43,7 @@ export type bookUpdateDTO = bookDTO & {
   cover?: string;
 };
 
-export type chapterDTO = {
+export type ChapterType = {
   _id?: string;
   title: string;
   description: string;
@@ -53,7 +53,7 @@ export type chapterDTO = {
   createdAt?: Date;
 };
 
-export type seenDTO = {
+export type SeenType = {
   _id?: string;
   user: string;
   bookId: string;
@@ -71,7 +71,7 @@ export type subscriberDTO = {
   createdAt?: string;
 };
 
-export type subscriptionsDTO = {
+export type SubscriptionsType = {
   _id?: string;
   name: string;
   active: boolean;
@@ -115,3 +115,18 @@ export type CommentType = {
   createdAt?: string;
   deletedAt?: string;
 };
+
+export type CategoryType = {
+  _id?: string;
+  title: string;
+  description?: string;
+  createdAt?: string;
+};
+
+export type LanguageType = {
+  _id?: string;
+  title: string;
+  active: boolean;
+  createdAt?: string;
+};
+

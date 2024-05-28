@@ -1,10 +1,11 @@
 import Repo from "../db/repository/chapterRepository";
-import { chapterDTO } from "../dto";
+import booksService from "./booksService";
+import { ChapterType } from "../dto";
 import HELPERS from "../utils/helpers";
 
 class ChapterService {
   private logInfo = "";
-  public async fetchChapters(book: string): Promise<chapterDTO[]> {
+  public async fetchChapters(book: string): Promise<ChapterType[]> {
     try {
       const chapters = await Repo.getChapters(book);
       this.logInfo = `${
@@ -25,7 +26,7 @@ class ChapterService {
   public async fetchChapter(
     chapterId: string,
     substring: string = ""
-  ): Promise<chapterDTO> {
+  ): Promise<ChapterType> {
     try {
       const chapter = chapterId
         ? await Repo.getChapterById(chapterId)
@@ -44,6 +45,29 @@ class ChapterService {
       this.logInfo = "";
     }
   }
-}
 
+  public async searchByKeyword(keyword: string) {
+    try {
+      const chapters = await Repo.searchByKeyword(keyword);
+      const books = await Promise.all(
+        chapters.map(async (chapter) => {
+          const book = await booksService.fetchBook(String(chapter.book));
+          return book;
+        })
+      );
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching chapter with keyword: ${keyword} @ ${HELPERS.currentTime()}`;
+      return books;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching chapter with keyword: ${keyword} @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
+}
 export default new ChapterService();
