@@ -1,15 +1,17 @@
 import Repo from "../db/repository/booksRepository";
 import seenService from "./seenService";
-import userService from "./userService";
 import sessionService from "./sessionService";
+import chapterService from "./chapterService";
+import languageService from "./languageService";
+import categoryService from "./categoryService";
 
-import { bookDTO, bookUpdateDTO } from "../dto";
+import { BookType, BookUpdateType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
 
 class BookService {
   private logInfo = "";
-  public async fetchBooks(): Promise<bookDTO[]> {
+  public async fetchBooks(): Promise<BookType[]> {
     try {
       const books = await Repo.fetchAll();
       this.logInfo = `${
@@ -27,39 +29,30 @@ class BookService {
     }
   }
 
-  public async fetchBook(
-    bookId: string,
-    sessionId: string = ""
-  ): Promise<bookDTO> {
-    try {
-      if (!bookId)
-        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
-      const book = await Repo.fetchOne(bookId);
-      if (sessionId) {
-        // check for seen record or create seen record
-        const session = await sessionService.getSession(sessionId);
-        const user = await userService.fetchUser(session.user as string);
-        await seenService.createNewSeen(book?._id as string, sessionId);
+  public async fetchBook(bookId: string, sessionId: string = ""): Promise<BookType> {
+    if (!bookId) {
+      throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+    }
+
+    const book = await Repo.fetchOne(bookId);
+
+    if (sessionId) {
+      const session = await sessionService.getSession(sessionId);
+
+      if (!session) {
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
       }
 
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching book @ ${HELPERS.currentTime()}`;
-      return book;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching book @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
+      await seenService.createNewSeen(book?._id as string, session.user as string);
     }
+
+    this.logInfo = `${HELPERS.loggerInfo.success} fetching book @ ${HELPERS.currentTime()}`;
+    return book;
   }
   public async updateBook(
     bookID: string,
-    book: bookUpdateDTO
-  ): Promise<bookDTO> {
+    book: BookUpdateType
+  ): Promise<BookType> {
     try {
       if (!bookID) {
         throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
@@ -146,6 +139,53 @@ class BookService {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async filterBooks({
+    search,
+    language,
+    category,
+  }: {
+    search?: string;
+    language?: string;
+    category?: string;
+  }) {
+    const books: BookType[] = [];
+    try {
+      if (search) {
+        const fetchByBooks = await Repo.searchByKeyword(search);
+        books.push(...fetchByBooks);
+        const fetchByChapter = await chapterService.searchByKeyword(search);
+        books.push(...fetchByChapter);
+      }
+      if(language){
+        const lang = await languageService.getLanguageById(language)
+        const fetchByLanguage = await Repo.findByLanguage(String(lang._id));
+        books.push(...fetchByLanguage);
+      }
+      if(category){
+        const cate = await categoryService.fetchCategory(category);
+        const fetchByCategory = await Repo.findByCategory(cate.title);
+        books.push(...fetchByCategory);
+      }
+      return this.getUniqueBooks(books);
+    } catch (error:any) {
+      throw error;
+    }
+  }
+
+  private getUniqueBooks(books: BookType[]): BookType[] {
+    const uniqueBooks: BookType[] = [];
+    const bookIds: string[] = [];
+
+    for (const book of books) {
+      if (!bookIds.includes(String(book?._id))) {
+        uniqueBooks.push(book);
+        bookIds.push(String(book?._id));
+      }
+    }
+
+    return uniqueBooks;
   }
 }
 

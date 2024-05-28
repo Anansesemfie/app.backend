@@ -1,14 +1,14 @@
 import HELPERS from "../utils/helpers";
 import seenRepository from "../db/repository/seenRepository";
-import { seenDTO } from "../dto";
+import { SeenType } from "../dto";
 
 class SeenService {
   private logInfo = "";
-  async createNewSeen(bookId: string, userId: string): Promise<seenDTO> {
+  async createNewSeen(bookId: string, userId: string): Promise<SeenType> {
     try {
       const oldSeen = await seenRepository.fetchOne(bookId, userId);
       if (oldSeen) return oldSeen;
-      const newSeen: seenDTO = {
+      const newSeen: SeenType = {
         user: userId,
         bookId: bookId,
       };
@@ -31,7 +31,7 @@ class SeenService {
     bookId: string,
     userId: string,
     params: {}
-  ): Promise<seenDTO> {
+  ): Promise<SeenType> {
     try {
       const updatedSeen = await seenRepository.update(
         { bookId: bookId, user: userId },

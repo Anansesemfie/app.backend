@@ -1,18 +1,18 @@
 import { Subscription } from "../db/models";
-import { subscriptionsDTO } from "../dto";
+import { SubscriptionsType } from "../dto";
 
 class SubscriptionService {
   private logInfo = "";
   public async create(
-    subscription: subscriptionsDTO
-  ): Promise<subscriptionsDTO> {
+    subscription: SubscriptionsType
+  ): Promise<SubscriptionsType> {
     try {
       return await Subscription.create(subscription);
     } catch (error: any) {
       throw error;
     }
   }
-  public async fetchOne(subscriptionId: string): Promise<subscriptionsDTO> {
+  public async fetchOne(subscriptionId: string): Promise<SubscriptionsType> {
     try {
       const fetchedSubscription = await Subscription.findOne({
         _id: subscriptionId,
@@ -22,7 +22,7 @@ class SubscriptionService {
       throw error;
     }
   }
-  public async fetchAllSubscriptions(): Promise<subscriptionsDTO[]> {
+  public async fetchAllSubscriptions(): Promise<SubscriptionsType[]> {
     try {
       const fetchedSubscriptions = await Subscription.find({
         visible: true,
@@ -34,9 +34,9 @@ class SubscriptionService {
     }
   }
   public async update(
-    subscription: subscriptionsDTO,
+    subscription: SubscriptionsType,
     subscriptionId: string
-  ): Promise<subscriptionsDTO> {
+  ): Promise<SubscriptionsType> {
     try {
       const updatedSubscription = await Subscription.findOneAndUpdate(
         { _id: subscriptionId },

@@ -3,6 +3,7 @@ import { PORT } from "./utils/env";
 import Mongoose from "./db/models";
 
 import ConsumerRouter from "./api/routes/consumer";
+import AdminRouter from "./api/routes/admin";
 
 const app: Application = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(ConsumerRouter);
+app.use("/admin", AdminRouter);
 Mongoose.connection
   .once("open", () => {
     console.log("Connected to MongoDB");

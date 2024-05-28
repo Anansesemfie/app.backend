@@ -1,10 +1,10 @@
 import { Subscription } from "../models";
-import { subscriptionsDTO } from "../../dto";
+import { SubscriptionsType } from "../../dto";
 
 class SubscriptionsRepository {
   public async create(
-    subscription: subscriptionsDTO
-  ): Promise<subscriptionsDTO> {
+    subscription: SubscriptionsType
+  ): Promise<SubscriptionsType> {
     try {
       return await Subscription.create(subscription);
     } catch (error: any) {
@@ -13,7 +13,7 @@ class SubscriptionsRepository {
   }
   public async getSubscription(
     subscriptionId: string
-  ): Promise<subscriptionsDTO> {
+  ): Promise<SubscriptionsType> {
     try {
       const subscription = await Subscription.findOne({
         _id: subscriptionId,
