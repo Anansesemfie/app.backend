@@ -1,7 +1,7 @@
 import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 import { isEmail, isStrongPassword } from "validator";
-import bcrypt from "bcrypt";
+import { UsersTypes } from "./utils";
 
 const Users = (Mongoose: any) => {
   const USER = new Mongoose.Schema({
@@ -26,7 +26,7 @@ const Users = (Mongoose: any) => {
     },
     account: {
       type: Number,
-      default: 0,
+      default: UsersTypes.User,
     },
     active: {
       type: Boolean,
@@ -51,7 +51,7 @@ const Users = (Mongoose: any) => {
     },
     createdAt: {
       type: Date,
-      default: HELPERS.currentTime(),
+      default: HELPERS.currentTime() || Date.now,
     },
   });
 

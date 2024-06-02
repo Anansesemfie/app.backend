@@ -1,5 +1,6 @@
 import { SessionType } from "../../dto";
 import { Session } from "../models";
+import errorHandler, { ErrorEnum } from "../../utils/error";
 
 class SessionRepository {
   public async create(session: SessionType): Promise<SessionType> {
@@ -9,11 +10,14 @@ class SessionRepository {
       throw error;
     }
   }
-  public async fetchOne(sessionId: string): Promise<SessionType | any> {
+  public async fetchOne(sessionId: string): Promise<SessionType> {
     try {
       const fetchedSession = await Session.findOne({
         _id: sessionId,
       });
+      if (!fetchedSession) {
+        throw errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
+      }
       return fetchedSession;
     } catch (error: any) {
       throw error;

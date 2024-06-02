@@ -22,7 +22,7 @@ class ReactionService {
           "Invalid user, book or action"
         );
       }
-      const session = await sessionService.getSession(sessionID);
+      const {session} = await sessionService.getSession(sessionID);
       console.log({ session });
       const reactionRes = await reactionRepository.getReaction(
         bookID,
