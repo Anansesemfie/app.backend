@@ -1,6 +1,7 @@
 import { Book } from "../models";
 import { BookType, BookUpdateType } from "../../dto";
 import errHandler, { ErrorEnum } from "../../utils/error";
+import { BookStatus } from "../models/utils";
 
 class BookRepository {
   public async create(book: BookType): Promise<BookType> {
@@ -21,6 +22,7 @@ class BookRepository {
       throw await errHandler.CustomError(ErrorEnum[400], "Error fetching book");
     }
   }
+
   public async update(bookId: string, book: BookUpdateType): Promise<BookType> {
     try {
       const updatedBook = await Book.findOneAndUpdate({ _id: bookId }, book, {
@@ -32,9 +34,9 @@ class BookRepository {
     }
   }
 
-  public async fetchAll(): Promise<BookType[]> {
+  public async fetchAll(Status:BookStatus = BookStatus.Active): Promise<BookType[]> {
     try {
-      const fetchedBooks = await Book.find({ status: "Active" });
+      const fetchedBooks = await Book.find({ status:Status  });
       return fetchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
@@ -58,8 +60,13 @@ class BookRepository {
 
   public async findByLanguage(language: string): Promise<BookType[]> {
     try {
+<<<<<<< Updated upstream
       console.log({ language });
       const matchedBooks = await Book.find({ languages:language  });
+=======
+      const matchedBooks = await Book.find({ languages: language  });
+      console.log(matchedBooks);
+>>>>>>> Stashed changes
       return matchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
@@ -69,9 +76,9 @@ class BookRepository {
     }
   }
 
-  public async findByCategory(category: string): Promise<BookType[]> {
+  public async findByCategory(categories: string): Promise<BookType[]> {
     try {
-      const matchedBooks = await Book.find({ category });
+      const matchedBooks = await Book.find({ category: { $in: categories } });
       return matchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
@@ -80,7 +87,6 @@ class BookRepository {
       );
     }
   }
-
 }
 
 export default new BookRepository();

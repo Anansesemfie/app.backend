@@ -1,4 +1,3 @@
-import { CommentType } from "../dto";
 import commentRepository from "../db/repository/commentRepository";
 import sessionService from "./sessionService";
 import booksService from "./booksService";
@@ -29,7 +28,7 @@ class CommentService {
           "Invalid book, user or comment"
         );
       }
-      const session = await sessionService.getSession(sessionID);
+      const {session} = await sessionService.getSession(sessionID);
       const newComment = await commentRepository.create({
         bookID,
         user: session?.user as string,

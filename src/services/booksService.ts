@@ -8,9 +8,53 @@ import categoryService from "./categoryService";
 import { BookType, BookUpdateType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
+import { UsersTypes } from "../db/models/utils";
 
 class BookService {
   private logInfo = "";
+  public async createBook(book: BookType,session:string): Promise<BookType> {
+    try {
+      if(!session){
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid session ID");
+      }
+      const {user} = await sessionService.getSession(session);
+      if(user.account !== UsersTypes.admin){
+        throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized access");
+      }
+      this.validateBookData(book);
+      const newBook = await Repo.create(book);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } creating book @ ${HELPERS.currentTime()}`;
+      return newBook;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } creating book @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
+
+  //write a function that validates book data
+  public validateBookData(book: BookType): boolean {
+    switch (true) {
+      case !book.title:
+        throw errorHandler.CustomError(ErrorEnum[400], "Title is required");
+      case !book.category.length:
+        throw errorHandler.CustomError(ErrorEnum[400], "Category is required");
+      case !book.languages.length:
+        throw errorHandler.CustomError(ErrorEnum[400], "Language is required");
+      case !book.folder:
+        throw errorHandler.CustomError(ErrorEnum[400], "Folder is required");
+      case !book.cover:
+        throw errorHandler.CustomError(ErrorEnum[400], "Cover is required");
+      default:
+        return true;
+    }
+  }
   public async fetchBooks(): Promise<BookType[]> {
     try {
       const books = await Repo.fetchAll();
@@ -33,16 +77,13 @@ class BookService {
     if (!bookId) {
       throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
     }
-
     const book = await Repo.fetchOne(bookId);
 
     if (sessionId) {
-      const session = await sessionService.getSession(sessionId);
-
+      const {session} = await sessionService.getSession(sessionId);
       if (!session) {
         throw await errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
       }
-
       await seenService.createNewSeen(book?._id as string, session.user as string);
     }
 
@@ -134,7 +175,7 @@ class BookService {
             "Invalid action"
           );
       }
-      console.log({ newBookMeta });
+     
       return newBookMeta;
     } catch (error) {
       throw error;
@@ -160,7 +201,7 @@ class BookService {
       }
       if(language){
         const lang = await languageService.getLanguageById(language)
-        const fetchByLanguage = await Repo.findByLanguage(String(lang._id));
+        const fetchByLanguage = await Repo.findByLanguage(String(lang));
         books.push(...fetchByLanguage);
       }
       if(category){

@@ -1,13 +1,12 @@
 import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
-
+import { BookStatus } from "./utils";
 const Books = (Mongoose: any) => {
   return new Mongoose.Schema(
     {
       title: {
         type: String,
         required: [true, "This book needs a title!"],
-        lowercase: false,
         maxlength: [50, "This is a very long title"],
       },
       description: {
@@ -15,12 +14,11 @@ const Books = (Mongoose: any) => {
         required: [true, "Say something to tease your audience"],
         minlength: [10, "Express yourself much more than this"],
         maxlength: [1500, "Do not narrate the whole thing here"],
-        lowercase: false,
       },
       status: {
-        type: String,
+        type: Number,
         required: true,
-        default: "Active",
+        default: BookStatus.Active,
       },
       snippet: {
         type: String,
@@ -52,34 +50,40 @@ const Books = (Mongoose: any) => {
       folder: {
         type: String,
         unique: true,
-        required: false,
       },
       cover: {
         type: String,
         default: "/images/user_fire.jpg",
-        required: false,
-        unique: false,
       },
-      owner: {
+      associates: [{
         type: ObjectId,
-        required: false,
-      },
+        ref:'users'
+      }],
       uploader: {
         type: ObjectId,
         required: [true, "Missing uploader"],
       },
       createdAt: {
         type: Date,
-        default: HELPERS.currentTime(),
+        default: HELPERS.currentTime() || Date.now,
       },
       meta: {
-        played: Number,
-        views: Number,
-        comments: Number,
+        played: {
+          type: Number,
+          default: 0,
+        },
+        views: {
+          type: Number,
+          default: 0,
+        },
+        comments: {
+          type: Number,
+          default: 0,
+        },
       },
     },
     {
-      timestamp: true,
+      timestamps: true,
     }
   );
 };

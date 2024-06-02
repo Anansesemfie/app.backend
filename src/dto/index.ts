@@ -11,7 +11,7 @@ export type BookType = {
   _id?: string;
   title: string;
   description: string;
-  status: "Active" | "Inactive";
+  status: number;
   snippet?: string;
   authors?: string[];
   category: string[];
@@ -19,7 +19,7 @@ export type BookType = {
   folder: string;
   cover: string;
   collections: string[];
-  owner: string;
+  associates: string[];
   uploader: string;
   createdAt?: Date;
   meta?: {
@@ -36,7 +36,7 @@ export type BookUpdateType = BookType & {
   uploader?: string;
   title?: string;
   description?: string;
-  status?: "Active" | "Inactive";
+  status?: number;
   category?: string[];
   languages?: string[];
   folder?: string;
@@ -90,7 +90,7 @@ export type UserType = {
   email: string;
   password: string;
   username: string;
-  account: string;
+  account: number;
   active: boolean;
   dp: string;
   bio: string;
@@ -129,4 +129,3 @@ export type LanguageType = {
   active: boolean;
   createdAt?: string;
 };
-

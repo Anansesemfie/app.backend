@@ -32,14 +32,13 @@ class LanguageService {
   public async getLanguageById(language: string) {
     try {
       const lang = await repo.getById(language);
-      console.log({ lang });
       if (!lang) {
         throw await errorHandler.CustomError(
           ErrorEnum[404],
           "Language not found"
         );
       }
-      return lang;
+      return lang._id;
     } catch (error: any) {
       throw error;
     }
