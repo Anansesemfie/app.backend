@@ -13,9 +13,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);
+
 Mongoose.connection
   .once("open", () => {
-    console.log("Connected to MongoDB");
+    console.log("Connected to DB");
     app.emit("ready");
   })
   .on("error", (e) => {
