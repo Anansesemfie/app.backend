@@ -7,7 +7,7 @@ import errorHandler, { ErrorEnum } from "./error";
 import { SECRET_JWT, SERVER_LOG_FILE } from "./env";
 class HELPERS {
   public static readonly Chars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" as const ;
 
   public static readonly SessionMaxAge = (months: number = 24) =>
     730 * 60 * 60 * months; //2 years
@@ -52,7 +52,7 @@ class HELPERS {
 
   public static async ENCODE_Token(id: string = ""): Promise<string> {
     try {
-      if (!id) id = await HELPERS.genRandCode();
+      if (!id) id = HELPERS.genRandCode();
       return jwt.sign({ id }, SECRET_JWT, {
         expiresIn: HELPERS.SessionMaxAge(),
       });

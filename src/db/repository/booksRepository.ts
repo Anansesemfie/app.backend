@@ -60,13 +60,8 @@ class BookRepository {
 
   public async findByLanguage(language: string): Promise<BookType[]> {
     try {
-<<<<<<< Updated upstream
-      console.log({ language });
-      const matchedBooks = await Book.find({ languages:language  });
-=======
       const matchedBooks = await Book.find({ languages: language  });
       console.log(matchedBooks);
->>>>>>> Stashed changes
       return matchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
