@@ -4,6 +4,7 @@ import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 
 import Language from "./LanguageRoute";
 import User from "./UserRoute";
+import BookSeens from "./BooksSeenRoute"
 
 const router = Router();
 
@@ -19,6 +20,6 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.use("/language", CHECKAPPTOKEN, Language);
+router.use("/book/seens", CHECKAPPTOKEN, BookSeens);
 router.use("/user", CHECKAPPTOKEN, User);
-
 export default router;

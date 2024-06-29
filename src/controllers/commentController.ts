@@ -23,6 +23,7 @@ export const postComment = async (req: Request, res: Response) => {
 
 export const getComments = async (req: Request, res: Response) => {
   try {
+     console.log("hellooooooooooooooooooo")
     const bookId = req.params.bookId;
     const comments = await commentService.getComments(bookId);
     res.status(200).json(comments);

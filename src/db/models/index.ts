@@ -18,7 +18,7 @@ import Sessions from "./Session";
 
 import { SessionType, UserType } from "../../dto/index";
 
-Mongoose.connect(MONGODB_URI, {
+Mongoose.connect("mongodb://127.0.0.1:27017/anansesemfie", {
   autoIndex: true,
 });
 

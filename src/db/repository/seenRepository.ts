@@ -9,10 +9,11 @@ class SeenRepository {
       throw error;
     }
   }
+  
   public async fetch(bookId: string): Promise<SeenType[]> {
     try {
-      const seens = await Seen.find({ bookId: bookId });
-      return seens;
+      const seen = await Seen.find({ bookID: bookId });
+      return seen;
     } catch (error: any) {
       throw error;
     }
@@ -23,7 +24,7 @@ class SeenRepository {
     userId: string = ""
   ): Promise<SeenType> {
     try {
-      const seen = await Seen.findOne({ bookId: bookId, user: userId });
+      const seen = await Seen.findOne({ bookID: bookId, user: userId });
       return seen;
     } catch (error: any) {
       throw error;
