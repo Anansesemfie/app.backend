@@ -32,6 +32,10 @@ const Users = (Mongoose: any) => {
       type: Boolean,
       default: false,
     },
+    verified: {
+      type: Boolean,
+      default: false
+    },
     dp: {
       type: String,
       default: "/images/dp.png",
