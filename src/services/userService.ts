@@ -16,6 +16,7 @@ class UserService {
       user.password = await bcrypt.hash(user.password, salt);
       const newUser = await Repo.create(user);
 
+      // process sending email verification to user
       processEmailJob({ data: { to: newUser.email, subject: 'Verify Your Email Address', template: 'verification', context: { email: newUser.email } } }).then(() => console.log('Email sent')).catch((e) => console.log(`Email not sent ${e}`)
       )
 
@@ -30,6 +31,8 @@ class UserService {
       this.logInfo = "";
     }
   }
+
+  
 
   public async login(user: { email: string; password: string }): Promise<any> {
     try {
@@ -69,6 +72,7 @@ class UserService {
       this.logInfo = "";
     }
   }
+
   public async fetchUser(userId: string): Promise<UserType | null> {
     try {
       const fetchedUser = await Repo.fetchUser(userId);
