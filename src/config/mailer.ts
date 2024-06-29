@@ -1,8 +1,10 @@
 import nodemailer from 'nodemailer'
 import path from 'path'
 import ejs from 'ejs'
-import { MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS, MAIL_ADMIN } from '../utils/env'
+import { MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS, MAIL_ADMIN, PORT } from '../utils/env'
+import { createToken } from '../utils/tokenUtils'
 
+const domain = `localhost:${PORT}/`
 
 const transporter = nodemailer.createTransport({
     host: MAIL_HOST,
@@ -38,5 +40,21 @@ const renderTemplate = async (template: string, context: object): Promise<string
     })
 }
 
+interface EmailJobData {
+    to: string;
+    subject: string;
+    template: string;
+    context: object
+}
 
-export default sendMail
+const processEmailJob = async (job: { data: EmailJobData }): Promise<string> => {
+    const { to, subject, template, context } = job.data
+    if (template === 'verification') {
+        const token = createToken(to);
+        (context as any).verificationLink = `${domain}verify?token=${token}`
+    }
+    await sendMail(to, subject, template, context)
+    return `Email sent to ${to}`;
+}
+
+export default processEmailJob;

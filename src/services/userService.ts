@@ -1,16 +1,16 @@
 import Repo from "../db/repository/userRepository";
 import { UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
-import { APP_BASE_URL } from "../utils/env";
-
 import HELPERS from "../utils/helpers";
 import bcrypt, { genSalt } from "bcrypt";
-
 import Session from "./sessionService";
-import EmailService from "./emailService";
+import { createToken } from "../utils/tokenUtils";
+import sendMail from "../config/mailer";
+import { PORT } from '../utils/env'
 
 class UserService {
   private logInfo: string = "";
+  private domain = `localhost:${PORT}/admin/user/`
 
   public async create(user: UserType): Promise<UserType> {
     try {
@@ -18,30 +18,35 @@ class UserService {
 
       user.password = await bcrypt.hash(user.password, salt);
       const newUser = await Repo.create(user);
-      const verificationCode = await this.generateVerification(
-        newUser._id as string
-      );
-      const HTML = `Hello <b>${newUser.username}</b>, verify your account <br/>
-      <button onClick=(copyText(${verificationCode})) >Copy verification Code</button> <br/>
-      and <a href="${APP_BASE_URL}">goto app </a> or
-      `;
-      await EmailService.sendEmail(
-        {
-          to: newUser.email,
-          subject: "Verify Account",
-          html: HTML,
-        },
-        {
-          link: `${APP_BASE_URL}?verificationCode=${verificationCode}`,
-          label: "Verify Account",
-        }
-      );
+      const context: object = {}
+      // send verification email
+      const token: string = createToken(newUser.email);
+      (context as any).verificationLink = `${this.domain}verify?token=${token}`
+      const { email } = newUser
+      await sendMail(email, "Verify Your Email Address", "verification", context)
+      // const verificationCode = await this.generateVerification(
+      //   newUser._id as string
+      // );
+      // const HTML = `Hello <b>${newUser.username}</b>, verify your account <br/>
+      // <button onClick=(copyText(${verificationCode})) >Copy verification Code</button> <br/>
+      // and <a href="${APP_BASE_URL}">goto app </a> or
+      // `;
+      // await EmailService.sendEmail(
+      //   {
+      //     to: newUser.email,
+      //     subject: "Verify Account",
+      //     html: HTML,
+      //   },
+      //   {
+      //     link: `${APP_BASE_URL}?verificationCode=${verificationCode}`,
+      //     label: "Verify Account",
+      //   }
+      // );
       return newUser;
     } catch (error: any) {
       console.log({ error });
-      this.logInfo = `${HELPERS.loggerInfo.error} creating ${
-        user.username
-      } @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.error} creating ${user.username
+        } @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
@@ -52,9 +57,8 @@ class UserService {
   public async login(user: { email: string; password: string }): Promise<any> {
     try {
       const fetchedUser = await Repo.Login(user?.email);
-      this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
-        user.email
-      } @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.success} logging in ${user.email
+        } @ ${HELPERS.currentTime()}`;
       if (await bcrypt.compare(user?.password, fetchedUser.password)) {
         return await this.formatForReturn(fetchedUser);
       } else {
@@ -64,9 +68,8 @@ class UserService {
         );
       }
     } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
-        user.email
-      } @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.error} logging in ${user.email
+        } @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
@@ -77,14 +80,12 @@ class UserService {
   public async logout(sessionId: string): Promise<string> {
     try {
       const session = await Session.endSession(sessionId);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.success
+        } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
       return session;
     } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.error
+        } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
@@ -94,14 +95,12 @@ class UserService {
   public async fetchUser(userId: string): Promise<UserType | null> {
     try {
       const fetchedUser = await Repo.fetchUser(userId);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.success
+        } fetching user ${userId} @ ${HELPERS.currentTime()}`;
       return fetchedUser;
     } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.error
+        } fetching user ${userId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
@@ -179,15 +178,13 @@ class UserService {
         },
         userId
       );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } creating verification code for useerId: ${userId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.success
+        } creating verification code for useerId: ${userId} @ ${HELPERS.currentTime()}`;
 
       return HELPERS.ENCODE_Token(token);
     } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
+      this.logInfo = `${HELPERS.loggerInfo.error
+        } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);
