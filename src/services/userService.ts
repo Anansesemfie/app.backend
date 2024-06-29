@@ -4,13 +4,10 @@ import errorHandler, { ErrorEnum } from "../utils/error";
 import HELPERS from "../utils/helpers";
 import bcrypt, { genSalt } from "bcrypt";
 import Session from "./sessionService";
-import { createToken } from "../utils/tokenUtils";
-import sendMail from "../config/mailer";
-import { PORT } from '../utils/env'
+import processEmailJob from "../config/mailer";
 
 class UserService {
   private logInfo: string = "";
-  private domain = `localhost:${PORT}/admin/user/`
 
   public async create(user: UserType): Promise<UserType> {
     try {
@@ -18,30 +15,10 @@ class UserService {
 
       user.password = await bcrypt.hash(user.password, salt);
       const newUser = await Repo.create(user);
-      const context: object = {}
-      // send verification email
-      const token: string = createToken(newUser.email);
-      (context as any).verificationLink = `${this.domain}verify?token=${token}`
-      const { email } = newUser
-      await sendMail(email, "Verify Your Email Address", "verification", context)
-      // const verificationCode = await this.generateVerification(
-      //   newUser._id as string
-      // );
-      // const HTML = `Hello <b>${newUser.username}</b>, verify your account <br/>
-      // <button onClick=(copyText(${verificationCode})) >Copy verification Code</button> <br/>
-      // and <a href="${APP_BASE_URL}">goto app </a> or
-      // `;
-      // await EmailService.sendEmail(
-      //   {
-      //     to: newUser.email,
-      //     subject: "Verify Account",
-      //     html: HTML,
-      //   },
-      //   {
-      //     link: `${APP_BASE_URL}?verificationCode=${verificationCode}`,
-      //     label: "Verify Account",
-      //   }
-      // );
+
+      processEmailJob({ data: { to: newUser.email, subject: 'Verify Your Email Address', template: 'verification', context: { email: newUser.email } } }).then(() => console.log('Email sent')).catch((e) => console.log(`Email not sent ${e}`)
+      )
+
       return newUser;
     } catch (error: any) {
       console.log({ error });
