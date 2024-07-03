@@ -12,7 +12,7 @@ export const Play = async (req: Request, res: Response) => {
       chapter = await playService.unAuthorizedUserPlay(chapterId, userId);
     }
 
-    res.status(200).json(chapter);
+    res.status(200).json({data:chapter});
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

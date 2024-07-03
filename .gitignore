@@ -6,3 +6,4 @@ npm-debug.log
 /dist
 /src/utils/logs
 /public/images/profile_display
+/yarn.lock

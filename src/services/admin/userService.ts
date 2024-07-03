@@ -5,7 +5,6 @@ import Session from "../sessionService";
 import { UsersTypes } from "../../db/models/utils";
 import { UserType } from "../../dto";
 class AdminUserService {
-  private logInfo: string = "";
   async create(user: UserType, sessionId: string) {
     try {
       const session = await Session.getSession(sessionId);
@@ -23,8 +22,10 @@ class AdminUserService {
       if (
         userRecord?.account !== UsersTypes.admin &&
         userRecord?.account !== UsersTypes.associate
-      )
+      ) {
         throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized");
+      }
+
       return await userService.login({ email, password });
     } catch (error: any) {
       throw error;

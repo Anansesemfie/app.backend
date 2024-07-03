@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cors from "cors";
 import { PORT } from "./utils/env";
 import Mongoose from "./db/models";
 
@@ -10,6 +11,7 @@ const app: Application = express();
 //express middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);

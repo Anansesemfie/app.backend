@@ -30,6 +30,12 @@ class UserRepository {
   public async Login(email: string): Promise<any> {
     try {
       const fetchedUser = await User.findOne({ email: email });
+      if (!fetchedUser) {
+        throw await errHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid user credentials"
+        );
+      }
       return fetchedUser;
     } catch (error: any) {
       throw await errHandler.CustomError(ErrorEnum[400], "Error getting user");

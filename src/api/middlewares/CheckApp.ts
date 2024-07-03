@@ -15,7 +15,6 @@ export async function CHECKAPPTOKEN(
     }
     // Extract the token from the Authorization header
     const tokenParts = authorizationHeader.split(" ");
-
     if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer")
       throw await errorHandler.CustomError(
         ErrorEnum[403],
@@ -28,10 +27,7 @@ export async function CHECKAPPTOKEN(
 
     next();
   } catch (error: any) {
-    let errors = await errorHandler.HandleError(
-      error?.errorCode,
-      error?.message
-    );
+    let errors = await errorHandler.HandleError(error?.code, error?.message);
     res
       .status(errors.code)
       .json({ error: errors.message, message: errors.exMessage });
