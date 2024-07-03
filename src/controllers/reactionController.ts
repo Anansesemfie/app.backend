@@ -11,7 +11,7 @@ export const likeBook = async (req: Request, res: Response) => {
       bookID: bookId,
       action: "Liked",
     });
-    res.status(200).json(reaction);
+    res.status(200).json({data:reaction});
   } catch (error: any) {
     console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
@@ -31,7 +31,7 @@ export const dislikeBook = async (req: Request, res: Response) => {
       bookID: bookId,
       action: "Disliked",
     });
-    res.status(200).json(reaction);
+    res.status(200).json({ data: reaction });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,

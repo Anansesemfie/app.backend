@@ -5,7 +5,7 @@ import {
 } from "../../../controllers/chapterController";
 const router = Router();
 
-router.get("/:bookId", getChapters);
-router.get("/all/:chapterId", getChapter);
+router.get("/all/:bookId", getChapters);
+router.get("/:chapterId", getChapter);
 
 export default router;

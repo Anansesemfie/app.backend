@@ -23,7 +23,6 @@ class ReactionService {
         );
       }
       const {session} = await sessionService.getSession(sessionID);
-      console.log({ session });
       const reactionRes = await reactionRepository.getReaction(
         bookID,
         String(session.user)

@@ -19,6 +19,6 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.use("/language", CHECKAPPTOKEN, Language);
-router.use("/user", CHECKAPPTOKEN, User);
+router.use("/user", User);
 
 export default router;

@@ -14,8 +14,12 @@ class UserService {
 
   public async create(user: UserType): Promise<UserType> {
     try {
+      if (!user.email || !user.username || !user.password)
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Invalid user data"
+        );
       const salt = await bcrypt.genSalt();
-
       user.password = await bcrypt.hash(user.password, salt);
       const newUser = await Repo.create(user);
       const verificationCode = await this.generateVerification(
@@ -55,14 +59,17 @@ class UserService {
       this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
-      if (await bcrypt.compare(user?.password, fetchedUser.password)) {
-        return await this.formatForReturn(fetchedUser);
-      } else {
-        throw errorHandler.CustomError(
+      const isPasswordValid = await bcrypt.compare(
+        user?.password,
+        fetchedUser.password
+      );
+      if (!isPasswordValid) {
+        throw await errorHandler.CustomError(
           ErrorEnum[403],
           "Invalid user credentials"
         );
       }
+      return await this.formatForReturn(fetchedUser);
     } catch (error: any) {
       this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
         user.email
