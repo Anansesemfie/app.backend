@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 import {
   CreateUser,
   LoginUser,
@@ -11,7 +12,7 @@ const router = Router();
 
 router.post("/add", CreateUser);
 router.post("/login", LoginUser);
-router.get("/logout", LogoutUser);
+router.get("/logout/",CHECKAPPTOKEN, LogoutUser);
 router.post("/reset-password", resetPassword);
 router.post("/forgot-password", forgotPassword);
 

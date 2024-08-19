@@ -39,7 +39,7 @@ class BookService {
   }
 
   //write a function that validates book data
-  public validateBookData(book: BookType): boolean {
+  private validateBookData(book: BookType): boolean {
     switch (true) {
       case !book.title:
         throw errorHandler.CustomError(ErrorEnum[400], "Title is required");
