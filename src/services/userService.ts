@@ -71,6 +71,7 @@ class UserService {
       }
       return await this.formatForReturn(fetchedUser);
     } catch (error: any) {
+      console.log({ error });
       this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
@@ -125,6 +126,7 @@ class UserService {
         dp: user.dp,
         bio: user.bio,
         token: await HELPERS.ENCODE_Token(token?._id),
+        role:user.account,
         subscription: {
           active: !!user.subscription,
           id: user.subscription ? user.subscription.toString() : "",

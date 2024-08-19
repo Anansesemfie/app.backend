@@ -34,9 +34,9 @@ class BookRepository {
     }
   }
 
-  public async fetchAll(Status:BookStatus = BookStatus.Active): Promise<BookType[]> {
+  public async fetchAll(Status:BookStatus = BookStatus.Active,numberOfRecords:number=5,page:number=0): Promise<BookType[]> {
     try {
-      const fetchedBooks = await Book.find({ status:Status  });
+      const fetchedBooks = await Book.find({ status:Status  }).skip(numberOfRecords * page).limit(numberOfRecords);
       return fetchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
