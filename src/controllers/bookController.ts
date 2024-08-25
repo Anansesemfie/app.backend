@@ -4,8 +4,15 @@ import { Request, Response } from "express";
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
-    const books = await booksService.fetchBooks();
-    res.status(200).json({ data: books });
+    const page = req.query.page as string;
+    const limit = req.query.limit as string;
+    const books = await booksService.fetchBooks({
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
+    res
+      .status(200)
+      .json({ data: { page: page, records: limit, results: books } });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,

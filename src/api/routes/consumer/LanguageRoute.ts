@@ -1,7 +1,7 @@
-import {getAll} from '../../../controllers/languageController'
+import { getAll } from "../../../controllers/languageController";
 import { Router } from "express";
 const router = Router();
 
-router.get("/all", getAll);
+router.get("/", getAll);
 
 export default router;

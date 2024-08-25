@@ -13,7 +13,7 @@ class PlayService {
     try {
       const chapter = await chapterService.fetchChapter(chapterId);
       if (chapter?.title?.toLowerCase() === "sample") return chapter;
-      const book = await booksService.fetchBook(chapter?.book);
+      const book = await booksService.fetchBook(chapter?.book?._id ?? "");
       const chapters = await chapterService.fetchChapters(book?._id as string);
       const chapterToReturn =
         chapters.find((chapter) => chapter.title?.toLowerCase() === "sample") ??
@@ -21,7 +21,7 @@ class PlayService {
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } unauthorized user played chapter: ${
-        chapterToReturn?._id
+        chapterToReturn?.id
       } @ ${HELPERS.currentTime()}`;
       return {
         chapter: chapterToReturn,
@@ -40,7 +40,7 @@ class PlayService {
   }
   async authorizedUserPlay(chapterId: string, sessionId: string) {
     try {
-      const {session} = await sessionService.getSession(sessionId);
+      const { session } = await sessionService.getSession(sessionId);
       const user = await userService.fetchUser(session.user as string);
       //no subscription currently linked
       if (!user?.subscription)
@@ -56,12 +56,16 @@ class PlayService {
 
       const chapter = await chapterService.fetchChapter(chapterId);
 
-      await seenService.updateSeen(chapter?.book, user._id as string, {
-        played: true,
-        subscription: user?.subscription,
-      });
+      await seenService.updateSeen(
+        chapter?.book?._id || "",
+        user._id as string,
+        {
+          played: true,
+          subscription: user?.subscription,
+        }
+      );
 
-      this.logInfo = `${HELPERS.loggerInfo.success} authorized user played chapter: ${chapter?._id}`;
+      this.logInfo = `${HELPERS.loggerInfo.success} authorized user played chapter: ${chapter?.id}`;
       return {
         chapter,
         playTime: 1,

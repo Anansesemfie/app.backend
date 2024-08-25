@@ -22,6 +22,14 @@ class CategoryRepository {
       throw errHandler.CustomError(ErrorEnum[400], error?.message);
     }
   }
+  async getAll(): Promise<CategoryType[]> {
+    try {
+      const categories = await Category.find();
+      return categories;
+    } catch (error: any) {
+      throw errHandler.CustomError(ErrorEnum[400], error?.message);
+    }
+  }
 
   // Update a category by ID
   async updateById(

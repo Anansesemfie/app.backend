@@ -53,6 +53,13 @@ export type ChapterType = {
   createdAt?: Date;
 };
 
+export type ChapterResponseType = {
+  id: string;
+  title: string;
+  content: string;
+  book: BookType;
+  createdAt: string | Date;
+};
 export type SeenType = {
   _id?: string;
   user: string;
@@ -121,6 +128,10 @@ export type CategoryType = {
   title: string;
   description?: string;
   createdAt?: string;
+};
+export type CategoryResponseType = {
+  id: string;
+  name: string;
 };
 
 export type LanguageType = {

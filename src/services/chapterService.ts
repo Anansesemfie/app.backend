@@ -1,17 +1,17 @@
 import Repo from "../db/repository/chapterRepository";
 import booksService from "./booksService";
-import { ChapterType } from "../dto";
+import { ChapterResponseType, ChapterType } from "../dto";
 import HELPERS from "../utils/helpers";
 
 class ChapterService {
   private logInfo = "";
-  public async fetchChapters(book: string): Promise<ChapterType[]> {
+  public async fetchChapters(book: string): Promise<ChapterResponseType[]> {
     try {
       const chapters = await Repo.getChapters(book);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
-      return chapters;
+      return Promise.all(chapters.map(this.formatChapter));
     } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
@@ -26,7 +26,7 @@ class ChapterService {
   public async fetchChapter(
     chapterId: string,
     substring: string = ""
-  ): Promise<ChapterType> {
+  ): Promise<ChapterResponseType> {
     try {
       const chapter = chapterId
         ? await Repo.getChapterById(chapterId)
@@ -34,7 +34,7 @@ class ChapterService {
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;
-      return chapter;
+      return await this.formatChapter(chapter);
     } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
@@ -68,6 +68,18 @@ class ChapterService {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";
     }
+  }
+  private async formatChapter(
+    chapter: ChapterType
+  ): Promise<ChapterResponseType> {
+    const Book = await booksService.fetchBook(chapter.book);
+    return {
+      id: chapter._id ?? "",
+      title: chapter.title,
+      content: chapter.file,
+      book: Book,
+      createdAt: chapter.createdAt ?? "",
+    };
   }
 }
 export default new ChapterService();

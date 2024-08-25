@@ -4,7 +4,7 @@ import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 
 import User from "./UserRoute";
 import Book from "./BookRoute";
-import Chapter from "./chapterRoute";
+import Chapter from "./ChapterRoute";
 import Play from "./userPlayRoute";
 import Route from "./ReactionRoute";
 
@@ -23,8 +23,6 @@ router.get("/", (req: Request, res: Response) => {
 
 router.use("/user", User);
 router.use("/book/", CHECKAPPTOKEN, Book);
-router.use("/book/chapter", CHECKAPPTOKEN, Chapter);
-router.use("/book/reaction", CHECKAPPTOKEN, Route);
 router.use("/chapter/play", CHECKAPPTOKEN, Play);
 
 export default router;

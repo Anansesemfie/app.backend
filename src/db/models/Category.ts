@@ -2,7 +2,7 @@ const Category = (Mongoose: any) => {
   return new Mongoose.Schema(
     {
       title: {
-        type: Array,
+        type: String,
         required: [true, "Category Title missing"],
         unique: [true, "Category name is required"],
         lowercase: false,
