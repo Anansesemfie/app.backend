@@ -23,7 +23,7 @@ class LanguageService {
           ErrorEnum[404],
           "Language not found"
         );}
-        return langs;
+        return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
     } catch (error: any) {
       throw error;
     }
@@ -42,6 +42,13 @@ class LanguageService {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  private async formatLanguage(language: LanguageType) {
+    return {
+      id: language._id,
+      name: language.title,
+    };
   }
 }
 

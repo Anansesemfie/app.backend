@@ -53,6 +53,7 @@ class ChapterRepository {
       );
     }
   }
+  
 }
 
 export default new ChapterRepository();

@@ -8,18 +8,25 @@ import categoryService from "./categoryService";
 import { BookType, BookUpdateType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
-import { UsersTypes } from "../db/models/utils";
+import { BookStatus, UsersTypes } from "../db/models/utils";
+import { stat } from "fs";
 
 class BookService {
   private logInfo = "";
-  public async createBook(book: BookType,session:string): Promise<BookType> {
+  public async createBook(book: BookType, session: string): Promise<BookType> {
     try {
-      if(!session){
-        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid session ID");
+      if (!session) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid session ID"
+        );
       }
-      const {user} = await sessionService.getSession(session);
-      if(user.account !== UsersTypes.admin){
-        throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized access");
+      const { user } = await sessionService.getSession(session);
+      if (user.account !== UsersTypes.admin) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Unauthorized access"
+        );
       }
       this.validateBookData(book);
       const newBook = await Repo.create(book);
@@ -55,9 +62,18 @@ class BookService {
         return true;
     }
   }
-  public async fetchBooks(): Promise<BookType[]> {
+  public async fetchBooks({
+    page = 1,
+    limit = 10,
+    status = BookStatus.Active,
+  }: {
+    page: number;
+    limit: number;
+    status?: BookStatus;
+    token?: string;
+  }): Promise<BookType[]> {
     try {
-      const books = await Repo.fetchAll();
+      const books = await Repo.fetchAll(status, limit, page);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching books @ ${HELPERS.currentTime()}`;
@@ -73,21 +89,32 @@ class BookService {
     }
   }
 
-  public async fetchBook(bookId: string, sessionId: string = ""): Promise<BookType> {
+  public async fetchBook(
+    bookId: string,
+    sessionId: string = ""
+  ): Promise<BookType> {
     if (!bookId) {
       throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
     }
     const book = await Repo.fetchOne(bookId);
 
     if (sessionId) {
-      const {session} = await sessionService.getSession(sessionId);
+      const { session } = await sessionService.getSession(sessionId);
       if (!session) {
-        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid Session ID"
+        );
       }
-      await seenService.createNewSeen(book?._id as string, session.user as string);
+      await seenService.createNewSeen(
+        book?._id as string,
+        session.user as string
+      );
     }
 
-    this.logInfo = `${HELPERS.loggerInfo.success} fetching book @ ${HELPERS.currentTime()}`;
+    this.logInfo = `${
+      HELPERS.loggerInfo.success
+    } fetching book @ ${HELPERS.currentTime()}`;
     return book;
   }
   public async updateBook(
@@ -175,7 +202,7 @@ class BookService {
             "Invalid action"
           );
       }
-     
+
       return newBookMeta;
     } catch (error) {
       throw error;
@@ -199,18 +226,18 @@ class BookService {
         const fetchByChapter = await chapterService.searchByKeyword(search);
         books.push(...fetchByChapter);
       }
-      if(language){
-        const lang = await languageService.getLanguageById(language)
+      if (language) {
+        const lang = await languageService.getLanguageById(language);
         const fetchByLanguage = await Repo.findByLanguage(String(lang));
         books.push(...fetchByLanguage);
       }
-      if(category){
+      if (category) {
         const cate = await categoryService.fetchCategory(category);
-        const fetchByCategory = await Repo.findByCategory(cate.title);
+        const fetchByCategory = await Repo.findByCategory(cate.name);
         books.push(...fetchByCategory);
       }
       return this.getUniqueBooks(books);
-    } catch (error:any) {
+    } catch (error: any) {
       throw error;
     }
   }

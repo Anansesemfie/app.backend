@@ -34,9 +34,15 @@ class BookRepository {
     }
   }
 
-  public async fetchAll(Status:BookStatus = BookStatus.Active,numberOfRecords:number=5,page:number=0): Promise<BookType[]> {
+  public async fetchAll(
+    Status: BookStatus = BookStatus.Active,
+    numberOfRecords: number = 5,
+    page: number = 0
+  ): Promise<BookType[]> {
     try {
-      const fetchedBooks = await Book.find({ status:Status  }).skip(numberOfRecords * page).limit(numberOfRecords);
+      const fetchedBooks = await Book.find({ status: Status })
+        .skip(numberOfRecords * page)
+        .limit(numberOfRecords);
       return fetchedBooks;
     } catch (error: any) {
       throw await errHandler.CustomError(
@@ -60,7 +66,7 @@ class BookRepository {
 
   public async findByLanguage(language: string): Promise<BookType[]> {
     try {
-      const matchedBooks = await Book.find({ languages: language  });
+      const matchedBooks = await Book.find({ languages: language });
       console.log(matchedBooks);
       return matchedBooks;
     } catch (error: any) {
