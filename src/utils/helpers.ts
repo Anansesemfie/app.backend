@@ -26,6 +26,14 @@ class HELPERS {
     return dayjs().toISOString();
   }
 
+  public static async generateFolderName(name: string): Promise<string> {
+    try {
+      return name.replace(/\s/g, "-").toLowerCase();
+    } catch (error) {
+      throw await errorHandler.CustomError(ErrorEnum[500], "Try again later");
+    }
+  }
+
   public static async logger(message: string): Promise<void> {
     try {
       message = "#" + message + "\n";
