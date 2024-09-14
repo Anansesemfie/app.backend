@@ -22,13 +22,27 @@ class BookService {
         );
       }
       const { user } = await sessionService.getSession(session);
+      if (!user) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid session ID"
+        );
+      }
       if (user.account !== UsersTypes.admin) {
         throw await errorHandler.CustomError(
           ErrorEnum[403],
           "Unauthorized access"
         );
       }
-      this.validateBookData(book);
+      book.uploader = user?._id as string;
+      book.folder = await HELPERS.generateFolderName(book.title);
+      const valid = await this.validateBookData(book);
+      if (!valid) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Invalid book data"
+        );
+      }
       const newBook = await Repo.create(book);
       this.logInfo = `${
         HELPERS.loggerInfo.success
@@ -46,22 +60,7 @@ class BookService {
   }
 
   //write a function that validates book data
-  private validateBookData(book: BookType): boolean {
-    switch (true) {
-      case !book.title:
-        throw errorHandler.CustomError(ErrorEnum[400], "Title is required");
-      case !book.category.length:
-        throw errorHandler.CustomError(ErrorEnum[400], "Category is required");
-      case !book.languages.length:
-        throw errorHandler.CustomError(ErrorEnum[400], "Language is required");
-      case !book.folder:
-        throw errorHandler.CustomError(ErrorEnum[400], "Folder is required");
-      case !book.cover:
-        throw errorHandler.CustomError(ErrorEnum[400], "Cover is required");
-      default:
-        return true;
-    }
-  }
+
   public async fetchBooks({
     page = 1,
     limit = 10,
@@ -254,6 +253,36 @@ class BookService {
     }
 
     return uniqueBooks;
+  }
+  private async validateBookData(book: BookType) {
+    switch (true) {
+      case !book.title:
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Title is required"
+        );
+      case !book.category.length:
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Category is required"
+        );
+      case !book.languages.length:
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Language is required"
+        );
+      // case !book.folder:
+      //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
+      // case !book.cover:
+      //   throw await errorHandler.CustomError(ErrorEnum[400], "Cover is required");
+      case !book.uploader:
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Uploader is required"
+        );
+      default:
+        return true;
+    }
   }
 }
 

@@ -8,7 +8,8 @@ class BookRepository {
     try {
       return await Book.create(book);
     } catch (error: any) {
-      throw await errHandler.CustomError(ErrorEnum[400], "Error creating book");
+      console.log(error);
+      throw await errHandler.CustomError(ErrorEnum[400], error._message);
     }
   }
 

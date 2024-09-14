@@ -1,8 +1,6 @@
 import Repo from "../db/repository/sessionRepository";
 import userService from "./userService";
-import { SessionType,UserType
-
- } from "../dto";
+import { SessionType, UserType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
 
@@ -33,19 +31,20 @@ class SessionService {
       throw error;
     }
   }
-  public async getSession(sessionId: string): Promise<{session:SessionType,user:UserType}> {
+  public async getSession(
+    sessionId: string
+  ): Promise<{ session: SessionType; user: UserType }> {
     try {
       const session = await Repo.fetchOne(sessionId);
       if (!session) {
         throw errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
       }
-      const user = await userService.fetchUser(session.user as string)
+      const user = await userService.fetchUser(session.user as string);
 
       if (!user) {
         throw errorHandler.CustomError(ErrorEnum[403], "Invalid User");
       }
-      return {session,user};
-
+      return { session, user };
     } catch (error: any) {
       throw error;
     }
@@ -55,7 +54,6 @@ class SessionService {
     try {
       const end = { expiredAt: HELPERS.currentTime().toString() };
       const session = await Repo.update(sessionId, end);
-      console.log("sessionDetails:", session, sessionId);
       if (session) {
         return "Success";
       }
