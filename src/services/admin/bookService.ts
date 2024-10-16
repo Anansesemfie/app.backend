@@ -32,7 +32,6 @@ class AudioService {
   }
   public async CreateBook(book: BookType, token: string): Promise<object> {
     try {
-      
       const createdBook = await bookService.createBook(book, token);
       this.logInfo = `${
         HELPERS.loggerInfo.success
@@ -65,6 +64,29 @@ class AudioService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } updating book @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
+
+  public async BookAnalytics(bookId: string, token: string): Promise<any> {
+    try {
+      const session = await sessionService.getSession(token);
+      if (!session || session?.user?.account !== UsersTypes.admin)
+        throw ErrorHandler.CustomError(ErrorEnum[401], "Invalid session ID");
+      if (!bookId)
+        throw ErrorHandler.CustomError(ErrorEnum[401], "Book ID is required");
+      const analytics = await bookService.bookAnalytics(bookId);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching book analytics @ ${HELPERS.currentTime()}`;
+      return analytics;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching book analytics @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo);

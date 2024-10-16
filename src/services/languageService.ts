@@ -3,33 +3,37 @@ import { LanguageType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
 
 class LanguageService {
-
-    public async createLanguage(language:LanguageType,sessionID:string ) {
-        try{
-            if(sessionID) throw await errorHandler.CustomError(ErrorEnum[403], "Invalid session ID");
-            const lang = await repo.create(language);
-            return lang;
-        }
-        catch(error:any){
-            throw error;
-        }
+  public async createLanguage(language: LanguageType, sessionID: string) {
+    try {
+      if (sessionID)
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid session ID"
+        );
+      const lang = await repo.create(language);
+      return lang;
+    } catch (error: any) {
+      throw error;
     }
+  }
 
   public async getAllLanguages() {
     try {
       const langs = await repo.getAll();
-      if (!langs){
+      if (!langs) {
         throw await errorHandler.CustomError(
           ErrorEnum[404],
           "Language not found"
-        );}
-        return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
+        );
+      }
+      return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
     } catch (error: any) {
       throw error;
     }
   }
 
   public async getLanguageById(language: string) {
+    console.log({ language });
     try {
       const lang = await repo.getById(language);
       if (!lang) {

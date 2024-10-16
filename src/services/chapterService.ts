@@ -5,6 +5,24 @@ import HELPERS from "../utils/helpers";
 
 class ChapterService {
   private logInfo = "";
+
+  public async createChapter(chapter: ChapterType): Promise<ChapterType> {
+    try {
+      const createdChapter = await Repo.createChapter(chapter);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } creating chapter @ ${HELPERS.currentTime()}`;
+      return createdChapter;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } creating chapter @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
   public async fetchChapters(book: string): Promise<ChapterResponseType[]> {
     try {
       const chapters = await Repo.getChapters(book);

@@ -92,29 +92,35 @@ class BookService {
     bookId: string,
     sessionId: string = ""
   ): Promise<BookType> {
-    if (!bookId) {
-      throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
-    }
-    const book = await Repo.fetchOne(bookId);
-
-    if (sessionId) {
-      const { session } = await sessionService.getSession(sessionId);
-      if (!session) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid Session ID"
+    try {
+      if (!bookId) {
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+      }
+      const book = await Repo.fetchOne(bookId);
+      if (sessionId) {
+        const { session } = await sessionService.getSession(sessionId);
+        if (!session) {
+          throw await errorHandler.CustomError(
+            ErrorEnum[403],
+            "Invalid Session ID"
+          );
+        }
+        await seenService.createNewSeen(
+          book?._id as string,
+          session.user as string
         );
       }
-      await seenService.createNewSeen(
-        book?._id as string,
-        session.user as string
-      );
-    }
 
-    this.logInfo = `${
-      HELPERS.loggerInfo.success
-    } fetching book @ ${HELPERS.currentTime()}`;
-    return book;
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching book @ ${HELPERS.currentTime()}`;
+      return book;
+    } catch (error) {
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
   }
   public async updateBook(
     bookID: string,
@@ -205,6 +211,24 @@ class BookService {
       return newBookMeta;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async bookAnalytics(bookId: string) {
+    try {
+      const book = await this.fetchBook(bookId);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching book analytics @ ${HELPERS.currentTime()}`;
+      return book.meta;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching book analytics @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
     }
   }
 

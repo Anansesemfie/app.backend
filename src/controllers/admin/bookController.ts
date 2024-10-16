@@ -9,6 +9,7 @@ export const GenerateSignedUrl = async (req: Request, res: Response) => {
     const signedUrl = await bookService.getAWSURL(file, fileType);
     res.status(200).json({ data: signedUrl });
   } catch (error: any) {
+    console.log({ error }); // Log error to the console
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -39,6 +40,22 @@ export const UpdateBook = async (req: Request, res: Response) => {
     const updatedBook = await bookService.UpdateBook(book, token);
     res.status(200).json({ data: updatedBook });
   } catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+};
+
+export const BookAnalytics = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.params;
+    const token = res.locals.sessionId;
+    const analytics = await bookService.BookAnalytics(bookId, token);
+    res.status(200).json({ data: analytics });
+  } catch (error: any) {
+    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
