@@ -1,15 +1,12 @@
 import Repo from "../db/repository/booksRepository";
 import seenService from "./seenService";
 import sessionService from "./sessionService";
-import chapterService from "./chapterService";
-import languageService from "./languageService";
-import categoryService from "./categoryService";
+import subscribersService from "./subscribersService";
 
 import { BookType, BookUpdateType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import { BookStatus, UsersTypes } from "../db/models/utils";
-import { stat } from "fs";
 
 class BookService {
   private logInfo = "";
@@ -60,19 +57,31 @@ class BookService {
   }
 
   //write a function that validates book data
-
   public async fetchBooks({
     page = 1,
     limit = 10,
-    status = BookStatus.Active,
+    token = "",
   }: {
     page: number;
     limit: number;
-    status?: BookStatus;
+    params?: {};
     token?: string;
   }): Promise<BookType[]> {
+    let books: BookType[] = [];
     try {
-      const books = await Repo.fetchAll(status, limit, page);
+      if (token) {
+        const booksToFetch = await this.fetchBooksInSubscription(token);
+        if (!booksToFetch) {
+          books = await Repo.fetchAll(limit, page);
+        } else {
+          books = await Repo.fetchAll(limit, page, {
+            _id: { $in: booksToFetch },
+          });
+        }
+      } else {
+        books = await Repo.fetchAll(limit, page);
+      }
+      //
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching books @ ${HELPERS.currentTime()}`;
@@ -92,29 +101,40 @@ class BookService {
     bookId: string,
     sessionId: string = ""
   ): Promise<BookType> {
-    if (!bookId) {
-      throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
-    }
-    const book = await Repo.fetchOne(bookId);
+    try {
+      if (!bookId) {
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+      }
+      if (sessionId) {
+        const booksToFetch = await this.fetchBooksInSubscription(sessionId);
+        if (booksToFetch && !booksToFetch.includes(bookId)) {
+          throw await errorHandler.CustomError(
+            ErrorEnum[403],
+            "Unauthorized access"
+          );
+        }
+      }
+      const book = await Repo.fetchOne(bookId);
 
-    if (sessionId) {
-      const { session } = await sessionService.getSession(sessionId);
-      if (!session) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid Session ID"
+      if (sessionId) {
+        const { user } = await sessionService.getSession(sessionId);
+        await seenService.createNewSeen(
+          book?._id as string,
+          user._id as string
         );
       }
-      await seenService.createNewSeen(
-        book?._id as string,
-        session.user as string
-      );
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } fetching book @ ${HELPERS.currentTime()}`;
+      return book;
+    } catch (error: unknown) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching book @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
     }
-
-    this.logInfo = `${
-      HELPERS.loggerInfo.success
-    } fetching book @ ${HELPERS.currentTime()}`;
-    return book;
   }
   public async updateBook(
     bookID: string,
@@ -160,6 +180,39 @@ class BookService {
       await this.updateBook(bookId, book);
     } catch (error) {
       throw await errorHandler.CustomError(ErrorEnum[500], "Invalid action");
+    }
+  }
+
+  async fetchBooksInSubscription(token: string) {
+    try {
+      const { user } = await sessionService.getSession(token);
+      if (!user.subscription) {
+        return [];
+      }
+      const subscription = await subscribersService.fetchOne({
+        _id: user.subscription,
+      });
+      if (!subscription) {
+        return [];
+      }
+      return subscription.books;
+    } catch (error: any) {
+    } finally {
+    }
+  }
+
+  public async analyzeBook(bookId: string): Promise<{
+    played: number;
+    views: number;
+    likes: number;
+    dislikes: number;
+    comments: number;
+  }> {
+    try {
+      const book = await this.fetchBook(bookId);
+      return book.meta;
+    } catch (error: any) {
+      throw error;
     }
   }
 
@@ -209,34 +262,40 @@ class BookService {
   }
 
   public async filterBooks({
+    page = 1,
+    limit = 10,
     search,
     language,
     category,
   }: {
+    page: number;
+    limit: number;
     search?: string;
     language?: string;
     category?: string;
   }) {
     const books: BookType[] = [];
     try {
+      const params: {
+        status: BookStatus;
+        title?: {};
+        category?: {};
+        languages?: {};
+      } = { status: BookStatus.Active };
       if (search) {
-        const fetchByBooks = await Repo.searchByKeyword(search);
-        books.push(...fetchByBooks);
-        const fetchByChapter = await chapterService.searchByKeyword(search);
-        books.push(...fetchByChapter);
+        params["title"] = { $regex: search };
       }
       if (language) {
-        const lang = await languageService.getLanguageById(language);
-        const fetchByLanguage = await Repo.findByLanguage(String(lang));
-        books.push(...fetchByLanguage);
+        params["languages"] = { $in: [language] };
       }
       if (category) {
-        const cate = await categoryService.fetchCategory(category);
-        const fetchByCategory = await Repo.findByCategory(cate.name);
-        books.push(...fetchByCategory);
+        params["category"] = { $in: [category] };
       }
+      const fetchByBooks = await Repo.fetchAll(limit, page, params);
+      books.push(...fetchByBooks);
       return this.getUniqueBooks(books);
     } catch (error: any) {
+      console.log({ error });
       throw error;
     }
   }
@@ -273,8 +332,11 @@ class BookService {
         );
       // case !book.folder:
       //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
-      // case !book.cover:
-      //   throw await errorHandler.CustomError(ErrorEnum[400], "Cover is required");
+      case !book.cover:
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Cover is required"
+        );
       case !book.uploader:
         throw await errorHandler.CustomError(
           ErrorEnum[400],

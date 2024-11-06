@@ -6,9 +6,11 @@ export const getBooks = async (req: Request, res: Response) => {
   try {
     const page = req.query.page as string;
     const limit = req.query.limit as string;
+    const token = res.locals.sessionId;
     const books = await booksService.fetchBooks({
       page: parseInt(page),
       limit: parseInt(limit),
+      token,
     });
     res
       .status(200)
@@ -25,7 +27,7 @@ export const getBooks = async (req: Request, res: Response) => {
 export const getBook = async (req: Request, res: Response) => {
   try {
     const bookId = req.params.bookId;
-    const sessionId = req.params.sessionId;
+    const sessionId = res.locals.sessionId;
     const book = await booksService.fetchBook(bookId, sessionId);
     res.status(200).json({ data: book });
   } catch (error: any) {
@@ -42,8 +44,12 @@ export const filterBooks = async (req: Request, res: Response) => {
     const search = req.query.search as string;
     const language = req.query.language as string;
     const category = req.query.category as string;
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
 
     const books = await booksService.filterBooks({
+      page,
+      limit,
       search,
       language,
       category,

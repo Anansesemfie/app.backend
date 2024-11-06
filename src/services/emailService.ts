@@ -1,15 +1,9 @@
-import sendGrid from "@sendgrid/mail";
-import { EMAIL_OPERAND, SENDGRID_KEY } from "../utils/env";
+import { EMAIL_OPERAND, APP_LOGO } from "../utils/env";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
-
-type EmailOptions = {
-  to?: string;
-  from?: string;
-  subject: string;
-  text?: string;
-  html: string;
-};
+import nodeMailer from "../utils/nodeMailer";
+import sendGRID from "../utils/sendGrid";
+import { EmailOptions } from "./utils/interfaces";
 
 type Action = {
   link: string;
@@ -17,15 +11,14 @@ type Action = {
 };
 
 class EmailService {
-  private sgEmail = sendGrid;
+  private sgEmail = new sendGRID();
+  private node_mailer = new nodeMailer();
   private defaultOptions = {
     from: EMAIL_OPERAND,
     subject: "From Anansesemfie",
   };
   private logInfo = "";
-  public _constructor() {
-    this.sgEmail.setApiKey(SENDGRID_KEY as string);
-  }
+  public _constructor() {}
   private generateEmailTemplate = (
     body: string,
     header: string = "Hello",
@@ -44,7 +37,7 @@ class EmailService {
                           <td>
                               <!-- Header -->
                               <header style="background-color: #f0f0f0; padding: 20px; text-align: center;">
-                                  <img src="(link unavailable)" alt="Logo" style="width: 100px; height: auto; margin: 0 auto;">
+                                  <img src="${APP_LOGO}" alt="Logo" style="width: 100px; height: auto; margin: 0 auto;">
                                   <h1 style="margin: 0;">${header}</h1>
                               </header>
                               <script>
@@ -69,7 +62,6 @@ class EmailService {
                               <!-- Footer -->
                               <footer style="background-color: #f0f0f0; padding: 10px; text-align: center;">
                                   <p style="margin: 0;">&copy; ${HELPERS.currentTime(
-                                    true,
                                     "YYYY"
                                   )} Our Company</p>
                               </footer>
@@ -84,11 +76,7 @@ class EmailService {
 
   public async sendEmail(options: EmailOptions, action: Action) {
     try {
-      if (!options.to || !options.subject)
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid email option"
-        );
+      await this.checkEmailOptions(options);
       const msg = {
         to: options.to!,
         from: options.from ?? this.defaultOptions.from,
@@ -100,10 +88,15 @@ class EmailService {
           action
         ),
       };
-      await this.sgEmail.send(msg);
+      const sentBySendGrid = await this.sendEmailWithSendGrid(msg);
+      if (!sentBySendGrid) {
+        await this.sendEmailWithNodeMailer(msg);
+      }
+
       this.logInfo = `${HELPERS.loggerInfo.success} sending email: ${
         options.subject
       } @ ${HELPERS.currentTime()}`;
+      return "Email sent successfully";
     } catch (error: any) {
       this.logInfo = `${HELPERS.loggerInfo.error} sending email: ${
         options.subject
@@ -112,6 +105,39 @@ class EmailService {
     } finally {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";
+    }
+  }
+
+  private async sendEmailWithNodeMailer(options: EmailOptions) {
+    try {
+      await this.node_mailer.init();
+      return await this.node_mailer.send(options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  private async sendEmailWithSendGrid(options: EmailOptions) {
+    try {
+      await this.sgEmail.init();
+      return await this.sgEmail.send(options);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  private async checkEmailOptions(options: EmailOptions) {
+    if (!options.to) {
+      throw await errorHandler.CustomError(
+        ErrorEnum[401],
+        "Email recipient is required"
+      );
+    }
+    if (!options.html) {
+      throw await errorHandler.CustomError(
+        ErrorEnum[401],
+        "Email content is required"
+      );
     }
   }
 }

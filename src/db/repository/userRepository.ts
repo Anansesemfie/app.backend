@@ -42,7 +42,10 @@ class UserRepository {
     }
   }
 
-  public async update(payload: {}, userId: string): Promise<any> {
+  public async update(
+    payload: Partial<UserType>,
+    userId: string
+  ): Promise<any> {
     try {
       const updatedUser = await User.findOneAndUpdate(
         { _id: userId },

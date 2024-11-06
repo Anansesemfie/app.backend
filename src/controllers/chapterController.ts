@@ -3,7 +3,9 @@ import { Request, Response } from "express";
 
 export const getChapters = async (req: Request, res: Response) => {
   try {
-    const chapters = await chapterService.fetchChapters(req.params.bookId);
+    const bookId = req.params.bookId;
+    const token = res.locals.sessionId;
+    const chapters = await chapterService.fetchChapters(bookId, token);
     res.status(200).json({ data: chapters });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

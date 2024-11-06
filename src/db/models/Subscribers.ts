@@ -21,6 +21,12 @@ const Subscribers = (Mongoose: any) => {
         type: Boolean,
         default: true,
       },
+      books: [
+        {
+          type: ObjectId,
+          ref: "books",
+        },
+      ],
       ref: {
         type: String,
         required: [true, "Reference ID is required"],
@@ -29,6 +35,15 @@ const Subscribers = (Mongoose: any) => {
       createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
+      },
+      updatedAt: {
+        type: Date,
+      },
+      activatedAt: {
+        type: Date,
+      },
+      deactivatedAt: {
+        type: Date,
       },
     },
     {

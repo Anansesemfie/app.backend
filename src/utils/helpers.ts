@@ -4,10 +4,10 @@ import fs from "fs";
 import path from "path";
 
 import errorHandler, { ErrorEnum } from "./error";
-import { SECRET_JWT, SERVER_LOG_FILE } from "./env";
+import { SECRET_JWT, SERVER_LOG_FILE, CAN_LOG } from "./env";
 class HELPERS {
   public static readonly Chars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" as const ;
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" as const;
 
   public static readonly SessionMaxAge = (months: number = 24) =>
     730 * 60 * 60 * months; //2 years
@@ -18,11 +18,14 @@ class HELPERS {
     error: "#Error",
     warning: "#Warning",
   } as const;
+
+  public static LOG(...arg: any) {
+    CAN_LOG && console.log(arg);
+  }
   public static currentTime(
-    format: boolean = true,
     formatBy: string = "YYYY-MM-DD HH:mm:ss"
   ): Date | string {
-    if (format) return dayjs().format(formatBy);
+    if (formatBy) return dayjs().format(formatBy);
     return dayjs().toISOString();
   }
 
@@ -34,9 +37,14 @@ class HELPERS {
     }
   }
 
-  public static async logger(message: string): Promise<void> {
+  public static async logger(
+    message: string,
+    serviceName?: string
+  ): Promise<void> {
     try {
-      message = "#" + message + "\n";
+      message = `${
+        serviceName ? `-${serviceName.toUpperCase()}-` : ""
+      }#${message}\n`;
       let dir = `${__dirname}${SERVER_LOG_FILE}`;
 
       if (!fs.existsSync(dir)) {

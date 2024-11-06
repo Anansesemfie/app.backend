@@ -1,4 +1,5 @@
 import userService from "../../services/admin/userService";
+import emailService from "../../services/emailService";
 import { Request, Response } from "express";
 
 import errorHandler from "../../utils/error";
@@ -33,3 +34,18 @@ export const LoginUser = async (req: Request, res: Response) => {
     res.status(code).json({ error: message, message: exMessage });
   }
 };
+
+export const SendEmail = async (req: Request, res: Response) => {
+  try {
+    let {email,action} = req.body;
+    const emailSent = await emailService.sendEmail(email,action);
+    res.status(200).json({data:emailSent});
+  } catch (error: any) {
+    console.log({ error });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+}

@@ -24,6 +24,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.8.10",
+    "@types/nodemailer": "^6.4.16",
     "@types/request": "^2.48.12",
     "@types/validator": "^13.11.9",
     "nodemon": "^3.1.0",

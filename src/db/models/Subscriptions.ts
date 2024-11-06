@@ -24,7 +24,6 @@ const Subscriptions = (Mongoose: any) => {
       users: {
         type: Number,
         min: 1,
-        required: false,
         default: 1,
       },
       autorenew: {
@@ -42,11 +41,18 @@ const Subscriptions = (Mongoose: any) => {
       },
       accent: {
         type: String,
-        default: "chocolate",
+        default: "#fff",
+      },
+      isNew: {
+        type: Boolean,
+        default: true,
       },
       createdAt: {
         type: Date,
         default: HELPERS.currentTime(),
+      },
+      updatedAt: {
+        type: Date,
       },
     },
     {

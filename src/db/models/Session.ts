@@ -14,7 +14,10 @@ const Session = (Mongoose: any) => {
     expiredAt: {
       type: Date,
     },
-    external: Boolean,
+    external: {
+      type: Boolean,
+      default: false,
+    },
     createdAt: {
       type: Date,
       default: HELPERS.currentTime(),

@@ -36,59 +36,23 @@ class BookRepository {
   }
 
   public async fetchAll(
-    Status: BookStatus = BookStatus.Active,
     numberOfRecords: number = 5,
-    page: number = 0
+    page: number = 0,
+    params: {} = { status: BookStatus.Active }
   ): Promise<BookType[]> {
     try {
-      const fetchedBooks = await Book.find({ status: Status })
-        .skip(numberOfRecords * page)
-        .limit(numberOfRecords);
+      const fetchedBooks = await Book.find({ ...params })
+        .skip(numberOfRecords * (page - 1))
+        .limit(numberOfRecords)
+        .sort({ createdAt: -1 });
       return fetchedBooks;
     } catch (error: any) {
+      console.log({ error });
       throw await errHandler.CustomError(
         ErrorEnum[400],
         "Error fetching books"
       );
     }
   }
-
-  public async searchByKeyword(keyword: string): Promise<BookType[]> {
-    try {
-      const matchedBooks = await Book.find({ title: { $regex: keyword } });
-      return matchedBooks;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error searching books"
-      );
-    }
-  }
-
-  public async findByLanguage(language: string): Promise<BookType[]> {
-    try {
-      const matchedBooks = await Book.find({ languages: language });
-      console.log(matchedBooks);
-      return matchedBooks;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error finding books by language"
-      );
-    }
-  }
-
-  public async findByCategory(categories: string): Promise<BookType[]> {
-    try {
-      const matchedBooks = await Book.find({ category: { $in: categories } });
-      return matchedBooks;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error finding books by category"
-      );
-    }
-  }
 }
-
 export default new BookRepository();

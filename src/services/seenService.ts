@@ -10,7 +10,7 @@ class SeenService {
       if (oldSeen) return oldSeen;
       const newSeen: SeenType = {
         user: userId,
-        bookId: bookId,
+        bookID: bookId,
       };
       const seen = await seenRepository.create(newSeen);
       this.logInfo = `${

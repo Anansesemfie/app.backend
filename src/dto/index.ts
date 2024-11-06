@@ -22,7 +22,7 @@ export type BookType = {
   associates: string[];
   uploader: string;
   createdAt?: Date;
-  meta?: {
+  meta: {
     played: number;
     views: number;
     likes: number;
@@ -63,7 +63,7 @@ export type ChapterResponseType = {
 export type SeenType = {
   _id?: string;
   user: string;
-  bookId: string;
+  bookID: string;
   seenAt?: Date;
   playedAt?: string;
   createdAt?: string;
@@ -74,8 +74,12 @@ export type subscriberDTO = {
   parent: string;
   user: string;
   active: boolean;
+  books?: string[];
   ref: string;
   createdAt?: string;
+  updatedAt?: string;
+  activatedAt?: string;
+  deactivatedAt?: string;
 };
 
 export type SubscriptionsType = {
@@ -103,6 +107,7 @@ export type UserType = {
   bio: string;
   subscription?: string;
   createdAt?: string;
+  key?: string;
 };
 
 export type ReactionType = {
