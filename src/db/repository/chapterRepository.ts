@@ -3,6 +3,19 @@ import { ChapterType } from "../../dto";
 import errHandler, { ErrorEnum } from "../../utils/error";
 
 class ChapterRepository {
+  public async createChapter(chapter: ChapterType): Promise<ChapterType> {
+    try {
+      const newChapter = new Chapter(chapter);
+      await newChapter.save();
+      return newChapter;
+    } catch (error: any) {
+      console.log({ error });
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        error?.message ?? "Error creating chapter"
+      );
+    }
+  }
   public async getChapters(bookId: string): Promise<ChapterType[]> {
     try {
       const chapters = await Chapter.find({ book: bookId });
@@ -53,7 +66,6 @@ class ChapterRepository {
       );
     }
   }
-  
 }
 
 export default new ChapterRepository();

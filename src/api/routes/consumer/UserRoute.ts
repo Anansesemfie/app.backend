@@ -6,14 +6,21 @@ import {
   LogoutUser,
   resetPassword,
   forgotPassword,
+  createSubscription,
+  linkSubscription,
 } from "../../../controllers/userController";
 
 const router = Router();
 
+router.get("/logout/", CHECKAPPTOKEN, LogoutUser);
+
 router.post("/add", CreateUser);
 router.post("/login", LoginUser);
-router.get("/logout/",CHECKAPPTOKEN, LogoutUser);
-router.post("/reset-password", resetPassword);
+
 router.post("/forgot-password", forgotPassword);
+router.post("/subscribe", CHECKAPPTOKEN, createSubscription);
+
+router.put("/subscribe/link", CHECKAPPTOKEN, linkSubscription);
+router.put("/reset-password", resetPassword);
 
 export default router;

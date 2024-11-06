@@ -10,10 +10,12 @@ class SubscriberRepository {
     }
   }
 
-  public async fetchOne(subscriptionID: string): Promise<subscriberDTO> {
+  public async fetchOne(
+    params: Partial<{ _id: string; ref: string }>
+  ): Promise<subscriberDTO> {
     try {
       const fetchedSubscription = await Subscriber.findOne({
-        _id: subscriptionID,
+        ...params,
       });
       return fetchedSubscription;
     } catch (error: any) {
@@ -22,7 +24,7 @@ class SubscriberRepository {
   }
 
   public async update(
-    subscription: subscriberDTO,
+    subscription: Partial<subscriberDTO>,
     subscriptionID: string
   ): Promise<subscriberDTO> {
     try {

@@ -2,11 +2,44 @@ import Repo from "../db/repository/chapterRepository";
 import booksService from "./booksService";
 import { ChapterResponseType, ChapterType } from "../dto";
 import HELPERS from "../utils/helpers";
+import errorHandler, { ErrorEnum } from "../utils/error";
 
 class ChapterService {
   private logInfo = "";
-  public async fetchChapters(book: string): Promise<ChapterResponseType[]> {
+
+  public async createChapter(
+    chapter: ChapterType
+  ): Promise<ChapterResponseType> {
     try {
+      const createdChapter = await Repo.createChapter(chapter);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } creating chapter @ ${HELPERS.currentTime()}`;
+      return await this.formatChapter(createdChapter);
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } creating chapter @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
+  public async fetchChapters(
+    book: string,
+    token: string = ""
+  ): Promise<ChapterResponseType[]> {
+    try {
+      if (token) {
+        const booksToFetch = await booksService.fetchBooksInSubscription(token);
+        if (booksToFetch && !booksToFetch.includes(book)) {
+          throw await errorHandler.CustomError(
+            ErrorEnum[403],
+            "Unauthorised access"
+          );
+        }
+      }
       const chapters = await Repo.getChapters(book);
       this.logInfo = `${
         HELPERS.loggerInfo.success

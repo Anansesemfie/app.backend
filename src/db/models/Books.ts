@@ -41,12 +41,6 @@ const Books = (Mongoose: any) => {
           ref: "languages",
         },
       ],
-      collections: [
-        {
-          type: ObjectId,
-          ref: "collections",
-        },
-      ],
       folder: {
         type: String,
         unique: true,

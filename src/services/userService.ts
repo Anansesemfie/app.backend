@@ -1,4 +1,5 @@
 import Repo from "../db/repository/userRepository";
+import subscribersService from "./subscribersService";
 import { UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import { APP_BASE_URL } from "../utils/env";
@@ -9,8 +10,8 @@ import bcrypt, { genSalt } from "bcrypt";
 import Session from "./sessionService";
 import EmailService from "./emailService";
 
-class UserService {
-  private logInfo: string = "";
+export class UserService {
+  private logInfo: string | null = null;
 
   public async create(user: UserType): Promise<UserType> {
     try {
@@ -25,8 +26,8 @@ class UserService {
       const verificationCode = await this.generateVerification(
         newUser._id as string
       );
-      const HTML = `Hello <b>${newUser.username}</b>, verify your account <br/>
-      <button onClick=(copyText(${verificationCode})) >Copy verification Code</button> <br/>
+      const HTML = `Hello <b>${newUser.username}</b>, <br/>verify your account <br/>
+      <b>code:${verificationCode}</b> <br/>
       and <a href="${APP_BASE_URL}">goto app </a> or
       `;
       await EmailService.sendEmail(
@@ -42,14 +43,13 @@ class UserService {
       );
       return newUser;
     } catch (error: any) {
-      console.log({ error });
       this.logInfo = `${HELPERS.loggerInfo.error} creating ${
         user.username
       } @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = null;
     }
   }
 
@@ -71,14 +71,14 @@ class UserService {
       }
       return await this.formatForReturn(fetchedUser);
     } catch (error: any) {
-      console.log({ error });
+      HELPERS.LOG({ error });
       this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = null;
     }
   }
 
@@ -95,7 +95,7 @@ class UserService {
       } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
-      await HELPERS.logger(this.logInfo);
+      await HELPERS.logger(this.logInfo as string);
       this.logInfo = "";
     }
   }
@@ -112,21 +112,24 @@ class UserService {
       } fetching user ${userId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
-      await HELPERS.logger(this.logInfo);
+      await HELPERS.logger(this.logInfo as string);
       this.logInfo = "";
     }
   }
 
   private async formatForReturn(user: UserType): Promise<any> {
     try {
-      const token = await Session.create(user?._id as string);
+      const token = await Session.create(user?._id as string, {
+        duration: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+        external: false,
+      });
       return {
         email: user.email,
         username: user.username,
         dp: user.dp,
         bio: user.bio,
         token: await HELPERS.ENCODE_Token(token?._id),
-        role:user.account,
+        role: user.account,
         subscription: {
           active: !!user.subscription,
           id: user.subscription ? user.subscription.toString() : "",
@@ -144,7 +147,17 @@ class UserService {
     try {
       const userId = await Session.validateResetToken(token);
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await Repo.update({ password: hashedPassword }, userId);
+      const updated = await Repo.update({ password: hashedPassword }, userId);
+      if (updated) {
+        await EmailService.sendEmail(
+          {
+            to: updated.email,
+            subject: "Password Reset",
+            html: `Hello ${updated.username}, your password has been reset successfully.`,
+          },
+          { link: `${APP_BASE_URL}/app`, label: "Login" }
+        );
+      }
     } catch (error: any) {
       throw error;
     }
@@ -163,11 +176,83 @@ class UserService {
     }
   }
 
+  public async createSubscription(
+    sessionId: string,
+    subscriptionParentID: string
+  ) {
+    try {
+      const session = await Session.getSession(sessionId);
+      if (!session) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid Session ID"
+        );
+      }
+      const user = await Repo.fetchUser(session.user._id as string);
+      if (!user) {
+        throw await errorHandler.CustomError(ErrorEnum[404], "User not found");
+      }
+      //create child subscription
+      const newSubscription = await subscribersService.create(
+        subscriptionParentID,
+        user
+      );
+
+      this.logInfo = `
+      ${HELPERS.loggerInfo.success} creating subscription for user ${
+        user.username
+      } @ ${HELPERS.currentTime()}
+      `;
+
+      return newSubscription;
+    } catch (error: any) {
+      this.logInfo = `
+      ${
+        HELPERS.loggerInfo.error
+      } creating subscription for user with session ID ${sessionId} @ ${HELPERS.currentTime()}
+      `;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = null;
+    }
+  }
+
+  public async linkSubscription(sessionId: string, ref: string) {
+    try {
+      const { user } = await Session.getSession(sessionId);
+
+      const subscription = await subscribersService.fetchOne({ ref });
+      //create child subscription
+      const payload = {
+        subscription: subscription._id,
+      };
+      const newSubscription = await Repo.update(payload, user._id as string);
+
+      this.logInfo = `
+      ${HELPERS.loggerInfo.success} linking subscription for user ${
+        user.username
+      } @ ${HELPERS.currentTime()}
+      `;
+
+      return newSubscription;
+    } catch (error: any) {
+      this.logInfo = `
+      ${
+        HELPERS.loggerInfo.error
+      } linking subscription for user with session ID ${sessionId} @ ${HELPERS.currentTime()}
+      `;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = null;
+    }
+  }
+
   private async generatePasswordResetToken(email: string): Promise<string> {
     // Generate a unique token (you can use libraries like crypto or uuid)
     const token = HELPERS.genRandCode();
     // await storeTokenInDatabase(email, token);
-
     return token;
   }
 
@@ -199,7 +284,7 @@ class UserService {
       } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
-      await HELPERS.logger(this.logInfo);
+      await HELPERS.logger(this.logInfo as string);
       this.logInfo = "";
     }
   }
