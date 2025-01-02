@@ -1,8 +1,11 @@
 import commentRepository from "../db/repository/commentRepository";
 import sessionService from "./sessionService";
 import booksService from "./booksService";
+import userService from "./userService";
+
 import errorHandler, { ErrorEnum } from "../utils/error";
 import HELPERS from "../utils/helpers";
+import { CommentType, CommentResponse } from "../dto";
 
 class CommentService {
   private logInfo = "";
@@ -22,13 +25,14 @@ class CommentService {
           "Comment contains special characters"
         );
       }
+      console.log({ bookID, sessionID, comment });
       if (!bookID || !sessionID || !comment) {
         throw await errorHandler.CustomError(
           ErrorEnum[403],
           "Invalid book, user or comment"
         );
       }
-      const {session} = await sessionService.getSession(sessionID);
+      const { session } = await sessionService.getSession(sessionID);
       const newComment = await commentRepository.create({
         bookID,
         user: session?.user as string,
@@ -53,15 +57,17 @@ class CommentService {
     }
   }
 
-  public async getComments(bookId: string) {
+  public async getComments(bookId: string, params?: {}) {
     try {
       if (!bookId)
         throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
-      const comments = await commentRepository.getComments(bookId);
+      const comments = await commentRepository.getComments(bookId, params);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } fetching all comments on book: ${bookId} @ ${HELPERS.currentTime()}`;
-      return comments;
+      return await Promise.all(
+        comments.map((comment: CommentType) => this.formatComment(comment))
+      );
     } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
@@ -71,6 +77,25 @@ class CommentService {
       await HELPERS.logger(this.logInfo);
       this.logInfo = "";
     }
+  }
+
+  private async formatComment(comment: CommentType) {
+    try {
+      const user = await userService.fetchUser(comment.user);
+      if (user) {
+        const formatted: CommentResponse = {
+          id: comment._id as string,
+          user: {
+            id: user._id as string,
+            name: user.username as string,
+            picture: user.dp as string,
+            email: user.email,
+          },
+          comment: comment.comment,
+        };
+        return formatted;
+      }
+    } catch (error: unknown) {}
   }
 }
 

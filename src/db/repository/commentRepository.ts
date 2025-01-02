@@ -15,9 +15,12 @@ class CommentRepository {
     }
   }
 
-  public async getComments(bookId: string): Promise<CommentType[]> {
+  public async getComments(
+    bookId: string,
+    params?: {}
+  ): Promise<CommentType[]> {
     try {
-      const comments = await Comment.find({ bookID: bookId });
+      const comments = await Comment.find({ bookID: bookId, ...params });
       return comments;
     } catch (error: any) {
       throw await errorHandle.CustomError(

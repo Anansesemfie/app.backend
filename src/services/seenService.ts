@@ -51,6 +51,29 @@ class SeenService {
       this.logInfo = "";
     }
   }
+
+  async getSeensAndPlay(
+    bookId: string,
+    start: string,
+    end: string
+  ): Promise<{ seen: number; played: number }> {
+    try {
+      const seen = await seenRepository.findAll(bookId, {
+        seenAt: { $gte: new Date(start), $lt: new Date(end) },
+      });
+      const played = await seenRepository.findAll(bookId, {
+        playedAt: { $gte: new Date(start), $lt: new Date(end) },
+      });
+      return { seen: seen.length, played: played.length };
+    } catch (error: unknown) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } fetching seen and played @ ${HELPERS.currentTime()}`;
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+      return { seen: 0, played: 0 };
+    }
+  }
 }
 
 export default new SeenService();

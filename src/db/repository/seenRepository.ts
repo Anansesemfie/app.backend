@@ -13,7 +13,7 @@ class SeenRepository {
     try {
       const seens = await Seen.find({ bookId: bookId });
       return seens;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw error;
     }
   }
@@ -25,7 +25,19 @@ class SeenRepository {
     try {
       const seen = await Seen.findOne({ bookId: bookId, user: userId });
       return seen;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      throw error;
+    }
+  }
+
+  public async findAll(bookID: string, params?: {}): Promise<SeenType[]> {
+    try {
+      const seen = await Seen.find({
+        bookID,
+        ...params,
+      });
+      return seen;
+    } catch (error: unknown) {
       throw error;
     }
   }
@@ -34,7 +46,7 @@ class SeenRepository {
     try {
       const updatedSeen = await Seen.findOneAndUpdate(params, payload);
       return updatedSeen;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw error;
     }
   }

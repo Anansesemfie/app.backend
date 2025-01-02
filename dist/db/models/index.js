@@ -1,0 +1,40 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Subscription = exports.PaymentsAccount = exports.Session = exports.External = exports.Origin = exports.Seen = exports.Comment = exports.Reaction = exports.Subscriber = exports.User = exports.Language = exports.Category = exports.Chapter = exports.Book = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+const env_1 = require("../../utils/env");
+const Books_1 = __importDefault(require("./Books"));
+const Chapter_1 = __importDefault(require("./Chapter"));
+const Category_1 = __importDefault(require("./Category"));
+const Languages_1 = __importDefault(require("./Languages"));
+const Users_1 = __importDefault(require("./Users"));
+const PaymentAccounts_1 = __importDefault(require("./PaymentAccounts"));
+const Subscribers_1 = __importDefault(require("./Subscribers"));
+const Subscriptions_1 = __importDefault(require("./Subscriptions"));
+const Reaction_1 = __importDefault(require("./Reaction"));
+const Comments_1 = __importDefault(require("./Comments"));
+const Seen_1 = __importDefault(require("./Seen"));
+const Origins_1 = __importDefault(require("./Origins"));
+const Externals_1 = __importDefault(require("./Externals"));
+const Session_1 = __importDefault(require("./Session"));
+mongoose_1.default.connect(env_1.MONGODB_URI, {
+    autoIndex: true,
+});
+exports.Book = mongoose_1.default.model("Books", (0, Books_1.default)(mongoose_1.default));
+exports.Chapter = mongoose_1.default.model("chapters", (0, Chapter_1.default)(mongoose_1.default));
+exports.Category = mongoose_1.default.model("categories", (0, Category_1.default)(mongoose_1.default));
+exports.Language = mongoose_1.default.model("languages", (0, Languages_1.default)(mongoose_1.default));
+exports.User = mongoose_1.default.model("users", (0, Users_1.default)(mongoose_1.default));
+exports.Subscriber = mongoose_1.default.model("subscribers", (0, Subscribers_1.default)(mongoose_1.default));
+exports.Reaction = mongoose_1.default.model("BookReacts", (0, Reaction_1.default)(mongoose_1.default));
+exports.Comment = mongoose_1.default.model("BookComments", (0, Comments_1.default)(mongoose_1.default));
+exports.Seen = mongoose_1.default.model("BookSeens", (0, Seen_1.default)(mongoose_1.default));
+exports.Origin = mongoose_1.default.model("origins", (0, Origins_1.default)(mongoose_1.default));
+exports.External = mongoose_1.default.model("externals", (0, Externals_1.default)(mongoose_1.default));
+exports.Session = mongoose_1.default.model("session", (0, Session_1.default)(mongoose_1.default));
+exports.PaymentsAccount = mongoose_1.default.model("paymentsAccount", (0, PaymentAccounts_1.default)(mongoose_1.default));
+exports.Subscription = mongoose_1.default.model("subscription", (0, Subscriptions_1.default)(mongoose_1.default));
+exports.default = mongoose_1.default;

@@ -32,11 +32,15 @@ class ReactionRepository {
       );
     }
   }
-  public async getReactions(bookId: string): Promise<ReactionType[]> {
+  public async getReactions(
+    bookId: string,
+    params?: {}
+  ): Promise<ReactionType[]> {
     try {
       const reactions = await Reaction.find({
         bookID: bookId,
         deletedAt: null,
+        ...params,
       });
       return reactions;
     } catch (error: any) {

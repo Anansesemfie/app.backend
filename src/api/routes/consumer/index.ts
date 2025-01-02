@@ -5,6 +5,7 @@ import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 import User from "./UserRoute";
 import Book from "./BookRoute";
 import Play from "./userPlayRoute";
+import Subscriptions from "./SubscriptionRoute";
 import WHCB from "./webHookCallBacks";
 
 const router = Router();
@@ -24,5 +25,6 @@ router.use("/user", User);
 router.use("/whcb", WHCB);
 router.use("/book/", CHECKAPPTOKEN, Book);
 router.use("/chapter/play", CHECKAPPTOKEN, Play);
+router.use("/subscription", Subscriptions);
 
 export default router;

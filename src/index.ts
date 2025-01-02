@@ -22,7 +22,7 @@ Mongoose.connection
     app.emit("ready");
   })
   .on("error", (e) => {
-    console.log(e);
+    console.error(e);
     console.log("Couldn't connect to DB");
     app.emit("error");
   });

@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const bookController_1 = require("../../../controllers/bookController");
+const LanguageRoute_1 = __importDefault(require("./LanguageRoute"));
+const ChapterRoute_1 = __importDefault(require("./ChapterRoute"));
+const ReactionRoute_1 = __importDefault(require("./ReactionRoute"));
+const CategoryRoute_1 = __importDefault(require("./CategoryRoute"));
+const CommentRoute_1 = __importDefault(require("./CommentRoute"));
+const router = (0, express_1.Router)();
+router.use("/languages", LanguageRoute_1.default);
+router.use("/chapter", ChapterRoute_1.default);
+router.use("/reaction", ReactionRoute_1.default);
+router.use("/category", CategoryRoute_1.default);
+router.use("/comment", CommentRoute_1.default);
+router.get("/", bookController_1.getBooks);
+router.get("/:bookId", bookController_1.getBook);
+router.get("/filter/all", bookController_1.filterBooks);
+exports.default = router;
