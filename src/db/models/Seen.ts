@@ -16,7 +16,7 @@ const Seen = (Mongoose: any) => {
       default: Date.now,
     },
     playedAt: {
-      type: String,
+      type: Date,
     },
     subscription: {
       type: ObjectId,

@@ -95,6 +95,19 @@ export type SubscriptionsType = {
   accent: string;
   createdAt?: string;
 };
+export type SubscriptionsResponse = {
+  id: string;
+  name: string;
+  active: boolean;
+  visible: boolean;
+  duration: number;
+  users: number;
+  autorenew: boolean;
+  amount: number;
+  origin: string;
+  accent: string;
+  createdAt: string;
+};
 
 export type UserType = {
   _id?: string;
@@ -126,6 +139,17 @@ export type CommentType = {
   comment: string;
   createdAt?: string;
   deletedAt?: string;
+};
+export type CommentResponse = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    picture: string;
+    email: string;
+  };
+  comment: string;
+  createdAt?: string;
 };
 
 export type CategoryType = {

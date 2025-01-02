@@ -1,9 +1,9 @@
 import bookService from "../../services/admin/bookService";
 import chapterService from "../../services/admin/chapterService";
+import analysisService from "../../services/analysisService";
 import { Request, Response } from "express";
 
 import errorHandler from "../../utils/error";
-import exp from "constants";
 
 export const GenerateSignedUrl = async (req: Request, res: Response) => {
   try {
@@ -57,6 +57,24 @@ export const CreateChapter = async (req: Request, res: Response) => {
     const token = res.locals.sessionId;
     const createdChapter = await chapterService.CreateChapter(chapter, token);
     res.status(200).json({ data: createdChapter });
+  } catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+};
+
+export const GetBookAnalysis = async (req: Request, res: Response) => {
+  try {
+    const bookId = req.params.bookId;
+    const start = req.query.startDate as string;
+    const end = req.query.endDate as string;
+    const token = res.locals.sessionId;
+
+    const analysis = await analysisService.analyzeBook(start, end, bookId);
+    res.status(200).json({ data: analysis });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,

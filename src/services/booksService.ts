@@ -12,12 +12,6 @@ class BookService {
   private logInfo = "";
   public async createBook(book: BookType, session: string): Promise<BookType> {
     try {
-      if (!session) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid session ID"
-        );
-      }
       const { user } = await sessionService.getSession(session);
       if (!user) {
         throw await errorHandler.CustomError(
@@ -45,7 +39,7 @@ class BookService {
         HELPERS.loggerInfo.success
       } creating book @ ${HELPERS.currentTime()}`;
       return newBook;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } creating book @ ${HELPERS.currentTime()}`;

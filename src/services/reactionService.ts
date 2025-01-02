@@ -95,6 +95,23 @@ class ReactionService {
       this.logInfo = "";
     }
   }
+
+  public async getReactions(bookID: string, params?: {}): Promise<ReactionType[]> {
+    try {
+      if (!bookID) {
+        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+      }
+      const reactions = await reactionRepository.getReactions(bookID, params);
+      this.logInfo = `${HELPERS.loggerInfo.success} fetching all reactions on book: ${bookID} @ ${HELPERS.currentTime()}`;
+      return reactions;
+    } catch (error: any) {
+      this.logInfo = `${HELPERS.loggerInfo.error} fetching all reactions on book: ${bookID} @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo);
+      this.logInfo = "";
+    }
+  }
 }
 
 export default new ReactionService();
