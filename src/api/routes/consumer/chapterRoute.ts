@@ -3,7 +3,6 @@ import {
   getChapters,
   getChapter,
 } from "../../../controllers/chapterController";
-
 import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 
 const router = Router();
