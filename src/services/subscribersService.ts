@@ -32,31 +32,48 @@ class SubscriberService {
         user: user._id as string,
       };
       const newSubscription = await subscribersRepository.create(subscription);
+      if (!newSubscription) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[500],
+          "Error creating subscription"
+        );
+      }
       const callback_url = `${APP_BASE_URL}/api/v1/subscribers/callback`;
-      const paystackResponse = await Paystack.initializeTransaction(
-        parentSubscription.amount,
-        user.email,
-        {
-          customer: {
-            id: user._id as string,
-            name: user.username,
+      if (parentSubscription.amount === 0) {
+        await this.update(
+          { active: true, activatedAt: HELPERS.currentTime() as string },
+          newSubscription._id as string
+        );
+        this.logInfo = `${
+          HELPERS.loggerInfo.success
+        } creating start up subscription @ ${HELPERS.currentTime()}`;
+        return newSubscription;
+      } else {
+        const paystackResponse = await Paystack.initializeTransaction(
+          parentSubscription.amount,
+          user.email,
+          {
+            customer: {
+              id: user._id as string,
+              name: user.username,
+            },
+            subscription: {
+              id: newSubscription._id as string,
+              duration: parentSubscription.duration,
+            },
           },
-          subscription: {
-            id: newSubscription._id as string,
-            duration: parentSubscription.duration,
-          },
-        },
-        callback_url
-      );
-      await this.update(
-        { ref: paystackResponse.data.reference },
-        newSubscription._id as string
-      );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } creating subscription @ ${HELPERS.currentTime()}`;
+          callback_url
+        );
+        await this.update(
+          { ref: paystackResponse.data.reference },
+          newSubscription._id as string
+        );
+        this.logInfo = `${
+          HELPERS.loggerInfo.success
+        } creating subscription @ ${HELPERS.currentTime()}`;
 
-      return paystackResponse;
+        return paystackResponse;
+      }
     } catch (error: any) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
@@ -150,7 +167,7 @@ class SubscriberService {
 
       const daysGone = HELPERS.countDaysBetweenDates(
         child?.createdAt as string,
-        HELPERS.currentTime('DD/MM/YYYY') as string
+        HELPERS.currentTime("DD/MM/YYYY") as string
       );
 
       return daysGone <= duration;

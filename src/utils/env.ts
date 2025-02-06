@@ -4,7 +4,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 export const MONGODB_URI = process.env.MONGODB_URI ?? "";
 export const HOST_URI = process.env.HOST_URI ?? "localhost";
-export const PORT = process.env.PORT ?? 3000;
+export const PORT = process.env.PORT ?? 5000;
 export const SERVER_LOG_FILE = process.env.SERVER_LOG_FILE ?? "/logs.log";
 
 export const APP_LOGO = process.env.APP_LOGO ?? "";
@@ -26,3 +26,4 @@ export const AWS_S3_BUCKET_AUDIO = process.env.AWS_S3_BUCKET_AUDIO ?? "";
 
 export const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY ?? "";
 export const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY ?? "";
+export const STARTUP_SUBSCRIPTION = process.env.STARTUP_SUBSCRIPTION ?? "";

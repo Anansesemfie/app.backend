@@ -8,7 +8,7 @@ const Users = (Mongoose: any) => {
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: [true, "Email is unique"],
+      unique: [true, "Email already exists"],
       lowercase: true,
       validate: [isEmail, "Please enter a valid email"],
     },

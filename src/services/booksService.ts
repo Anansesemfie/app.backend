@@ -65,7 +65,9 @@ class BookService {
     try {
       if (token) {
         const booksToFetch = await this.fetchBooksInSubscription(token);
-        if (!booksToFetch) {
+
+        if (!booksToFetch.length) {
+          console.log({ booksToFetch });
           books = await Repo.fetchAll(limit, page);
         } else {
           books = await Repo.fetchAll(limit, page, {
@@ -101,7 +103,7 @@ class BookService {
       }
       if (sessionId) {
         const booksToFetch = await this.fetchBooksInSubscription(sessionId);
-        if (booksToFetch && !booksToFetch.includes(bookId)) {
+        if (booksToFetch.length && !booksToFetch.includes(bookId)) {
           throw await errorHandler.CustomError(
             ErrorEnum[403],
             "Unauthorized access"
@@ -177,7 +179,7 @@ class BookService {
     }
   }
 
-  async fetchBooksInSubscription(token: string) {
+  async fetchBooksInSubscription(token: string): Promise<string[]> {
     try {
       const { user } = await sessionService.getSession(token);
       if (!user.subscription) {
@@ -189,8 +191,9 @@ class BookService {
       if (!subscription) {
         return [];
       }
-      return subscription.books;
+      return subscription.books as string[];
     } catch (error: any) {
+      return [];
     } finally {
     }
   }
