@@ -1,11 +1,11 @@
 import Repo from "../db/repository/userRepository";
 import subscribersService from "./subscribersService";
-import { UserType } from "../dto";
+import { subscriberDTO, UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
-import { APP_BASE_URL } from "../utils/env";
+import { APP_BASE_URL, STARTUP_SUBSCRIPTION } from "../utils/env";
 
 import HELPERS from "../utils/helpers";
-import bcrypt, { genSalt } from "bcrypt";
+import bcrypt from "bcrypt";
 
 import Session from "./sessionService";
 import EmailService from "./emailService";
@@ -26,6 +26,16 @@ export class UserService {
       const verificationCode = await this.generateVerification(
         newUser._id as string
       );
+      const newSub = (await subscribersService.create(
+        STARTUP_SUBSCRIPTION,
+        newUser
+      )) as subscriberDTO;
+
+      await this.updateUser(
+        { subscription: newSub._id },
+        newUser._id as string
+      );
+
       const HTML = `Hello <b>${newUser.username}</b>, <br/>verify your account <br/>
       <b>code:${verificationCode}</b> <br/>
       and <a href="${APP_BASE_URL}">goto app </a> or
@@ -46,6 +56,29 @@ export class UserService {
       this.logInfo = `${HELPERS.loggerInfo.error} creating ${
         user.username
       } @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = null;
+    }
+  }
+
+  public async updateUser(
+    payload: Partial<UserType>,
+    userID: string
+  ): Promise<UserType> {
+    try {
+      const updatedUser = (await Repo.update(payload, userID)) as UserType;
+      this.logInfo = `
+      ${
+        HELPERS.loggerInfo.success
+      } updating user ${userID} @ ${HELPERS.currentTime()}
+      `;
+      return updatedUser;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } updating user ${userID} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo as string);
@@ -182,25 +215,19 @@ export class UserService {
   ) {
     try {
       const session = await Session.getSession(sessionId);
-      if (!session) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid Session ID"
-        );
-      }
-      const user = await Repo.fetchUser(session.user._id as string);
-      if (!user) {
-        throw await errorHandler.CustomError(ErrorEnum[404], "User not found");
-      }
+      const curUser = (await Repo.fetchUser(
+        session.user._id as string
+      )) as UserType;
+
       //create child subscription
       const newSubscription = await subscribersService.create(
         subscriptionParentID,
-        user
+        curUser
       );
 
       this.logInfo = `
       ${HELPERS.loggerInfo.success} creating subscription for user ${
-        user.username
+        curUser.username
       } @ ${HELPERS.currentTime()}
       `;
 
@@ -227,7 +254,10 @@ export class UserService {
       const payload = {
         subscription: subscription._id,
       };
-      const newSubscription = await Repo.update(payload, user._id as string);
+      const newSubscription = await this.updateUser(
+        payload,
+        user._id as string
+      );
 
       this.logInfo = `
       ${HELPERS.loggerInfo.success} linking subscription for user ${

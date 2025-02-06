@@ -1,7 +1,6 @@
 import userService from "../../services/admin/userService";
 import emailService from "../../services/emailService";
 import { Request, Response } from "express";
-
 import errorHandler from "../../utils/error";
 export const CreateUser = async (req: Request, res: Response) => {
   try {
@@ -10,6 +9,7 @@ export const CreateUser = async (req: Request, res: Response) => {
     const newUser = await userService.create(user, sessionId);
     res.status(201).json({data:newUser});
   } catch (error: any) {
+    console.log({error})
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -26,7 +26,6 @@ export const LoginUser = async (req: Request, res: Response) => {
     const fetchedUser = await userService.login(user);
     res.status(200).json({data:fetchedUser});
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -41,7 +40,6 @@ export const SendEmail = async (req: Request, res: Response) => {
     const emailSent = await emailService.sendEmail(email,action);
     res.status(200).json({data:emailSent});
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message

@@ -33,7 +33,7 @@ class ChapterService {
     try {
       if (token) {
         const booksToFetch = await booksService.fetchBooksInSubscription(token);
-        if (booksToFetch && !booksToFetch.includes(book)) {
+        if (booksToFetch.length && !booksToFetch.includes(book)) {
           throw await errorHandler.CustomError(
             ErrorEnum[403],
             "Unauthorised access"

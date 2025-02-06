@@ -19,17 +19,16 @@ class UserRepository {
             "Username already exists"
           );
         default:
-          throw await errHandler.CustomError(
-            ErrorEnum[400],
-            "Error creating user"
-          );
+          throw await errHandler.CustomError(ErrorEnum[400], error.message);
       }
     }
   }
 
   public async Login(email: string): Promise<any> {
     try {
+      console.log(email);
       const fetchedUser = await User.findOne({ email: email });
+      console.log(fetchedUser);
       if (!fetchedUser) {
         throw await errHandler.CustomError(
           ErrorEnum[403],
@@ -38,7 +37,7 @@ class UserRepository {
       }
       return fetchedUser;
     } catch (error: any) {
-      throw await errHandler.CustomError(ErrorEnum[400], "Error getting user");
+      throw await errHandler.CustomError(ErrorEnum[400], error.message);
     }
   }
 
@@ -76,7 +75,7 @@ class UserRepository {
     }
   }
 
-  public async fetchUser(userId: string) {
+  public async fetchUser(userId: string): Promise<UserType | null> {
     try {
       const fetchedUser = await User.findOne({ _id: userId });
       return fetchedUser;

@@ -12,7 +12,7 @@ type METADATA = {
   };
 };
 
-type PAYSTACK_INIT_RESPONSE = {
+export type PAYSTACK_INIT_RESPONSE = {
   status: boolean;
   message: string;
   data: {
