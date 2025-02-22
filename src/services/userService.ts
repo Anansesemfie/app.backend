@@ -26,13 +26,13 @@ export class UserService {
       const verificationCode = await this.generateVerification(
         newUser._id as string
       );
-      const newSub = (await subscribersService.create(
+      const { subscription } = await subscribersService.create(
         STARTUP_SUBSCRIPTION,
         newUser
-      )) as subscriberDTO;
+      );
 
       await this.updateUser(
-        { subscription: newSub._id },
+        { subscription: subscription._id },
         newUser._id as string
       );
 
@@ -220,9 +220,19 @@ export class UserService {
       )) as UserType;
 
       //create child subscription
-      const newSubscription = await subscribersService.create(
+      const { paymentDetails, subscription } = await subscribersService.create(
         subscriptionParentID,
         curUser
+      );
+      if (!subscription) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[500],
+          "Error creating subscription"
+        );
+      }
+      this.updateUser(
+        { subscription: subscription._id },
+        curUser._id as string
       );
 
       this.logInfo = `
@@ -231,7 +241,7 @@ export class UserService {
       } @ ${HELPERS.currentTime()}
       `;
 
-      return newSubscription;
+      return paymentDetails;
     } catch (error: any) {
       this.logInfo = `
       ${

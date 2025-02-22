@@ -3,6 +3,6 @@ import { ActivateSubscription } from "../../../controllers/webHookCallBacks";
 
 const route = Router();
 
-route.get("/paystack", ActivateSubscription);
+route.put("/paystack", ActivateSubscription);
 
 export default route;

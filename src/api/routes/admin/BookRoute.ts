@@ -9,7 +9,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/analyse/:bookId",GetBookAnalysis)
+router.get("/metrics/:bookId",GetBookAnalysis)
 
 router.post("/getSignedUrl", GenerateSignedUrl);
 router.post("/createBook", CreateBook);
