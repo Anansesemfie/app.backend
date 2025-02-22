@@ -3,7 +3,7 @@ import subscriptionsService from "./subscriptionsService";
 import { subscriberDTO, UserType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
-import Paystack from "../utils/paystack";
+import Paystack, { PAYSTACK_INIT_RESPONSE } from "../utils/paystack";
 import { APP_BASE_URL } from "../utils/env";
 import dayjs from "dayjs";
 
@@ -47,7 +47,7 @@ class SubscriberService {
         this.logInfo = `${
           HELPERS.loggerInfo.success
         } creating start up subscription @ ${HELPERS.currentTime()}`;
-        return newSubscription;
+        return {paymentDetails: {} as PAYSTACK_INIT_RESPONSE,subscription:newSubscription};
       } else {
         const paystackResponse = await Paystack.initializeTransaction(
           parentSubscription.amount,
@@ -72,7 +72,7 @@ class SubscriberService {
           HELPERS.loggerInfo.success
         } creating subscription @ ${HELPERS.currentTime()}`;
 
-        return paystackResponse;
+        return {paymentDetails:paystackResponse, subscription:newSubscription};
       }
     } catch (error: any) {
       this.logInfo = `${
@@ -137,6 +137,11 @@ class SubscriberService {
       const fetchedSubscription = await subscribersRepository.fetchOne({
         ...params,
       });
+      if (!fetchedSubscription)
+        throw await errorHandler.CustomError(
+          ErrorEnum[404],
+          "Subscription not found"
+        );
       return fetchedSubscription ?? {};
     } catch (error: any) {
       throw error;

@@ -20,13 +20,13 @@ class Analysis {
         createdAt: { $gte: new Date(from), $lt: new Date(to) },
         action: "dislike",
       });
-      return {
-        seen,
-        played,
-        comments: comments.length,
-        likes: likes.length,
-        dislikes: dislikes.length,
-      };
+      return [
+        { label: "Seen", data: seen },
+        { label: "Played", data: played },
+        { label: "Comments", data: comments.length },
+        { label: "Likes", data: likes.length },
+        { label: "Dislikes", data: dislikes.length },
+      ];
     } catch (error) {}
   }
 }

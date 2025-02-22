@@ -6,10 +6,10 @@ import errorHandler from "../utils/error";
 
 export const ActivateSubscription = async (req: Request, res: Response) => {
   try {
-    const { ref, reference } = req.query;
-    HELPERS.LOG({ ref, reference });
+    const { trxref, reference } = req.query;
+    HELPERS.LOG({ trxref, reference });
     const response = await subscribersService.verifySubscription(
-      (reference ?? ref) as string
+      (reference ?? trxref) as string
     );
     res.status(200).json({ data: response });
   } catch (error: any) {
