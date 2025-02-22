@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bookController_1 = require("../../../controllers/admin/bookController");
 const express_1 = require("express");
 const router = (0, express_1.Router)();
-router.get("/analyse/:bookId", bookController_1.GetBookAnalysis);
+router.get("/metrics/:bookId", bookController_1.GetBookAnalysis);
 router.post("/getSignedUrl", bookController_1.GenerateSignedUrl);
 router.post("/createBook", bookController_1.CreateBook);
 router.post("/createChapter", bookController_1.CreateChapter);

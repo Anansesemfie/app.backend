@@ -24,6 +24,7 @@ const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(201).json({ data: newUser });
     }
     catch (error) {
+        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }
@@ -38,7 +39,6 @@ const LoginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: fetchedUser });
     }
     catch (error) {
-        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }
@@ -51,7 +51,6 @@ const SendEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: emailSent });
     }
     catch (error) {
-        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }

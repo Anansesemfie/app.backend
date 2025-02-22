@@ -12,7 +12,7 @@ const Users = (Mongoose) => {
         email: {
             type: String,
             required: [true, "Email is required"],
-            unique: [true, "Email is unique"],
+            unique: [true, "Email already exists"],
             lowercase: true,
             validate: [validator_1.isEmail, "Please enter a valid email"],
         },
