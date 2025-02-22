@@ -18,9 +18,9 @@ const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = __importDefault(require("../utils/error"));
 const ActivateSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { ref, reference } = req.query;
-        helpers_1.default.LOG({ ref, reference });
-        const response = yield subscribersService_1.default.verifySubscription((reference !== null && reference !== void 0 ? reference : ref));
+        const { trxref, reference } = req.query;
+        helpers_1.default.LOG({ trxref, reference });
+        const response = yield subscribersService_1.default.verifySubscription((reference !== null && reference !== void 0 ? reference : trxref));
         res.status(200).json({ data: response });
     }
     catch (error) {

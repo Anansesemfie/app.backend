@@ -1,12 +1,12 @@
 "use strict";
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PAYSTACK_SECRET_KEY = exports.PAYSTACK_PUBLIC_KEY = exports.AWS_S3_BUCKET_AUDIO = exports.AWS_S3_BUCKET_IMAGES = exports.AWS_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.CAN_LOG = exports.APP_BASE_URL = exports.BASE_URL = exports.SENDGRID_KEY = exports.EMAIL_PASSWORD = exports.EMAIL_OPERAND = exports.SECRET_JWT = exports.APP_LOGO = exports.SERVER_LOG_FILE = exports.PORT = exports.HOST_URI = exports.MONGODB_URI = void 0;
+exports.STARTUP_SUBSCRIPTION = exports.PAYSTACK_SECRET_KEY = exports.PAYSTACK_PUBLIC_KEY = exports.AWS_S3_BUCKET_AUDIO = exports.AWS_S3_BUCKET_IMAGES = exports.AWS_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.CAN_LOG = exports.APP_BASE_URL = exports.BASE_URL = exports.SENDGRID_KEY = exports.EMAIL_PASSWORD = exports.EMAIL_OPERAND = exports.SECRET_JWT = exports.APP_LOGO = exports.SERVER_LOG_FILE = exports.PORT = exports.HOST_URI = exports.MONGODB_URI = void 0;
 require("dotenv/config");
 const isProduction = process.env.NODE_ENV === "production";
 exports.MONGODB_URI = (_a = process.env.MONGODB_URI) !== null && _a !== void 0 ? _a : "";
 exports.HOST_URI = (_b = process.env.HOST_URI) !== null && _b !== void 0 ? _b : "localhost";
-exports.PORT = (_c = process.env.PORT) !== null && _c !== void 0 ? _c : 3000;
+exports.PORT = (_c = process.env.PORT) !== null && _c !== void 0 ? _c : 5000;
 exports.SERVER_LOG_FILE = (_d = process.env.SERVER_LOG_FILE) !== null && _d !== void 0 ? _d : "/logs.log";
 exports.APP_LOGO = (_e = process.env.APP_LOGO) !== null && _e !== void 0 ? _e : "";
 exports.SECRET_JWT = (_f = process.env.SECRET_JWT) !== null && _f !== void 0 ? _f : "";
@@ -23,3 +23,4 @@ exports.AWS_S3_BUCKET_IMAGES = (_q = process.env.AWS_S3_BUCKET_IMAGES) !== null 
 exports.AWS_S3_BUCKET_AUDIO = (_r = process.env.AWS_S3_BUCKET_AUDIO) !== null && _r !== void 0 ? _r : "";
 exports.PAYSTACK_PUBLIC_KEY = (_s = process.env.PAYSTACK_PUBLIC_KEY) !== null && _s !== void 0 ? _s : "";
 exports.PAYSTACK_SECRET_KEY = (_t = process.env.PAYSTACK_SECRET_KEY) !== null && _t !== void 0 ? _t : "";
+exports.STARTUP_SUBSCRIPTION = (_u = process.env.STARTUP_SUBSCRIPTION) !== null && _u !== void 0 ? _u : "";

@@ -15,13 +15,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -57,6 +67,8 @@ class UserService {
                 user.password = yield bcrypt_1.default.hash(user.password, salt);
                 const newUser = yield userRepository_1.default.create(user);
                 const verificationCode = yield this.generateVerification(newUser._id);
+                const { subscription } = yield subscribersService_1.default.create(env_1.STARTUP_SUBSCRIPTION, newUser);
+                yield this.updateUser({ subscription: subscription._id }, newUser._id);
                 const HTML = `Hello <b>${newUser.username}</b>, <br/>verify your account <br/>
       <b>code:${verificationCode}</b> <br/>
       and <a href="${env_1.APP_BASE_URL}">goto app </a> or
@@ -73,6 +85,25 @@ class UserService {
             }
             catch (error) {
                 this.logInfo = `${helpers_1.default.loggerInfo.error} creating ${user.username} @ ${helpers_1.default.currentTime()}`;
+                throw error;
+            }
+            finally {
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = null;
+            }
+        });
+    }
+    updateUser(payload, userID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const updatedUser = (yield userRepository_1.default.update(payload, userID));
+                this.logInfo = `
+      ${helpers_1.default.loggerInfo.success} updating user ${userID} @ ${helpers_1.default.currentTime()}
+      `;
+                return updatedUser;
+            }
+            catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} updating user ${userID} @ ${helpers_1.default.currentTime()}`;
                 throw error;
             }
             finally {
@@ -200,19 +231,17 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const session = yield sessionService_1.default.getSession(sessionId);
-                if (!session) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Session ID");
-                }
-                const user = yield userRepository_1.default.fetchUser(session.user._id);
-                if (!user) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "User not found");
-                }
+                const curUser = (yield userRepository_1.default.fetchUser(session.user._id));
                 //create child subscription
-                const newSubscription = yield subscribersService_1.default.create(subscriptionParentID, user);
+                const { paymentDetails, subscription } = yield subscribersService_1.default.create(subscriptionParentID, curUser);
+                if (!subscription) {
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Error creating subscription");
+                }
+                this.updateUser({ subscription: subscription._id }, curUser._id);
                 this.logInfo = `
-      ${helpers_1.default.loggerInfo.success} creating subscription for user ${user.username} @ ${helpers_1.default.currentTime()}
+      ${helpers_1.default.loggerInfo.success} creating subscription for user ${curUser.username} @ ${helpers_1.default.currentTime()}
       `;
-                return newSubscription;
+                return paymentDetails;
             }
             catch (error) {
                 this.logInfo = `
@@ -235,7 +264,7 @@ class UserService {
                 const payload = {
                     subscription: subscription._id,
                 };
-                const newSubscription = yield userRepository_1.default.update(payload, user._id);
+                const newSubscription = yield this.updateUser(payload, user._id);
                 this.logInfo = `
       ${helpers_1.default.loggerInfo.success} linking subscription for user ${user.username} @ ${helpers_1.default.currentTime()}
       `;
