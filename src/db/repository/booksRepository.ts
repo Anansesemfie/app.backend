@@ -47,7 +47,6 @@ class BookRepository {
         .sort({ createdAt: -1 });
       return fetchedBooks;
     } catch (error: any) {
-      console.log({ error });
       throw await errHandler.CustomError(
         ErrorEnum[400],
         "Error fetching books"

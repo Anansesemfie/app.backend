@@ -93,7 +93,6 @@ class BookRepository {
                 return fetchedBooks;
             }
             catch (error) {
-                console.log({ error });
                 throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching books");
             }
         });
