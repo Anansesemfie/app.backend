@@ -47,7 +47,10 @@ class SubscriberService {
         this.logInfo = `${
           HELPERS.loggerInfo.success
         } creating start up subscription @ ${HELPERS.currentTime()}`;
-        return {paymentDetails: {} as PAYSTACK_INIT_RESPONSE,subscription:newSubscription};
+        return {
+          paymentDetails: {} as PAYSTACK_INIT_RESPONSE,
+          subscription: newSubscription,
+        };
       } else {
         const paystackResponse = await Paystack.initializeTransaction(
           parentSubscription.amount,
@@ -72,7 +75,10 @@ class SubscriberService {
           HELPERS.loggerInfo.success
         } creating subscription @ ${HELPERS.currentTime()}`;
 
-        return {paymentDetails:paystackResponse, subscription:newSubscription};
+        return {
+          paymentDetails: paystackResponse,
+          subscription: newSubscription,
+        };
       }
     } catch (error: any) {
       this.logInfo = `${
@@ -134,6 +140,7 @@ class SubscriberService {
     params: Partial<{ _id: string; ref: string }>
   ): Promise<subscriberDTO> {
     try {
+      console.log({ params });
       const fetchedSubscription = await subscribersRepository.fetchOne({
         ...params,
       });
@@ -165,7 +172,7 @@ class SubscriberService {
 
   public async validateSubscription(subscriptionId: string): Promise<boolean> {
     try {
-      const child = await this.fetchOne({ _id: subscriptionId });
+      const child = await this.fetchOne({ _id: String(subscriptionId) });
       const parent = await subscriptionsService.fetchOne(child.parent);
 
       const duration = HELPERS.millisecondsToDays(parent.duration);
@@ -177,7 +184,6 @@ class SubscriberService {
 
       return daysGone <= duration;
     } catch (error: any) {
-      console.log({ error });
       throw error;
     }
   }
