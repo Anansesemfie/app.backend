@@ -40,9 +40,9 @@ class PlayService {
   }
   async authorizedUserPlay(chapterId: string, sessionId: string) {
     try {
+      
       const { session } = await sessionService.getSession(sessionId);
       const user = await userService.fetchUser(session.user as string);
-      //no subscription currently linked
       if (!user?.subscription)
         return await this.unAuthorizedUserPlay(chapterId, user?._id);
 

@@ -98,11 +98,13 @@ class BookService {
     sessionId: string = ""
   ): Promise<BookType> {
     try {
+
       if (!bookId) {
         throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
       }
       if (sessionId) {
         const booksToFetch = await this.fetchBooksInSubscription(sessionId);
+        console.log('books fetched');
         if (booksToFetch.length && !booksToFetch.includes(bookId)) {
           throw await errorHandler.CustomError(
             ErrorEnum[403],
@@ -111,9 +113,11 @@ class BookService {
         }
       }
       const book = await Repo.fetchOne(bookId);
+      console.log("book fetched");
 
       if (sessionId) {
         const { user } = await sessionService.getSession(sessionId);
+        console.log("creating session");
         await seenService.createNewSeen(
           book?._id as string,
           user._id as string
