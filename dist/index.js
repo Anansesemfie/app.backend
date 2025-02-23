@@ -9,6 +9,7 @@ const env_1 = require("./utils/env");
 const models_1 = __importDefault(require("./db/models"));
 const consumer_1 = __importDefault(require("./api/routes/consumer"));
 const admin_1 = __importDefault(require("./api/routes/admin"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 //express middlewares
 app.use(express_1.default.json());
@@ -16,6 +17,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)());
 app.use(consumer_1.default);
 app.use("/admin", admin_1.default);
+app.use(express_1.default.static(path_1.default.join(__dirname, "uploads")));
 models_1.default.connection
     .once("open", () => {
     console.log("Connected to DB");

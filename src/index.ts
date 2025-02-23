@@ -5,6 +5,7 @@ import Mongoose from "./db/models";
 
 import ConsumerRouter from "./api/routes/consumer";
 import AdminRouter from "./api/routes/admin";
+import path from "path";
 
 const app: Application = express();
 
@@ -15,7 +16,7 @@ app.use(cors());
 
 app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);
-
+app.use(express.static(path.join(__dirname, "uploads")));
 Mongoose.connection
   .once("open", () => {
     console.log("Connected to DB");
