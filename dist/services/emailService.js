@@ -60,7 +60,7 @@ class EmailService {
         };
         this.logInfo = "";
         this.generateEmailTemplate = (email) => {
-            var _a, _b, _c;
+            var _a, _b, _c, _d;
             return `<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -188,8 +188,7 @@ a, a:hover {
 	<tr>
 		${(_a = email.actions) === null || _a === void 0 ? void 0 : _a.map((act) => `<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
 			padding-top: 25px;
-			padding-bottom: 5px;" class="button"><a
-			href="${act.link}" target="_blank" style="text-decoration: underline;">
+			padding-bottom: 5px;" class="button"><a href="${act.link}" target="_blank" style="text-decoration: underline;">
 				<table border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 240px; min-width: 120px; border-collapse: collapse; border-spacing: 0; padding: 0;"><tr><td align="center" valign="middle" style="padding: 12px 24px; margin: 0; text-decoration: underline; border-collapse: collapse; border-spacing: 0; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px;"
 					bgcolor="#E9703E"><a target="_blank" style="text-decoration: underline;
 					color: #FFFFFF; font-family: sans-serif; font-size: 17px; font-weight: 400; line-height: 120%;"
@@ -197,7 +196,8 @@ a, a:hover {
 						${act.title}
 					</a>
 			</td></tr></table></a>
-		</td>`)}
+		</td>
+		`)}
 	</tr>
 
 	<!-- LINE -->
@@ -214,8 +214,8 @@ a, a:hover {
 		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%;" class="list-item"><table align="center" border="0" cellspacing="0" cellpadding="0" style="width: inherit; margin: 0; padding: 0; border-collapse: collapse; border-spacing: 0;">
 			
 			<!-- LIST ITEM -->
-			${((_b = email.items) === null || _b === void 0 ? void 0 : _b.length) &&
-                ((_c = email.items) === null || _c === void 0 ? void 0 : _c.map((itm) => `<tr>
+			${((_b = email.items) === null || _b === void 0 ? void 0 : _b.length)
+                ? (_c = email.items) === null || _c === void 0 ? void 0 : _c.map((itm) => `<tr>
 
 				<!-- LIST ITEM IMAGE -->
 				<!-- Image text color should be opposite to background color. Set your url, image src, alt and title. Alt text should fit the image size. Real image size should be x2 -->
@@ -238,19 +238,22 @@ a, a:hover {
 						${itm.description}
 				</td>
 
-			</tr>`))}
+			</tr>`)
+                : ""}
 
 		</table></td>
 	</tr>
 
 	<!-- LINE -->
 	<!-- Set line color -->
-	<tr>
+	${((_d = email.items) === null || _d === void 0 ? void 0 : _d.length)
+                ? `<tr>
 		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
 			padding-top: 25px;" class="line"><hr
 			color="#E0E0E0" align="center" width="100%" size="1" noshade style="margin: 0; padding: 0;" />
 		</td>
-	</tr>
+	</tr>`
+                : ""}
 
 	<!-- PARAGRAPH -->
 	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
@@ -345,6 +348,7 @@ a, a:hover {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             try {
+                helpers_1.default.LOG("EmailService.sendEmail", options, email);
                 yield this.checkEmailOptions(options);
                 const msg = {
                     to: options.to,

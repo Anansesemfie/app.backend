@@ -151,8 +151,7 @@ a, a:hover {
         act
       ) => `<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
 			padding-top: 25px;
-			padding-bottom: 5px;" class="button"><a
-			href="${act.link}" target="_blank" style="text-decoration: underline;">
+			padding-bottom: 5px;" class="button"><a href="${act.link}" target="_blank" style="text-decoration: underline;">
 				<table border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 240px; min-width: 120px; border-collapse: collapse; border-spacing: 0; padding: 0;"><tr><td align="center" valign="middle" style="padding: 12px 24px; margin: 0; text-decoration: underline; border-collapse: collapse; border-spacing: 0; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px;"
 					bgcolor="#E9703E"><a target="_blank" style="text-decoration: underline;
 					color: #FFFFFF; font-family: sans-serif; font-size: 17px; font-weight: 400; line-height: 120%;"
@@ -160,7 +159,8 @@ a, a:hover {
 						${act.title}
 					</a>
 			</td></tr></table></a>
-		</td>`
+		</td>
+		`
     )}
 	</tr>
 
@@ -179,9 +179,9 @@ a, a:hover {
 			
 			<!-- LIST ITEM -->
 			${
-        email.items?.length &&
-        email.items?.map(
-          (itm) => `<tr>
+        email.items?.length
+          ? email.items?.map(
+              (itm) => `<tr>
 
 				<!-- LIST ITEM IMAGE -->
 				<!-- Image text color should be opposite to background color. Set your url, image src, alt and title. Alt text should fit the image size. Real image size should be x2 -->
@@ -205,7 +205,8 @@ a, a:hover {
 				</td>
 
 			</tr>`
-        )
+            )
+          : ""
       }
 
 		</table></td>
@@ -213,12 +214,16 @@ a, a:hover {
 
 	<!-- LINE -->
 	<!-- Set line color -->
-	<tr>
+	${
+    email.items?.length
+      ? `<tr>
 		<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
 			padding-top: 25px;" class="line"><hr
 			color="#E0E0E0" align="center" width="100%" size="1" noshade style="margin: 0; padding: 0;" />
 		</td>
-	</tr>
+	</tr>`
+      : ""
+  }
 
 	<!-- PARAGRAPH -->
 	<!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
@@ -309,6 +314,7 @@ a, a:hover {
 
   public async sendEmail(options: EmailOptions, email: EmailTemplate) {
     try {
+      HELPERS.LOG("EmailService.sendEmail", options, email);
       await this.checkEmailOptions(options);
       const msg = {
         to: options.to!,

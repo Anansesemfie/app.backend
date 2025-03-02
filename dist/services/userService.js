@@ -204,23 +204,25 @@ class UserService {
     resetPassword(token, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const userId = yield sessionService_1.default.validateResetToken(token);
-                const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
-                const updated = yield userRepository_1.default.update({ password: hashedPassword }, userId);
-                if (updated) {
-                    yield emailService_1.default.sendEmail({
-                        to: updated.email,
-                        subject: "Password Reset",
-                        html: `Hello ${updated.username}, your password has been reset successfully.`,
-                    }, {
-                        header: "Password Reset",
-                        body: "Your password has been reset",
-                        actions: [{ title: "Login", link: env_1.APP_BASE_URL }],
-                    });
+                const code = yield helpers_1.default.DECODE_TOKEN(token);
+                helpers_1.default.LOG(code);
+                const user = yield userRepository_1.default.fetchOneByKey(code !== null && code !== void 0 ? code : "");
+                if (!user) {
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Invalid user data");
                 }
+                const salt = yield bcrypt_1.default.genSalt();
+                const hashedPassword = yield bcrypt_1.default.hash(newPassword, salt);
+                yield this.updateUser({ password: hashedPassword }, user._id);
+                this.logInfo = `${helpers_1.default.loggerInfo.success} resetting password for user with token ${token} @ ${helpers_1.default.currentTime()}`;
             }
             catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} resetting password for user with token ${token} @ ${helpers_1.default.currentTime()}`;
                 throw error;
+            }
+            finally {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} resetting password for user with token ${token} @ ${helpers_1.default.currentTime()}`;
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = "";
             }
         });
     }
@@ -231,8 +233,22 @@ class UserService {
                 if (!user) {
                     throw new Error("User not found");
                 }
-                const token = yield this.generatePasswordResetToken(user.email);
-                yield this.sendPasswordResetEmail(user.email, token);
+                const token = yield this.generatePasswordResetToken(user);
+                const encryptedToken = yield helpers_1.default.ENCODE_Token(token);
+                yield emailService_1.default.sendEmail({
+                    to: user.email,
+                    subject: "Password Reset",
+                    html: `Hello ${user.username}, reset your password <a href="${env_1.APP_BASE_URL}/reset-password?token=${token}">here</a>`,
+                }, {
+                    header: "Password Reset",
+                    body: "Reset your password",
+                    actions: [
+                        {
+                            title: "Reset Password",
+                            link: `${env_1.APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+                        },
+                    ],
+                });
             }
             catch (error) {
                 throw error;
@@ -294,18 +310,11 @@ class UserService {
             }
         });
     }
-    generatePasswordResetToken(email) {
+    generatePasswordResetToken(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Generate a unique token (you can use libraries like crypto or uuid)
             const token = helpers_1.default.genRandCode();
-            // await storeTokenInDatabase(email, token);
+            yield this.updateUser({ key: token }, user._id);
             return token;
-        });
-    }
-    sendPasswordResetEmail(email, token) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // Send an email to the user containing a link with the password reset token embedded
-            // await sendEmail(email, `Password Reset Link: https://anansesemfie.com/reset-password?token=${token}`);
         });
     }
     generateVerification(userId) {
@@ -331,7 +340,11 @@ class UserService {
     verifyAccount(verificationCode) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield userRepository_1.default.fetchOneByKey(verificationCode);
+                helpers_1.default.LOG(verificationCode);
+                if (!verificationCode)
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Invalid verification code");
+                const code = yield helpers_1.default.DECODE_TOKEN(verificationCode);
+                const user = yield userRepository_1.default.fetchOneByKey(code !== null && code !== void 0 ? code : "");
                 if (!user) {
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "User not found or already verified");
                 }

@@ -24,5 +24,6 @@ router.post("/subscribe", CHECKAPPTOKEN, createSubscription);
 
 router.put("/subscribe/link", CHECKAPPTOKEN, linkSubscription);
 router.put("/reset-password", resetPassword);
+router.put("/forgot-password", forgotPassword);
 
 export default router;

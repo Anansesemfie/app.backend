@@ -12,4 +12,5 @@ router.post("/forgot-password", userController_1.forgotPassword);
 router.post("/subscribe", CheckApp_1.CHECKAPPTOKEN, userController_1.createSubscription);
 router.put("/subscribe/link", CheckApp_1.CHECKAPPTOKEN, userController_1.linkSubscription);
 router.put("/reset-password", userController_1.resetPassword);
+router.put("/forgot-password", userController_1.forgotPassword);
 exports.default = router;

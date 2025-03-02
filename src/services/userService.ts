@@ -1,6 +1,6 @@
 import Repo from "../db/repository/userRepository";
 import subscribersService from "./subscribersService";
-import { subscriberDTO, UserType } from "../dto";
+import { UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import { APP_BASE_URL, STARTUP_SUBSCRIPTION } from "../utils/env";
 
@@ -189,25 +189,32 @@ export class UserService {
     newPassword: string
   ): Promise<void> {
     try {
-      const userId = await Session.validateResetToken(token);
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      const updated = await Repo.update({ password: hashedPassword }, userId);
-      if (updated) {
-        await EmailService.sendEmail(
-          {
-            to: updated.email,
-            subject: "Password Reset",
-            html: `Hello ${updated.username}, your password has been reset successfully.`,
-          },
-          {
-            header: "Password Reset",
-            body: "Your password has been reset",
-            actions: [{ title: "Login", link: APP_BASE_URL }],
-          }
+      const code = await HELPERS.DECODE_TOKEN(token);
+      HELPERS.LOG(code);
+      const user = await Repo.fetchOneByKey(code ?? "");
+      if (!user) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Invalid user data"
         );
       }
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      await this.updateUser({ password: hashedPassword }, user._id as string);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
     } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
       throw error;
+    } finally {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = "";
     }
   }
 
@@ -217,8 +224,25 @@ export class UserService {
       if (!user) {
         throw new Error("User not found");
       }
-      const token = await this.generatePasswordResetToken(user.email);
-      await this.sendPasswordResetEmail(user.email, token);
+      const token = await this.generatePasswordResetToken(user);
+      const encryptedToken = await HELPERS.ENCODE_Token(token);
+      await EmailService.sendEmail(
+        {
+          to: user.email,
+          subject: "Password Reset",
+          html: `Hello ${user.username}, reset your password <a href="${APP_BASE_URL}/reset-password?token=${token}">here</a>`,
+        },
+        {
+          header: "Password Reset",
+          body: "Reset your password",
+          actions: [
+            {
+              title: "Reset Password",
+              link: `${APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+            },
+          ],
+        }
+      );
     } catch (error: any) {
       throw error;
     }
@@ -304,19 +328,10 @@ export class UserService {
     }
   }
 
-  private async generatePasswordResetToken(email: string): Promise<string> {
-    // Generate a unique token (you can use libraries like crypto or uuid)
+  private async generatePasswordResetToken(user: UserType): Promise<string> {
     const token = HELPERS.genRandCode();
-    // await storeTokenInDatabase(email, token);
+    await this.updateUser({ key: token }, user._id as string);
     return token;
-  }
-
-  private async sendPasswordResetEmail(
-    email: string,
-    token: string
-  ): Promise<void> {
-    // Send an email to the user containing a link with the password reset token embedded
-    // await sendEmail(email, `Password Reset Link: https://anansesemfie.com/reset-password?token=${token}`);
   }
 
   private async generateVerification(userId: string) {
@@ -346,7 +361,14 @@ export class UserService {
 
   public async verifyAccount(verificationCode: string) {
     try {
-      const user = await Repo.fetchOneByKey(verificationCode);
+      HELPERS.LOG(verificationCode);
+      if (!verificationCode)
+        throw await errorHandler.CustomError(
+          ErrorEnum[400],
+          "Invalid verification code"
+        );
+      const code = await HELPERS.DECODE_TOKEN(verificationCode);
+      const user = await Repo.fetchOneByKey(code ?? "");
       if (!user) {
         throw await errorHandler.CustomError(
           ErrorEnum[404],

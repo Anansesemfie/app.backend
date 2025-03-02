@@ -115,7 +115,7 @@ export const linkSubscription = async (req: Request, res: Response) => {
 
 export const verifyAccount = async (req: Request, res: Response) => {
   try {
-    const token = req.query.token as string;
+    const token = req.params.token as string;
     await userService.verifyAccount(token);
     res
       .status(200)
