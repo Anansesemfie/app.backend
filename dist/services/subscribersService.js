@@ -81,7 +81,10 @@ class SubscriberService {
                 if (parentSubscription.amount === 0) {
                     yield this.update({ active: true, activatedAt: helpers_1.default.currentTime() }, newSubscription._id);
                     this.logInfo = `${helpers_1.default.loggerInfo.success} creating start up subscription @ ${helpers_1.default.currentTime()}`;
-                    return { paymentDetails: {}, subscription: newSubscription };
+                    return {
+                        paymentDetails: {},
+                        subscription: newSubscription,
+                    };
                 }
                 else {
                     const paystackResponse = yield paystack_1.default.initializeTransaction(parentSubscription.amount, user.email, {
@@ -96,7 +99,10 @@ class SubscriberService {
                     }, callback_url);
                     yield this.update({ ref: paystackResponse.data.reference }, newSubscription._id);
                     this.logInfo = `${helpers_1.default.loggerInfo.success} creating subscription @ ${helpers_1.default.currentTime()}`;
-                    return { paymentDetails: paystackResponse, subscription: newSubscription };
+                    return {
+                        paymentDetails: paystackResponse,
+                        subscription: newSubscription,
+                    };
                 }
             }
             catch (error) {
@@ -144,6 +150,7 @@ class SubscriberService {
     fetchOne(params) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log({ params });
                 const fetchedSubscription = yield subscribersRepository_1.default.fetchOne(Object.assign({}, params));
                 if (!fetchedSubscription)
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "Subscription not found");
@@ -168,14 +175,13 @@ class SubscriberService {
     validateSubscription(subscriptionId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const child = yield this.fetchOne({ _id: subscriptionId });
+                const child = yield this.fetchOne({ _id: String(subscriptionId) });
                 const parent = yield subscriptionsService_1.default.fetchOne(child.parent);
                 const duration = helpers_1.default.millisecondsToDays(parent.duration);
                 const daysGone = helpers_1.default.countDaysBetweenDates(child === null || child === void 0 ? void 0 : child.createdAt, helpers_1.default.currentTime("DD/MM/YYYY"));
                 return daysGone <= duration;
             }
             catch (error) {
-                console.log({ error });
                 throw error;
             }
         });

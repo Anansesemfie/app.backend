@@ -78,8 +78,14 @@ class UserService {
                     subject: "Verify Account",
                     html: HTML,
                 }, {
-                    link: `${env_1.APP_BASE_URL}?verificationCode=${verificationCode}`,
-                    label: "Verify Account",
+                    actions: [
+                        {
+                            link: `${env_1.APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+                            title: "Verify Account",
+                        },
+                    ],
+                    header: "New Account Verification",
+                    body: "Verify your account to start using our services",
                 });
                 return newUser;
             }
@@ -116,15 +122,17 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const fetchedUser = yield userRepository_1.default.Login(user === null || user === void 0 ? void 0 : user.email);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} logging in ${user.email} @ ${helpers_1.default.currentTime()}`;
+                if (!fetchedUser || !fetchedUser.active) {
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid user or credentials");
+                }
                 const isPasswordValid = yield bcrypt_1.default.compare(user === null || user === void 0 ? void 0 : user.password, fetchedUser.password);
+                this.logInfo = `${helpers_1.default.loggerInfo.success} logging in ${user.email} @ ${helpers_1.default.currentTime()}`;
                 if (!isPasswordValid) {
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid user credentials");
                 }
                 return yield this.formatForReturn(fetchedUser);
             }
             catch (error) {
-                helpers_1.default.LOG({ error });
                 this.logInfo = `${helpers_1.default.loggerInfo.error} logging in ${user.email} @ ${helpers_1.default.currentTime()}`;
                 throw error;
             }
@@ -204,7 +212,11 @@ class UserService {
                         to: updated.email,
                         subject: "Password Reset",
                         html: `Hello ${updated.username}, your password has been reset successfully.`,
-                    }, { link: `${env_1.APP_BASE_URL}/app`, label: "Login" });
+                    }, {
+                        header: "Password Reset",
+                        body: "Your password has been reset",
+                        actions: [{ title: "Login", link: env_1.APP_BASE_URL }],
+                    });
                 }
             }
             catch (error) {
@@ -308,6 +320,27 @@ class UserService {
             }
             catch (error) {
                 this.logInfo = `${helpers_1.default.loggerInfo.error} creating verification code for user ${userId} @ ${helpers_1.default.currentTime()}`;
+                throw error;
+            }
+            finally {
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = "";
+            }
+        });
+    }
+    verifyAccount(verificationCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield userRepository_1.default.fetchOneByKey(verificationCode);
+                if (!user) {
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "User not found or already verified");
+                }
+                yield this.updateUser({ active: true }, user._id);
+                this.logInfo = `${helpers_1.default.loggerInfo.success} verifying account for user ${user.username} @ ${helpers_1.default.currentTime()}`;
+                return user;
+            }
+            catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} verifying account for user with verification code ${verificationCode} @ ${helpers_1.default.currentTime()}`;
                 throw error;
             }
             finally {

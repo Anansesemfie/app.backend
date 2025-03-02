@@ -79,5 +79,18 @@ class AdminUserService {
             }
         });
     }
+    fetchUsers(params, sessionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const session = yield sessionService_1.default.getSession(sessionId);
+                if (session.user.account !== utils_1.UsersTypes.admin)
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized");
+                return yield userRepository_1.default.fetchAll(params);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
 exports.default = new AdminUserService();

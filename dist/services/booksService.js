@@ -128,13 +128,16 @@ class BookService {
                 }
                 if (sessionId) {
                     const booksToFetch = yield this.fetchBooksInSubscription(sessionId);
+                    console.log('books fetched');
                     if (booksToFetch.length && !booksToFetch.includes(bookId)) {
                         throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized access");
                     }
                 }
                 const book = yield booksRepository_1.default.fetchOne(bookId);
+                console.log("book fetched");
                 if (sessionId) {
                     const { user } = yield sessionService_1.default.getSession(sessionId);
+                    console.log("creating session");
                     yield seenService_1.default.createNewSeen(book === null || book === void 0 ? void 0 : book._id, user._id);
                 }
                 this.logInfo = `${helpers_1.default.loggerInfo.success} fetching book @ ${helpers_1.default.currentTime()}`;
