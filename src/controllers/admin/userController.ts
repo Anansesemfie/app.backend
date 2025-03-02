@@ -7,9 +7,9 @@ export const CreateUser = async (req: Request, res: Response) => {
     let user = req.body;
     let sessionId = res.locals.sessionId;
     const newUser = await userService.create(user, sessionId);
-    res.status(201).json({data:newUser});
+    res.status(201).json({ data: newUser });
   } catch (error: any) {
-    console.log({error})
+    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -24,7 +24,7 @@ export const LoginUser = async (req: Request, res: Response) => {
       res.status(401).json({ message: "Already logged in" });
     let user = req?.body;
     const fetchedUser = await userService.login(user);
-    res.status(200).json({data:fetchedUser});
+    res.status(200).json({ data: fetchedUser });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
@@ -36,9 +36,9 @@ export const LoginUser = async (req: Request, res: Response) => {
 
 export const SendEmail = async (req: Request, res: Response) => {
   try {
-    let {email,action} = req.body;
-    const emailSent = await emailService.sendEmail(email,action);
-    res.status(200).json({data:emailSent});
+    let { email, body } = req.body;
+    const emailSent = await emailService.sendEmail(email, body);
+    res.status(200).json({ data: emailSent });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
@@ -46,4 +46,20 @@ export const SendEmail = async (req: Request, res: Response) => {
     );
     res.status(code).json({ error: message, message: exMessage });
   }
-}
+};
+
+export const FetchUsers = async (req: Request, res: Response) => {
+  try {
+    let { username, email, account } = req.body;
+    let sessionId = res.locals.sessionId;
+    const users = await userService.fetchUsers({ email,account }, sessionId);
+    res.status(200).json({ data: users });
+  } catch (error: any) {
+    console.log({ error });
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+};

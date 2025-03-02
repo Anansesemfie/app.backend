@@ -8,11 +8,13 @@ import {
   forgotPassword,
   createSubscription,
   linkSubscription,
+  verifyAccount,
 } from "../../../controllers/userController";
 
 const router = Router();
 
 router.get("/logout/", CHECKAPPTOKEN, LogoutUser);
+router.get("/verify/:token", verifyAccount);
 
 router.post("/add", CreateUser);
 router.post("/login", LoginUser);

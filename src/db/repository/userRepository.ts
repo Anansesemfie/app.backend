@@ -84,9 +84,31 @@ class UserRepository {
     }
   }
 
+  public async fetchAll(params: {}, limit = 100): Promise<UserType[]> {
+    try {
+      return await User.find({ ...params })
+        .limit(limit)
+        .sort({ createdAt: -1 });
+    } catch (error: any) {
+      throw await errHandler.CustomError(
+        ErrorEnum[400],
+        "Error fetching users"
+      );
+    }
+  }
+
   public async fetchOneByEmail(email: string): Promise<UserType | null> {
     try {
       return await User.findOne({ email });
+    } catch (error: any) {
+      throw await errHandler.CustomError(ErrorEnum[400], "Error fetching user");
+    }
+  }
+
+  public async fetchOneByKey(key: string): Promise<UserType | null> {
+    try {
+      const user = await User.findOne({ key });
+      return user;
     } catch (error: any) {
       throw await errHandler.CustomError(ErrorEnum[400], "Error fetching user");
     }
