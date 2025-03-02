@@ -17,6 +17,7 @@ app.use(cors());
 app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);
 app.use(express.static(path.join(__dirname, "uploads")));
+app.use(express.static(path.join(__dirname, "public")));
 Mongoose.connection
   .once("open", () => {
     console.log("Connected to DB");

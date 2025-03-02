@@ -112,7 +112,7 @@ const linkSubscription = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.linkSubscription = linkSubscription;
 const verifyAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.query.token;
+        const token = req.params.token;
         yield userService_1.default.verifyAccount(token);
         res
             .status(200)
