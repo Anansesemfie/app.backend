@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendEmail = exports.LoginUser = exports.CreateUser = void 0;
+exports.FetchUsers = exports.SendEmail = exports.LoginUser = exports.CreateUser = void 0;
 const userService_1 = __importDefault(require("../../services/admin/userService"));
 const emailService_1 = __importDefault(require("../../services/emailService"));
 const error_1 = __importDefault(require("../../utils/error"));
@@ -46,8 +46,8 @@ const LoginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.LoginUser = LoginUser;
 const SendEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let { email, action } = req.body;
-        const emailSent = yield emailService_1.default.sendEmail(email, action);
+        let { email, body } = req.body;
+        const emailSent = yield emailService_1.default.sendEmail(email, body);
         res.status(200).json({ data: emailSent });
     }
     catch (error) {
@@ -56,3 +56,17 @@ const SendEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.SendEmail = SendEmail;
+const FetchUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let { username, email, account } = req.body;
+        let sessionId = res.locals.sessionId;
+        const users = yield userService_1.default.fetchUsers({ email, account }, sessionId);
+        res.status(200).json({ data: users });
+    }
+    catch (error) {
+        console.log({ error });
+        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
+        res.status(code).json({ error: message, message: exMessage });
+    }
+});
+exports.FetchUsers = FetchUsers;

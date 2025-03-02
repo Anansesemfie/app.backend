@@ -56,7 +56,6 @@ class PlayService {
             try {
                 const { session } = yield sessionService_1.default.getSession(sessionId);
                 const user = yield userService_1.default.fetchUser(session.user);
-                //no subscription currently linked
                 if (!(user === null || user === void 0 ? void 0 : user.subscription))
                     return yield this.unAuthorizedUserPlay(chapterId, user === null || user === void 0 ? void 0 : user._id);
                 const subscription = yield subscribersService_1.default.validateSubscription(user === null || user === void 0 ? void 0 : user.subscription);

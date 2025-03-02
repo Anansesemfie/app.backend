@@ -38,7 +38,7 @@ const Users = (Mongoose) => {
         },
         dp: {
             type: String,
-            default: "/images/dp.png",
+            default: "",
         },
         bio: {
             type: String,

@@ -35,7 +35,7 @@ class EmailService implements IEmailService {
    * @param {string} html - The HTML version of the email content
    * @returns {Promise<string>} - The response from the email service
    */
-  async send({ to, subject, text, html }: EmailOptions): Promise<boolean> {
+  async send({ to, subject, html }: EmailOptions): Promise<boolean> {
     if (!this.transporter) {
       throw new Error("EmailService is not initialized. Call init() first.");
     }
@@ -45,7 +45,6 @@ class EmailService implements IEmailService {
         from: process.env.EMAIL_USERNAME,
         to,
         subject,
-        text,
         html,
       };
 

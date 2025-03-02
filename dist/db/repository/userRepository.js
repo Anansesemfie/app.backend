@@ -109,10 +109,33 @@ class UserRepository {
             }
         });
     }
+    fetchAll(params_1) {
+        return __awaiter(this, arguments, void 0, function* (params, limit = 100) {
+            try {
+                return yield models_1.User.find(Object.assign({}, params))
+                    .limit(limit)
+                    .sort({ createdAt: -1 });
+            }
+            catch (error) {
+                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching users");
+            }
+        });
+    }
     fetchOneByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return yield models_1.User.findOne({ email });
+            }
+            catch (error) {
+                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching user");
+            }
+        });
+    }
+    fetchOneByKey(key) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield models_1.User.findOne({ key });
+                return user;
             }
             catch (error) {
                 throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching user");

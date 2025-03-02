@@ -47,8 +47,14 @@ export class UserService {
           html: HTML,
         },
         {
-          link: `${APP_BASE_URL}?verificationCode=${verificationCode}`,
-          label: "Verify Account",
+          actions: [
+            {
+              link: `${APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+              title: "Verify Account",
+            },
+          ],
+          header: "New Account Verification",
+          body: "Verify your account to start using our services",
         }
       );
       return newUser;
@@ -89,13 +95,19 @@ export class UserService {
   public async login(user: { email: string; password: string }): Promise<any> {
     try {
       const fetchedUser = await Repo.Login(user?.email);
-      this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
-        user.email
-      } @ ${HELPERS.currentTime()}`;
+      if (!fetchedUser || !fetchedUser.active) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[403],
+          "Invalid user or credentials"
+        );
+      }
       const isPasswordValid = await bcrypt.compare(
         user?.password,
         fetchedUser.password
       );
+      this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
+        user.email
+      } @ ${HELPERS.currentTime()}`;
       if (!isPasswordValid) {
         throw await errorHandler.CustomError(
           ErrorEnum[403],
@@ -104,7 +116,6 @@ export class UserService {
       }
       return await this.formatForReturn(fetchedUser);
     } catch (error: any) {
-      HELPERS.LOG({ error });
       this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
         user.email
       } @ ${HELPERS.currentTime()}`;
@@ -188,7 +199,11 @@ export class UserService {
             subject: "Password Reset",
             html: `Hello ${updated.username}, your password has been reset successfully.`,
           },
-          { link: `${APP_BASE_URL}/app`, label: "Login" }
+          {
+            header: "Password Reset",
+            body: "Your password has been reset",
+            actions: [{ title: "Login", link: APP_BASE_URL }],
+          }
         );
       }
     } catch (error: any) {
@@ -322,6 +337,31 @@ export class UserService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = "";
+    }
+  }
+
+  public async verifyAccount(verificationCode: string) {
+    try {
+      const user = await Repo.fetchOneByKey(verificationCode);
+      if (!user) {
+        throw await errorHandler.CustomError(
+          ErrorEnum[404],
+          "User not found or already verified"
+        );
+      }
+      await this.updateUser({ active: true }, user._id as string);
+      this.logInfo = `${
+        HELPERS.loggerInfo.success
+      } verifying account for user ${user.username} @ ${HELPERS.currentTime()}`;
+      return user;
+    } catch (error: any) {
+      this.logInfo = `${
+        HELPERS.loggerInfo.error
+      } verifying account for user with verification code ${verificationCode} @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo as string);

@@ -44,7 +44,7 @@ class EmailService {
      * @returns {Promise<string>} - The response from the email service
      */
     send(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ to, subject, text, html }) {
+        return __awaiter(this, arguments, void 0, function* ({ to, subject, html }) {
             if (!this.transporter) {
                 throw new Error("EmailService is not initialized. Call init() first.");
             }
@@ -53,7 +53,6 @@ class EmailService {
                     from: process.env.EMAIL_USERNAME,
                     to,
                     subject,
-                    text,
                     html,
                 };
                 const info = yield this.transporter.sendMail(mailOptions);

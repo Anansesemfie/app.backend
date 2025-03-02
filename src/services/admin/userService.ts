@@ -31,6 +31,20 @@ class AdminUserService {
       throw error;
     }
   }
+
+  async fetchUsers(
+    params: { username?: string; email?: string; account: UsersTypes },
+    sessionId: string
+  ): Promise<UserType[]> {
+    try {
+      const session = await Session.getSession(sessionId);
+      if (session.user.account !== UsersTypes.admin)
+        throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized");
+      return await userRepository.fetchAll(params);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
 
 export default new AdminUserService();

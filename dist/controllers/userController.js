@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkSubscription = exports.createSubscription = exports.forgotPassword = exports.resetPassword = exports.LogoutUser = exports.LoginUser = exports.CreateUser = void 0;
+exports.verifyAccount = exports.linkSubscription = exports.createSubscription = exports.forgotPassword = exports.resetPassword = exports.LogoutUser = exports.LoginUser = exports.CreateUser = void 0;
 const userService_1 = __importDefault(require("../services/userService"));
 const error_1 = __importDefault(require("../utils/error"));
 const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -110,3 +110,17 @@ const linkSubscription = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.linkSubscription = linkSubscription;
+const verifyAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.query.token;
+        yield userService_1.default.verifyAccount(token);
+        res
+            .status(200)
+            .json({ data: { message: "Account verified successfully" } });
+    }
+    catch (error) {
+        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
+        res.status(code).json({ error: message, message: exMessage });
+    }
+});
+exports.verifyAccount = verifyAccount;
