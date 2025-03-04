@@ -94,7 +94,6 @@ class BookService {
                 if (token) {
                     const booksToFetch = yield this.fetchBooksInSubscription(token);
                     if (!booksToFetch.length) {
-                        console.log({ booksToFetch });
                         books = yield booksRepository_1.default.fetchAll(limit, page);
                     }
                     else {

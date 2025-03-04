@@ -13,6 +13,6 @@ router.post("/add", CHECKAPPTOKEN, CreateUser);
 router.post("/login", LoginUser);
 router.post("/send-email", CHECKAPPTOKEN, SendEmail);
 
-router.get("/fetchusers", CHECKAPPTOKEN, FetchUsers);
+router.post("/fetchusers", CHECKAPPTOKEN, FetchUsers);
 
 export default router;

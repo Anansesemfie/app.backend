@@ -50,12 +50,13 @@ export const SendEmail = async (req: Request, res: Response) => {
 
 export const FetchUsers = async (req: Request, res: Response) => {
   try {
-    let { username, email, account } = req.body;
-    let sessionId = res.locals.sessionId;
-    const users = await userService.fetchUsers({ email,account }, sessionId);
+    const { search, account } = req.body;
+    console.log({ search, account });
+
+    const sessionId = res.locals.sessionId;
+    const users = await userService.fetchUsers({ search, account }, sessionId);
     res.status(200).json({ data: users });
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message

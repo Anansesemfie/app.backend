@@ -3,7 +3,7 @@ import userRepository from "../../db/repository/userRepository";
 import errorHandler, { ErrorEnum } from "../../utils/error";
 import Session from "../sessionService";
 import { UsersTypes } from "../../db/models/utils";
-import { UserType } from "../../dto";
+import { UserResponse, UserType } from "../../dto";
 class AdminUserService {
   async create(user: UserType, sessionId: string) {
     try {
@@ -33,14 +33,24 @@ class AdminUserService {
   }
 
   async fetchUsers(
-    params: { username?: string; email?: string; account: UsersTypes },
+    params: { search: string; account: UsersTypes },
     sessionId: string
-  ): Promise<UserType[]> {
+  ): Promise<UserResponse[]> {
     try {
+      const filter = {
+        email: { $regex: params.search },
+        account: params.account,
+      };
       const session = await Session.getSession(sessionId);
       if (session.user.account !== UsersTypes.admin)
         throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized");
-      return await userRepository.fetchAll(params);
+
+      const users = await userRepository.fetchAll(filter);
+      return Promise.all(
+        users.map((user) => {
+          return userService.formatUser(user);
+        })
+      );
     } catch (error: any) {
       throw error;
     }

@@ -67,7 +67,6 @@ class BookService {
         const booksToFetch = await this.fetchBooksInSubscription(token);
 
         if (!booksToFetch.length) {
-          console.log({ booksToFetch });
           books = await Repo.fetchAll(limit, page);
         } else {
           books = await Repo.fetchAll(limit, page, {

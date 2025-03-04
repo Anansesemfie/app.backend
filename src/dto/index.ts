@@ -123,6 +123,18 @@ export type UserType = {
   key?: string;
 };
 
+export type UserResponse = {
+  id: string;
+  email: string;
+  username: string;
+  account: number;
+  active: boolean;
+  dp: string;
+  bio: string;
+  subscription?: string;
+  createdAt: string;
+}
+
 export type ReactionType = {
   _id?: string;
   bookID: string;

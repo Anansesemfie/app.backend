@@ -82,10 +82,17 @@ class AdminUserService {
     fetchUsers(params, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const filter = {
+                    email: { $regex: params.search },
+                    account: params.account,
+                };
                 const session = yield sessionService_1.default.getSession(sessionId);
                 if (session.user.account !== utils_1.UsersTypes.admin)
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized");
-                return yield userRepository_1.default.fetchAll(params);
+                const users = yield userRepository_1.default.fetchAll(filter);
+                return Promise.all(users.map((user) => {
+                    return userService_1.default.formatUser(user);
+                }));
             }
             catch (error) {
                 throw error;

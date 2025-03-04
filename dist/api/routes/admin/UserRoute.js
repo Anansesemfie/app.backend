@@ -7,5 +7,5 @@ const router = (0, express_1.Router)();
 router.post("/add", CheckApp_1.CHECKAPPTOKEN, userController_1.CreateUser);
 router.post("/login", userController_1.LoginUser);
 router.post("/send-email", CheckApp_1.CHECKAPPTOKEN, userController_1.SendEmail);
-router.get("/fetchusers", CheckApp_1.CHECKAPPTOKEN, userController_1.FetchUsers);
+router.post("/fetchusers", CheckApp_1.CHECKAPPTOKEN, userController_1.FetchUsers);
 exports.default = router;
