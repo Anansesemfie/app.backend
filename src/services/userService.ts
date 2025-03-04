@@ -1,6 +1,6 @@
 import Repo from "../db/repository/userRepository";
 import subscribersService from "./subscribersService";
-import { UserType } from "../dto";
+import { UserResponse, UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import { APP_BASE_URL, STARTUP_SUBSCRIPTION } from "../utils/env";
 
@@ -200,7 +200,10 @@ export class UserService {
       }
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(newPassword, salt);
-      await this.updateUser({ password: hashedPassword }, user._id as string);
+      await this.updateUser(
+        { password: hashedPassword, active: true },
+        user._id as string
+      );
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
@@ -384,6 +387,33 @@ export class UserService {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } verifying account for user with verification code ${verificationCode} @ ${HELPERS.currentTime()}`;
+      throw error;
+    } finally {
+      await HELPERS.logger(this.logInfo as string);
+      this.logInfo = "";
+    }
+  }
+  public async formatUser(user: UserType): Promise<UserResponse> {
+    try {
+      const formattedUser = {
+        id: user._id as string,
+        email: user.email,
+        username: user.username,
+        account: user.account,
+        active: user.active,
+        dp: user.dp,
+        bio: user.bio,
+        subscription: user.subscription as string,
+        createdAt: user.createdAt as string,
+      };
+      this.logInfo = `${HELPERS.loggerInfo.success} formatting user ${
+        user.username
+      } @ ${HELPERS.currentTime()}`;
+      return formattedUser;
+    } catch (error: any) {
+      this.logInfo = `${HELPERS.loggerInfo.error} formatting user ${
+        user.username
+      } @ ${HELPERS.currentTime()}`;
       throw error;
     } finally {
       await HELPERS.logger(this.logInfo as string);

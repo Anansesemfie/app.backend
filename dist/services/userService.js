@@ -212,7 +212,7 @@ class UserService {
                 }
                 const salt = yield bcrypt_1.default.genSalt();
                 const hashedPassword = yield bcrypt_1.default.hash(newPassword, salt);
-                yield this.updateUser({ password: hashedPassword }, user._id);
+                yield this.updateUser({ password: hashedPassword, active: true }, user._id);
                 this.logInfo = `${helpers_1.default.loggerInfo.success} resetting password for user with token ${token} @ ${helpers_1.default.currentTime()}`;
             }
             catch (error) {
@@ -354,6 +354,33 @@ class UserService {
             }
             catch (error) {
                 this.logInfo = `${helpers_1.default.loggerInfo.error} verifying account for user with verification code ${verificationCode} @ ${helpers_1.default.currentTime()}`;
+                throw error;
+            }
+            finally {
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = "";
+            }
+        });
+    }
+    formatUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const formattedUser = {
+                    id: user._id,
+                    email: user.email,
+                    username: user.username,
+                    account: user.account,
+                    active: user.active,
+                    dp: user.dp,
+                    bio: user.bio,
+                    subscription: user.subscription,
+                    createdAt: user.createdAt,
+                };
+                this.logInfo = `${helpers_1.default.loggerInfo.success} formatting user ${user.username} @ ${helpers_1.default.currentTime()}`;
+                return formattedUser;
+            }
+            catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} formatting user ${user.username} @ ${helpers_1.default.currentTime()}`;
                 throw error;
             }
             finally {

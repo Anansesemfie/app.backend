@@ -86,6 +86,7 @@ class UserRepository {
 
   public async fetchAll(params: {}, limit = 100): Promise<UserType[]> {
     try {
+      console.log({params});
       return await User.find({ ...params })
         .limit(limit)
         .sort({ createdAt: -1 });
