@@ -55,6 +55,21 @@ class AdminUserService {
       throw error;
     }
   }
+
+  async makeAssociate(userId: string, sessionId: string) {
+    try {
+      const session = await Session.getSession(sessionId);
+      if (session.user.account !== UsersTypes.admin)
+        throw await errorHandler.CustomError(ErrorEnum[403], "Unauthorized");
+      const user = await userService.updateUser(
+        { account: UsersTypes.associate },
+        userId
+      );
+      return await userService.formatUser(user);
+    } catch (error: any) {
+      throw error;
+    }
+  }
 }
 
 export default new AdminUserService();

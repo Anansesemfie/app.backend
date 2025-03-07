@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chapterService_1 = __importDefault(require("./chapterService"));
 const booksService_1 = __importDefault(require("./booksService"));
 const seenService_1 = __importDefault(require("./seenService"));
-const userService_1 = __importDefault(require("./userService"));
 const sessionService_1 = __importDefault(require("./sessionService"));
 const subscribersService_1 = __importDefault(require("./subscribersService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
@@ -27,6 +26,7 @@ class PlayService {
         return __awaiter(this, arguments, void 0, function* (chapterId, userId = "") {
             var _a, _b, _c, _d;
             try {
+                console.log("unAuthorizedUserPlay");
                 const chapter = yield chapterService_1.default.fetchChapter(chapterId);
                 if (((_a = chapter === null || chapter === void 0 ? void 0 : chapter.title) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "sample")
                     return chapter;
@@ -54,15 +54,15 @@ class PlayService {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const { session } = yield sessionService_1.default.getSession(sessionId);
-                const user = yield userService_1.default.fetchUser(session.user);
-                if (!(user === null || user === void 0 ? void 0 : user.subscription))
-                    return yield this.unAuthorizedUserPlay(chapterId, user === null || user === void 0 ? void 0 : user._id);
-                const subscription = yield subscribersService_1.default.validateSubscription(user === null || user === void 0 ? void 0 : user.subscription);
+                const { user } = yield sessionService_1.default.getSession(sessionId);
+                if (!user.subscription)
+                    return yield this.unAuthorizedUserPlay(chapterId, user._id);
+                const subscription = yield subscribersService_1.default.validateSubscription(user.subscription);
                 // no active subscription
                 if (!subscription)
                     return yield this.unAuthorizedUserPlay(chapterId, user === null || user === void 0 ? void 0 : user._id);
                 const chapter = yield chapterService_1.default.fetchChapter(chapterId);
+                console.log("fetched chapter");
                 yield seenService_1.default.updateSeen(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a._id) || "", user._id, {
                     played: true,
                     subscription: user === null || user === void 0 ? void 0 : user.subscription,

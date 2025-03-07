@@ -9,7 +9,6 @@ export const CreateUser = async (req: Request, res: Response) => {
     const newUser = await userService.create(user, sessionId);
     res.status(201).json({ data: newUser });
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -51,11 +50,24 @@ export const SendEmail = async (req: Request, res: Response) => {
 export const FetchUsers = async (req: Request, res: Response) => {
   try {
     const { search, account } = req.body;
-    console.log({ search, account });
-
     const sessionId = res.locals.sessionId;
     const users = await userService.fetchUsers({ search, account }, sessionId);
     res.status(200).json({ data: users });
+  } catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+};
+
+export const MakeAssociate = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body;
+    const sessionId = res.locals.sessionId;
+    const user = await userService.makeAssociate(userId, sessionId);
+    res.status(200).json({ data: user });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,

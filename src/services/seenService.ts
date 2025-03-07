@@ -33,6 +33,7 @@ class SeenService {
     params: {}
   ): Promise<SeenType> {
     try {
+      console.log("seen", params);
       const updatedSeen = await seenRepository.update(
         { bookId: bookId, user: userId },
         params

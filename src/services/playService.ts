@@ -11,6 +11,7 @@ class PlayService {
   private logInfo = "";
   async unAuthorizedUserPlay(chapterId: string, userId: string = "") {
     try {
+      console.log("unAuthorizedUserPlay");
       const chapter = await chapterService.fetchChapter(chapterId);
       if (chapter?.title?.toLowerCase() === "sample") return chapter;
       const book = await booksService.fetchBook(chapter?.book?._id ?? "");
@@ -40,22 +41,19 @@ class PlayService {
   }
   async authorizedUserPlay(chapterId: string, sessionId: string) {
     try {
-      
-      const { session } = await sessionService.getSession(sessionId);
-      const user = await userService.fetchUser(session.user as string);
-      if (!user?.subscription)
-        return await this.unAuthorizedUserPlay(chapterId, user?._id);
+      const { user } = await sessionService.getSession(sessionId);
+      if (!user.subscription)
+        return await this.unAuthorizedUserPlay(chapterId, user._id);
 
       const subscription = await subscribersService.validateSubscription(
-        user?.subscription
+        user.subscription
       );
-
       // no active subscription
       if (!subscription)
         return await this.unAuthorizedUserPlay(chapterId, user?._id);
 
       const chapter = await chapterService.fetchChapter(chapterId);
-
+      console.log("fetched chapter");
       await seenService.updateSeen(
         chapter?.book?._id || "",
         user._id as string,
