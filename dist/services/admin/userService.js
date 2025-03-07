@@ -83,8 +83,7 @@ class AdminUserService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const filter = {
-                    email: { $regex: params.search },
-                    account: params.account,
+                    email: { $regex: params.search }
                 };
                 const session = yield sessionService_1.default.getSession(sessionId);
                 if (session.user.account !== utils_1.UsersTypes.admin)
