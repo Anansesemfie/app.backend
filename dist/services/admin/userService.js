@@ -99,5 +99,19 @@ class AdminUserService {
             }
         });
     }
+    makeAssociate(userId, sessionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const session = yield sessionService_1.default.getSession(sessionId);
+                if (session.user.account !== utils_1.UsersTypes.admin)
+                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized");
+                const user = yield userService_1.default.updateUser({ account: utils_1.UsersTypes.associate }, userId);
+                return yield userService_1.default.formatUser(user);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
 }
 exports.default = new AdminUserService();

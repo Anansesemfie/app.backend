@@ -175,12 +175,15 @@ class SubscriberService {
       const child = await this.fetchOne({ _id: String(subscriptionId) });
       const parent = await subscriptionsService.fetchOne(child.parent);
 
+      console.log({ child, parent });
+
       const duration = HELPERS.millisecondsToDays(parent.duration);
 
       const daysGone = HELPERS.countDaysBetweenDates(
         child?.createdAt as string,
         HELPERS.currentTime("DD/MM/YYYY") as string
       );
+      console.log({ daysGone, duration });
 
       return daysGone <= duration;
     } catch (error: any) {

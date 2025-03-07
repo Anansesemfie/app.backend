@@ -177,8 +177,10 @@ class SubscriberService {
             try {
                 const child = yield this.fetchOne({ _id: String(subscriptionId) });
                 const parent = yield subscriptionsService_1.default.fetchOne(child.parent);
+                console.log({ child, parent });
                 const duration = helpers_1.default.millisecondsToDays(parent.duration);
                 const daysGone = helpers_1.default.countDaysBetweenDates(child === null || child === void 0 ? void 0 : child.createdAt, helpers_1.default.currentTime("DD/MM/YYYY"));
+                console.log({ daysGone, duration });
                 return daysGone <= duration;
             }
             catch (error) {
