@@ -23,7 +23,7 @@ class SeenRepository {
     userId: string = ""
   ): Promise<SeenType> {
     try {
-      const seen = await Seen.findOne({ bookId: bookId, user: userId });
+      const seen = await Seen.findOne({ bookID: bookId, user: userId });
       return seen;
     } catch (error: unknown) {
       throw error;

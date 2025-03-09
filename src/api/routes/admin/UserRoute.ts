@@ -16,6 +16,6 @@ router.post("/sendEmail", CHECKAPPTOKEN, SendEmail);
 
 router.post("/fetchUsers", CHECKAPPTOKEN, FetchUsers);
 
-router.put("/makeAssociate", CHECKAPPTOKEN, MakeAssociate);
+router.put("/changeRole", CHECKAPPTOKEN, MakeAssociate);
 
 export default router;
