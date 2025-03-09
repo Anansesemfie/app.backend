@@ -133,7 +133,6 @@ class BookService {
                     }
                 }
                 const book = yield booksRepository_1.default.fetchOne(bookId);
-                console.log("book fetched");
                 if (sessionId) {
                     const { user } = yield sessionService_1.default.getSession(sessionId);
                     console.log("creating session");

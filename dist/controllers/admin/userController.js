@@ -70,9 +70,9 @@ const FetchUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.FetchUsers = FetchUsers;
 const MakeAssociate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId } = req.body;
+        const { userId, type } = req.body;
         const sessionId = res.locals.sessionId;
-        const user = yield userService_1.default.makeAssociate(userId, sessionId);
+        const user = yield userService_1.default.changeRole(userId, type, sessionId);
         res.status(200).json({ data: user });
     }
     catch (error) {

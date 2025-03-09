@@ -112,7 +112,6 @@ class UserRepository {
     fetchAll(params_1) {
         return __awaiter(this, arguments, void 0, function* (params, limit = 100) {
             try {
-                console.log({ params });
                 return yield models_1.User.find(Object.assign({}, params))
                     .limit(limit)
                     .sort({ createdAt: -1 });
