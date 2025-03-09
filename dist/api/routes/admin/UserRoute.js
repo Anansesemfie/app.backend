@@ -8,5 +8,5 @@ router.post("/add", CheckApp_1.CHECKAPPTOKEN, userController_1.CreateUser);
 router.post("/login", userController_1.LoginUser);
 router.post("/sendEmail", CheckApp_1.CHECKAPPTOKEN, userController_1.SendEmail);
 router.post("/fetchUsers", CheckApp_1.CHECKAPPTOKEN, userController_1.FetchUsers);
-router.put("/makeAssociate", CheckApp_1.CHECKAPPTOKEN, userController_1.MakeAssociate);
+router.put("/changeRole", CheckApp_1.CHECKAPPTOKEN, userController_1.MakeAssociate);
 exports.default = router;

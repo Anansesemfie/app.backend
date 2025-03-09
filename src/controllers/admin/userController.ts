@@ -2,6 +2,7 @@ import userService from "../../services/admin/userService";
 import emailService from "../../services/emailService";
 import { Request, Response } from "express";
 import errorHandler from "../../utils/error";
+import { UsersTypes } from "../../db/models/utils";
 export const CreateUser = async (req: Request, res: Response) => {
   try {
     let user = req.body;
@@ -64,9 +65,13 @@ export const FetchUsers = async (req: Request, res: Response) => {
 
 export const MakeAssociate = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.body;
+    const { userId, type } = req.body;
     const sessionId = res.locals.sessionId;
-    const user = await userService.makeAssociate(userId, sessionId);
+    const user = await userService.changeRole(
+      userId as string,
+      type as UsersTypes,
+      sessionId
+    );
     res.status(200).json({ data: user });
   } catch (error: any) {
     const { code, message, exMessage } = await errorHandler.HandleError(

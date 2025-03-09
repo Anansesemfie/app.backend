@@ -26,7 +26,6 @@ class PlayService {
         return __awaiter(this, arguments, void 0, function* (chapterId, userId = "") {
             var _a, _b, _c, _d;
             try {
-                console.log("unAuthorizedUserPlay");
                 const chapter = yield chapterService_1.default.fetchChapter(chapterId);
                 if (((_a = chapter === null || chapter === void 0 ? void 0 : chapter.title) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "sample")
                     return chapter;
@@ -58,9 +57,9 @@ class PlayService {
                 if (!user.subscription)
                     return yield this.unAuthorizedUserPlay(chapterId, user._id);
                 const subscription = yield subscribersService_1.default.validateSubscription(user.subscription);
-                // no active subscription
-                if (!subscription)
-                    return yield this.unAuthorizedUserPlay(chapterId, user === null || user === void 0 ? void 0 : user._id);
+                if (!subscription) {
+                    return yield this.unAuthorizedUserPlay(chapterId, user._id);
+                }
                 const chapter = yield chapterService_1.default.fetchChapter(chapterId);
                 console.log("fetched chapter");
                 yield seenService_1.default.updateSeen(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a._id) || "", user._id, {

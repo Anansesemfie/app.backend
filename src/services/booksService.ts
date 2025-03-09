@@ -112,8 +112,6 @@ class BookService {
         }
       }
       const book = await Repo.fetchOne(bookId);
-      console.log("book fetched");
-
       if (sessionId) {
         const { user } = await sessionService.getSession(sessionId);
         console.log("creating session");

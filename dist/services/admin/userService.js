@@ -48,9 +48,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userService_1 = __importDefault(require("../userService"));
 const userRepository_1 = __importDefault(require("../../db/repository/userRepository"));
 const error_1 = __importStar(require("../../utils/error"));
+const helpers_1 = __importDefault(require("../../utils/helpers"));
 const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
 class AdminUserService {
+    constructor() {
+        this.logInfo = "";
+    }
     create(user, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -83,7 +87,8 @@ class AdminUserService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const filter = {
-                    email: { $regex: params.search }
+                    email: { $regex: params.search },
+                    account: params.account,
                 };
                 const session = yield sessionService_1.default.getSession(sessionId);
                 if (session.user.account !== utils_1.UsersTypes.admin)
@@ -98,17 +103,24 @@ class AdminUserService {
             }
         });
     }
-    makeAssociate(userId, sessionId) {
+    changeRole(userId, userType, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                helpers_1.default.LOG("changing user role", userId, userType);
                 const session = yield sessionService_1.default.getSession(sessionId);
                 if (session.user.account !== utils_1.UsersTypes.admin)
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized");
-                const user = yield userService_1.default.updateUser({ account: utils_1.UsersTypes.associate }, userId);
+                const user = yield userService_1.default.updateUser({ account: userType }, userId);
+                this.logInfo = `${helpers_1.default.loggerInfo.success} changing user role of id: ${userId} to ${userType} @ ${helpers_1.default.currentTime()}`;
                 return yield userService_1.default.formatUser(user);
             }
             catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} changing user role @ ${helpers_1.default.currentTime()}`;
                 throw error;
+            }
+            finally {
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = "";
             }
         });
     }

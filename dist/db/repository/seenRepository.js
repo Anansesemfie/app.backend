@@ -35,7 +35,7 @@ class SeenRepository {
     fetchOne(bookId_1) {
         return __awaiter(this, arguments, void 0, function* (bookId, userId = "") {
             try {
-                const seen = yield models_1.Seen.findOne({ bookId: bookId, user: userId });
+                const seen = yield models_1.Seen.findOne({ bookID: bookId, user: userId });
                 return seen;
             }
             catch (error) {
