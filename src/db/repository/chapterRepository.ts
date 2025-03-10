@@ -9,7 +9,6 @@ class ChapterRepository {
       await newChapter.save();
       return newChapter;
     } catch (error: any) {
-      console.log({ error });
       throw await errHandler.CustomError(
         ErrorEnum[400],
         error?.message ?? "Error creating chapter"

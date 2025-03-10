@@ -11,9 +11,8 @@ export const likeBook = async (req: Request, res: Response) => {
       bookID: bookId,
       action: "Liked",
     });
-    res.status(200).json({data:reaction});
+    res.status(200).json({ data: reaction });
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message

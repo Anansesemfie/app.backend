@@ -50,7 +50,6 @@ class EmailService implements IEmailService {
 
       const info = await this.transporter.sendMail(mailOptions);
       if (!info) false;
-      console.log(`Email sent: ${info.response}`);
       return true;
     } catch (error) {
       console.error(`Error sending email: ${error}`);

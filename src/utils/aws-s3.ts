@@ -1,4 +1,5 @@
-import AWS from "aws-sdk";
+import { S3, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   AWS_S3_BUCKET_IMAGES,
   AWS_ACCESS_KEY_ID,
@@ -6,22 +7,26 @@ import {
   AWS_REGION,
 } from "./env";
 import errorHandler, { ErrorEnum } from "../utils/error";
-class AWS_S3 {
-  readonly accessKeyId = AWS_ACCESS_KEY_ID;
-  readonly secretAccessKey = AWS_SECRET_ACCESS_KEY;
-  readonly region = AWS_REGION;
-  readonly expires = 60;
 
-  bucketName: string = AWS_S3_BUCKET_IMAGES;
-  private s3: AWS.S3 | null = null;
+class AWS_S3 {
+  private readonly accessKeyId = AWS_ACCESS_KEY_ID;
+  private readonly secretAccessKey = AWS_SECRET_ACCESS_KEY;
+  private readonly region = AWS_REGION;
+  private readonly expires = 60;
+
+  private bucketName: string;
+  private s3: S3;
+
   constructor(preferedBucket?: string) {
-    this.s3 = new AWS.S3({
-      signatureVersion: "v4",
+    this.s3 = new S3({
       region: this.region,
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
+      credentials: {
+        accessKeyId: this.accessKeyId,
+        secretAccessKey: this.secretAccessKey,
+      },
     });
-    this.bucketName = preferedBucket || this.bucketName;
+
+    this.bucketName = preferedBucket || AWS_S3_BUCKET_IMAGES;
   }
 
   async getSignedUrl(
@@ -31,18 +36,22 @@ class AWS_S3 {
     const s3Params = {
       Bucket: this.bucketName,
       Key: fileName,
-      Expires: this.expires,
       ContentType: fileType,
-      ACL: "public-read",
     };
-    if (!this.s3) {
+
+    try {
+      const signedURL = await getSignedUrl(
+        this.s3,
+        new PutObjectCommand(s3Params),
+        { expiresIn: this.expires }
+      );
+      return { signedURL, time: this.expires };
+    } catch (error) {
       throw await errorHandler.CustomError(
         ErrorEnum[403],
         "Could not generate signed URL"
       );
     }
-    const signedURL = await this.s3?.getSignedUrlPromise("putObject", s3Params);
-    return { signedURL, time: this.expires };
   }
 }
 

@@ -63,7 +63,6 @@ function CHECKAPPTOKEN(req, res, next) {
             let bearerToken = tokenParts[1];
             bearerToken = yield helpers_1.default.DECODE_TOKEN(bearerToken);
             res.locals.sessionId = bearerToken;
-            console.log({ sessionId: res.locals.sessionId });
             next();
         }
         catch (error) {

@@ -42,9 +42,14 @@ class SeenRepository {
     }
   }
 
-  public async update(params: {}, payload: {}): Promise<SeenType> {
+  public async update(
+    params: { bookID: string; user: string },
+    payload: {}
+  ): Promise<SeenType> {
     try {
-      const updatedSeen = await Seen.findOneAndUpdate(params, payload);
+      const updatedSeen = await Seen.findOneAndUpdate(params, payload, {
+        new: true,
+      });
       return updatedSeen;
     } catch (error: unknown) {
       throw error;

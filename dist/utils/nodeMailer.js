@@ -58,7 +58,6 @@ class EmailService {
                 const info = yield this.transporter.sendMail(mailOptions);
                 if (!info)
                     false;
-                console.log(`Email sent: ${info.response}`);
                 return true;
             }
             catch (error) {

@@ -81,14 +81,12 @@ export const createSubscription = async (req: Request, res: Response) => {
   try {
     const { subscription } = req.body;
     const sessionId = res.locals.sessionId;
-    console.log({ sessionId, subscription });
     const newSubscription = await userService.createSubscription(
       sessionId,
       subscription
     );
     res.status(201).json({ data: newSubscription });
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message
@@ -104,7 +102,6 @@ export const linkSubscription = async (req: Request, res: Response) => {
     const newSubscription = await userService.linkSubscription(sessionId, ref);
     res.status(201).json({ data: newSubscription });
   } catch (error: any) {
-    console.log({ error });
     const { code, message, exMessage } = await errorHandler.HandleError(
       error?.code,
       error?.message

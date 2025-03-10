@@ -30,13 +30,15 @@ class SeenService {
   async updateSeen(
     bookId: string,
     userId: string,
-    params: {}
+    payload: {}
   ): Promise<SeenType> {
     try {
-      console.log("seen", params);
       const updatedSeen = await seenRepository.update(
-        { bookId: bookId, user: userId },
-        params
+        {
+          bookID: bookId,
+          user: userId,
+        },
+        payload
       );
       this.logInfo = `${
         HELPERS.loggerInfo.success

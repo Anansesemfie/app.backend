@@ -56,7 +56,7 @@ export type ChapterType = {
 export type ChapterResponseType = {
   id: string;
   title: string;
-  content: string;
+  content?: string;
   book: BookType;
   createdAt: string | Date;
 };
@@ -133,7 +133,7 @@ export type UserResponse = {
   bio: string;
   subscription?: string;
   createdAt: string;
-}
+};
 
 export type ReactionType = {
   _id?: string;

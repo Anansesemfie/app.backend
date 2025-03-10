@@ -26,9 +26,7 @@ class UserRepository {
 
   public async Login(email: string): Promise<any> {
     try {
-      console.log(email);
       const fetchedUser = await User.findOne({ email: email });
-      console.log(fetchedUser);
       if (!fetchedUser) {
         throw await errHandler.CustomError(
           ErrorEnum[403],

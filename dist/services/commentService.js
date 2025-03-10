@@ -61,7 +61,6 @@ class CommentService {
                 if (helpers_1.default.hasSpecialCharacters(comment)) {
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Comment contains special characters");
                 }
-                console.log({ bookID, sessionID, comment });
                 if (!bookID || !sessionID || !comment) {
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book, user or comment");
                 }

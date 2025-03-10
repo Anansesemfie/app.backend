@@ -54,7 +54,6 @@ class ChapterRepository {
                 return newChapter;
             }
             catch (error) {
-                console.log({ error });
                 throw yield error_1.default.CustomError(error_1.ErrorEnum[400], (_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : "Error creating chapter");
             }
         });
