@@ -6,10 +6,12 @@ export const getBooks = async (req: Request, res: Response) => {
   try {
     const page = req.query.page as string;
     const limit = req.query.limit as string;
+    const search = req.query.search as string
     const token = res.locals.sessionId;
     const books = await booksService.fetchBooks({
       page: parseInt(page),
       limit: parseInt(limit),
+      params: { title: {$regex:search} },
       token,
     });
     res

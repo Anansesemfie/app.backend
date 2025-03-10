@@ -52,7 +52,6 @@ class BookRepository {
                 return yield models_1.Book.create(book);
             }
             catch (error) {
-                console.log(error);
                 throw yield error_1.default.CustomError(error_1.ErrorEnum[400], error._message);
             }
         });

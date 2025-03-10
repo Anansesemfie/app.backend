@@ -57,7 +57,9 @@ class SeenRepository {
     update(params, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const updatedSeen = yield models_1.Seen.findOneAndUpdate(params, payload);
+                const updatedSeen = yield models_1.Seen.findOneAndUpdate(params, payload, {
+                    new: true,
+                });
                 return updatedSeen;
             }
             catch (error) {

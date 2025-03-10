@@ -40,8 +40,7 @@ class AdminUserService {
   ): Promise<UserResponse[]> {
     try {
       const filter = {
-        email: { $regex: params.search },
-        account: params.account,
+        email: { $regex: params.search }
       };
       const session = await Session.getSession(sessionId);
       if (session.user.account !== UsersTypes.admin)

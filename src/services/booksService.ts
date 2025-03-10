@@ -55,6 +55,7 @@ class BookService {
     page = 1,
     limit = 10,
     token = "",
+    params = {},
   }: {
     page: number;
     limit: number;
@@ -67,14 +68,15 @@ class BookService {
         const booksToFetch = await this.fetchBooksInSubscription(token);
 
         if (!booksToFetch.length) {
-          books = await Repo.fetchAll(limit, page);
+          books = await Repo.fetchAll(limit, page, params);
         } else {
           books = await Repo.fetchAll(limit, page, {
             _id: { $in: booksToFetch },
+            ...params,
           });
         }
       } else {
-        books = await Repo.fetchAll(limit, page);
+        books = await Repo.fetchAll(limit, page, params);
       }
       //
       this.logInfo = `${
@@ -97,13 +99,11 @@ class BookService {
     sessionId: string = ""
   ): Promise<BookType> {
     try {
-
       if (!bookId) {
         throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
       }
       if (sessionId) {
         const booksToFetch = await this.fetchBooksInSubscription(sessionId);
-        console.log('books fetched');
         if (booksToFetch.length && !booksToFetch.includes(bookId)) {
           throw await errorHandler.CustomError(
             ErrorEnum[403],
@@ -114,7 +114,6 @@ class BookService {
       const book = await Repo.fetchOne(bookId);
       if (sessionId) {
         const { user } = await sessionService.getSession(sessionId);
-        console.log("creating session");
         await seenService.createNewSeen(
           book?._id as string,
           user._id as string
@@ -293,7 +292,6 @@ class BookService {
       books.push(...fetchByBooks);
       return this.getUniqueBooks(books);
     } catch (error: any) {
-      console.log({ error });
       throw error;
     }
   }

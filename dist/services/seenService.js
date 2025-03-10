@@ -42,11 +42,13 @@ class SeenService {
             }
         });
     }
-    updateSeen(bookId, userId, params) {
+    updateSeen(bookId, userId, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("seen", params);
-                const updatedSeen = yield seenRepository_1.default.update({ bookId: bookId, user: userId }, params);
+                const updatedSeen = yield seenRepository_1.default.update({
+                    bookID: bookId,
+                    user: userId,
+                }, payload);
                 this.logInfo = `${helpers_1.default.loggerInfo.success} updating seen @ ${helpers_1.default.currentTime()}`;
                 return updatedSeen;
             }

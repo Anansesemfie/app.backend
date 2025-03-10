@@ -65,9 +65,7 @@ class UserRepository {
     Login(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(email);
                 const fetchedUser = yield models_1.User.findOne({ email: email });
-                console.log(fetchedUser);
                 if (!fetchedUser) {
                     throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid user credentials");
                 }

@@ -58,12 +58,10 @@ class ReactionRepository {
     getReaction(bookId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log({ bookId, userId });
                 const reaction = yield models_1.Reaction.findOne({
                     bookID: bookId,
                     user: userId,
                 });
-                console.log({ reaction });
                 return reaction;
             }
             catch (error) {

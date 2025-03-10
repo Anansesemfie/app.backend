@@ -19,10 +19,12 @@ const getBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = req.query.page;
         const limit = req.query.limit;
+        const search = req.query.search;
         const token = res.locals.sessionId;
         const books = yield booksService_1.default.fetchBooks({
             page: parseInt(page),
             limit: parseInt(limit),
+            params: { title: { $regex: search } },
             token,
         });
         res

@@ -25,7 +25,6 @@ class CommentService {
           "Comment contains special characters"
         );
       }
-      console.log({ bookID, sessionID, comment });
       if (!bookID || !sessionID || !comment) {
         throw await errorHandler.CustomError(
           ErrorEnum[403],

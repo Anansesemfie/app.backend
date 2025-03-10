@@ -61,9 +61,8 @@ class PlayService {
                     return yield this.unAuthorizedUserPlay(chapterId, user._id);
                 }
                 const chapter = yield chapterService_1.default.fetchChapter(chapterId);
-                console.log("fetched chapter");
                 yield seenService_1.default.updateSeen(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a._id) || "", user._id, {
-                    played: true,
+                    playedAt: helpers_1.default.currentTime(),
                     subscription: user === null || user === void 0 ? void 0 : user.subscription,
                 });
                 this.logInfo = `${helpers_1.default.loggerInfo.success} authorized user played chapter: ${chapter === null || chapter === void 0 ? void 0 : chapter.id}`;

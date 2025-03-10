@@ -41,11 +41,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const client_s3_1 = require("@aws-sdk/client-s3");
+const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
 const env_1 = require("./env");
 const error_1 = __importStar(require("../utils/error"));
 class AWS_S3 {
@@ -54,31 +52,29 @@ class AWS_S3 {
         this.secretAccessKey = env_1.AWS_SECRET_ACCESS_KEY;
         this.region = env_1.AWS_REGION;
         this.expires = 60;
-        this.bucketName = env_1.AWS_S3_BUCKET_IMAGES;
-        this.s3 = null;
-        this.s3 = new aws_sdk_1.default.S3({
-            signatureVersion: "v4",
+        this.s3 = new client_s3_1.S3({
             region: this.region,
-            accessKeyId: this.accessKeyId,
-            secretAccessKey: this.secretAccessKey,
+            credentials: {
+                accessKeyId: this.accessKeyId,
+                secretAccessKey: this.secretAccessKey,
+            },
         });
-        this.bucketName = preferedBucket || this.bucketName;
+        this.bucketName = preferedBucket || env_1.AWS_S3_BUCKET_IMAGES;
     }
     getSignedUrl(fileName, fileType) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             const s3Params = {
                 Bucket: this.bucketName,
                 Key: fileName,
-                Expires: this.expires,
                 ContentType: fileType,
-                ACL: "public-read",
             };
-            if (!this.s3) {
+            try {
+                const signedURL = yield (0, s3_request_presigner_1.getSignedUrl)(this.s3, new client_s3_1.PutObjectCommand(s3Params), { expiresIn: this.expires });
+                return { signedURL, time: this.expires };
+            }
+            catch (error) {
                 throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Could not generate signed URL");
             }
-            const signedURL = yield ((_a = this.s3) === null || _a === void 0 ? void 0 : _a.getSignedUrlPromise("putObject", s3Params));
-            return { signedURL, time: this.expires };
         });
     }
 }

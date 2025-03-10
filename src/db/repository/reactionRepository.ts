@@ -18,12 +18,10 @@ class ReactionRepository {
     userId: string
   ): Promise<ReactionType> {
     try {
-      console.log({ bookId, userId });
       const reaction = await Reaction.findOne({
         bookID: bookId,
         user: userId,
       });
-      console.log({ reaction });
       return reaction;
     } catch (error: any) {
       throw await errorHandle.CustomError(

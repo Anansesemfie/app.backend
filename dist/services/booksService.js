@@ -88,22 +88,20 @@ class BookService {
     }
     //write a function that validates book data
     fetchBooks(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", }) {
+        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, }) {
             let books = [];
             try {
                 if (token) {
                     const booksToFetch = yield this.fetchBooksInSubscription(token);
                     if (!booksToFetch.length) {
-                        books = yield booksRepository_1.default.fetchAll(limit, page);
+                        books = yield booksRepository_1.default.fetchAll(limit, page, params);
                     }
                     else {
-                        books = yield booksRepository_1.default.fetchAll(limit, page, {
-                            _id: { $in: booksToFetch },
-                        });
+                        books = yield booksRepository_1.default.fetchAll(limit, page, Object.assign({ _id: { $in: booksToFetch } }, params));
                     }
                 }
                 else {
-                    books = yield booksRepository_1.default.fetchAll(limit, page);
+                    books = yield booksRepository_1.default.fetchAll(limit, page, params);
                 }
                 //
                 this.logInfo = `${helpers_1.default.loggerInfo.success} fetching books @ ${helpers_1.default.currentTime()}`;
@@ -127,7 +125,6 @@ class BookService {
                 }
                 if (sessionId) {
                     const booksToFetch = yield this.fetchBooksInSubscription(sessionId);
-                    console.log('books fetched');
                     if (booksToFetch.length && !booksToFetch.includes(bookId)) {
                         throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized access");
                     }
@@ -135,7 +132,6 @@ class BookService {
                 const book = yield booksRepository_1.default.fetchOne(bookId);
                 if (sessionId) {
                     const { user } = yield sessionService_1.default.getSession(sessionId);
-                    console.log("creating session");
                     yield seenService_1.default.createNewSeen(book === null || book === void 0 ? void 0 : book._id, user._id);
                 }
                 this.logInfo = `${helpers_1.default.loggerInfo.success} fetching book @ ${helpers_1.default.currentTime()}`;
@@ -270,7 +266,6 @@ class BookService {
                 return this.getUniqueBooks(books);
             }
             catch (error) {
-                console.log({ error });
                 throw error;
             }
         });

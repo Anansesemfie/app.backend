@@ -27,7 +27,6 @@ const likeBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: reaction });
     }
     catch (error) {
-        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }

@@ -49,14 +49,12 @@ class PlayService {
       if (!subscription){
         return await this.unAuthorizedUserPlay(chapterId, user._id);
       }
-
       const chapter = await chapterService.fetchChapter(chapterId);
-      console.log("fetched chapter");
       await seenService.updateSeen(
         chapter?.book?._id || "",
         user._id as string,
         {
-          played: true,
+          playedAt: HELPERS.currentTime(),
           subscription: user?.subscription,
         }
       );

@@ -85,12 +85,10 @@ const createSubscription = (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const { subscription } = req.body;
         const sessionId = res.locals.sessionId;
-        console.log({ sessionId, subscription });
         const newSubscription = yield userService_1.default.createSubscription(sessionId, subscription);
         res.status(201).json({ data: newSubscription });
     }
     catch (error) {
-        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }
@@ -104,7 +102,6 @@ const linkSubscription = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(201).json({ data: newSubscription });
     }
     catch (error) {
-        console.log({ error });
         const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
         res.status(code).json({ error: message, message: exMessage });
     }
