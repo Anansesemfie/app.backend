@@ -31,6 +31,24 @@ export type BookType = {
   };
 };
 
+export type BookResponseType = {
+  id: string;
+  title: string;
+  description: string;
+  snippet?: string;
+  authors?: string[];
+  category: string[];
+  languages: string[];
+  cover: string;
+  meta: {
+    played: number;
+    views: number;
+    likes: number;
+    dislikes: number;
+    comments: number;
+  };
+};
+
 export type BookUpdateType = BookType & {
   owner?: string;
   uploader?: string;
@@ -56,12 +74,13 @@ export type ChapterType = {
 export type ChapterResponseType = {
   id: string;
   title: string;
-  content?: string;
+  content?: string; //TODO:Remove this line
   book: BookType;
   createdAt: string | Date;
 };
 export type SeenType = {
   _id?: string;
+  periodId?: string;
   user: string;
   bookID: string;
   seenAt?: Date;
@@ -118,6 +137,7 @@ export type UserType = {
   active: boolean;
   dp: string;
   bio: string;
+  organization?: string;
   subscription?: string;
   createdAt?: string;
   key?: string;
@@ -180,4 +200,46 @@ export type LanguageType = {
   title: string;
   active: boolean;
   createdAt?: string;
+};
+
+export type LanguageResponseType = {
+  id: string;
+  name: string;
+};
+export type OrganizationType = {
+  _id?: string;
+  name: string;
+  description?: string;
+  type: string;
+  logo?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type OrganizationResponseType = {
+  id: string;
+  name: string;
+  description?: string;
+  type: string;
+  logo?: string;
+};
+export type PeriodType = {
+  _id?: string;
+  startDate: Date;
+  endDate: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  year: number;
+  month: number;
+  active: boolean;
+};
+export type PeriodResponseType = {
+  id: string;
+  startDate: Date;
+  endDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  year: number;
+  month: number;
+  status: "active" | "inactive";
 };

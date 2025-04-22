@@ -15,6 +15,8 @@ import BookSeen from "./Seen";
 import Origins from "./Origins";
 import Externals from "./Externals";
 import Sessions from "./Session";
+import Period from "./Period";
+import organization from "./Organization";
 
 import { SessionType, UserType } from "../../dto/index";
 
@@ -44,6 +46,11 @@ export const PaymentsAccount = Mongoose.model(
 export const Subscription = Mongoose.model(
   "subscription",
   Subscriptions(Mongoose)
+);
+export const Periods = Mongoose.model("period", Period(Mongoose));
+export const Organization = Mongoose.model(
+  "organization",
+  organization(Mongoose)
 );
 
 export default Mongoose;

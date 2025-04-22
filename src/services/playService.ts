@@ -8,7 +8,7 @@ import HELPERS from "../utils/helpers";
 
 class PlayService {
   private logInfo = "";
-  async unAuthorizedUserPlay(chapterId: string, userId: string = "") {
+  async unAuthorizedUserPlay(chapterId: string, userId= "") {
     try {
       const chapter = await chapterService.fetchChapter(chapterId);
       if (chapter?.title?.toLowerCase() === "sample") return chapter;
@@ -27,7 +27,7 @@ class PlayService {
         playTime: chapterToReturn?.title.toLowerCase() === "sample" ? 1 : 0.25,
         status: userId ? "No Active subscription" : "Not logged in",
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;
@@ -64,7 +64,7 @@ class PlayService {
         chapter,
         playTime: 1,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;

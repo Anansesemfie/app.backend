@@ -1,59 +1,36 @@
 import { Seen } from "../models";
-import { SeenType } from "../../dto";
+import type { SeenType } from "../../dto";
 
 class SeenRepository {
   public async create(seen: SeenType): Promise<SeenType> {
-    try {
-      return await Seen.create(seen);
-    } catch (error: any) {
-      throw error;
-    }
+    return await Seen.create(seen);
   }
   public async fetch(bookId: string): Promise<SeenType[]> {
-    try {
-      const seens = await Seen.find({ bookId: bookId });
-      return seens;
-    } catch (error: unknown) {
-      throw error;
-    }
+    const seens = await Seen.find({ bookId: bookId });
+    return seens;
   }
 
-  public async fetchOne(
-    bookId: string,
-    userId: string = ""
-  ): Promise<SeenType> {
-    try {
-      const seen = await Seen.findOne({ bookID: bookId, user: userId });
-      return seen;
-    } catch (error: unknown) {
-      throw error;
-    }
+  public async fetchOne(bookId: string, userId = ""): Promise<SeenType> {
+    const seen = await Seen.findOne({ bookID: bookId, user: userId });
+    return seen;
   }
 
-  public async findAll(bookID: string, params?: {}): Promise<SeenType[]> {
-    try {
-      const seen = await Seen.find({
-        bookID,
-        ...params,
-      });
-      return seen;
-    } catch (error: unknown) {
-      throw error;
-    }
+  public async findAll(bookID: string, params = {}): Promise<SeenType[]> {
+    const seen = await Seen.find({
+      bookID,
+      ...params,
+    });
+    return seen;
   }
 
   public async update(
-    params: { bookID: string; user: string },
-    payload: {}
+    params: { bookID: string; user: string; periodId: string },
+    payload: object
   ): Promise<SeenType> {
-    try {
-      const updatedSeen = await Seen.findOneAndUpdate(params, payload, {
-        new: true,
-      });
-      return updatedSeen;
-    } catch (error: unknown) {
-      throw error;
-    }
+    const updatedSeen = await Seen.findOneAndUpdate(params, payload, {
+      new: true,
+    });
+    return updatedSeen;
   }
 }
 

@@ -1,6 +1,6 @@
 import Repo from "../db/repository/userRepository";
 import subscribersService from "./subscribersService";
-import { UserResponse, UserType } from "../dto";
+import type { UserResponse, UserType } from "../dto";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import { APP_BASE_URL, STARTUP_SUBSCRIPTION } from "../utils/env";
 

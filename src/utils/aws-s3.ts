@@ -47,8 +47,9 @@ class AWS_S3 {
       );
       return { signedURL, time: this.expires };
     } catch (error) {
+      console.log({error})
       throw await errorHandler.CustomError(
-        ErrorEnum[403],
+        ErrorEnum[500],
         "Could not generate signed URL"
       );
     }

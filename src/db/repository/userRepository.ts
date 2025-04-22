@@ -1,5 +1,5 @@
 import { User } from "../models";
-import { UserType } from "../../dto/";
+import type { UserType } from "../../dto/";
 import errHandler, { ErrorEnum } from "../../utils/error";
 
 class UserRepository {

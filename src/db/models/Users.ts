@@ -49,6 +49,10 @@ const Users = (Mongoose: any) => {
       type: ObjectId,
       required: false,
     },
+    organization: {
+      type: ObjectId,
+      ref: "organization",
+    },
     createdAt: {
       type: Date,
       default: HELPERS.currentTime() || Date.now,

@@ -1,23 +1,24 @@
 import HELPERS from "../utils/helpers";
 import seenRepository from "../db/repository/seenRepository";
-import { SeenType } from "../dto";
+import periodService from "./periodService";
+import type { SeenType } from "../dto";
 
 class SeenService {
   private logInfo = "";
   async createNewSeen(bookId: string, userId: string): Promise<SeenType> {
     try {
-      const oldSeen = await seenRepository.fetchOne(bookId, userId);
-      if (oldSeen) return oldSeen;
+      const period = await periodService.fetchLatest();
       const newSeen: SeenType = {
         user: userId,
         bookID: bookId,
+        periodId: period._id ?? "",
       };
       const seen = await seenRepository.create(newSeen);
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } creating new seen @ ${HELPERS.currentTime()}`;
       return seen;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } fetching books @ ${HELPERS.currentTime()}`;
@@ -30,13 +31,15 @@ class SeenService {
   async updateSeen(
     bookId: string,
     userId: string,
-    payload: {}
+    payload: object
   ): Promise<SeenType> {
     try {
+      const period = await periodService.fetchLatest();
       const updatedSeen = await seenRepository.update(
         {
           bookID: bookId,
           user: userId,
+          periodId: period._id ?? "",
         },
         payload
       );
@@ -44,7 +47,7 @@ class SeenService {
         HELPERS.loggerInfo.success
       } updating seen @ ${HELPERS.currentTime()}`;
       return updatedSeen;
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logInfo = `${
         HELPERS.loggerInfo.error
       } updating seen @ ${HELPERS.currentTime()}`;
