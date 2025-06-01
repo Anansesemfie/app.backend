@@ -82,7 +82,7 @@ class SessionService {
                 if (!session) {
                     throw error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Session ID");
                 }
-                if (new Date(session.expiredAt) < new Date()) {
+                if (new Date(session.expiredAt) > new Date()) {
                     throw error_1.default.CustomError(error_1.ErrorEnum[403], "Session expired");
                 }
                 const user = yield userService_1.default.fetchUser(session.user);
