@@ -39,7 +39,7 @@ class SessionService {
       if (!session) {
         throw errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
       }
-      if (new Date(session.expiredAt) < new Date()) {
+      if (new Date(session.expiredAt) > new Date()) {
         throw errorHandler.CustomError(ErrorEnum[403], "Session expired");
       }
       const user = await userService.fetchUser(session.user as string);
