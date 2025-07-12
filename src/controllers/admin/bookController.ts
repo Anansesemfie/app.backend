@@ -2,6 +2,7 @@ import bookService from "../../services/admin/bookService";
 import chapterService from "../../services/admin/chapterService";
 import analysisService from "../../services/analysisService";
 import { Request, Response } from "express";
+import ErrorHandler, { ErrorEnum } from "../../utils/error";
 
 import errorHandler from "../../utils/error";
 
@@ -83,3 +84,19 @@ export const GetBookAnalysis = async (req: Request, res: Response) => {
     res.status(code).json({ error: message, message: exMessage });
   }
 };
+
+
+export const DeleteChapter = async (req: Request, res: Response) =>{
+  try{
+    const { chapterURL } = req.body;
+
+    const result = await chapterService.deleteChapter(chapterURL);
+    res.status(200).json(result);
+  }catch (error: any) {
+    const { code, message, exMessage } = await errorHandler.HandleError(
+      error?.code,
+      error?.message
+    );
+    res.status(code).json({ error: message, message: exMessage });
+  }
+}
