@@ -1,4 +1,4 @@
-import { S3, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   AWS_S3_BUCKET_IMAGES,
@@ -53,6 +53,16 @@ class AWS_S3 {
       );
     }
   }
+
+  public async deleteObject(key: string): Promise<void> {
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      })
+    );
+  }
+
 }
 
 export default AWS_S3;

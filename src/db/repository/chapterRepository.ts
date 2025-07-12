@@ -65,6 +65,15 @@ class ChapterRepository {
       );
     }
   }
+
+  public async getChapterByFile(fileKey: string) {
+    return await Chapter.findOne({ file: fileKey });
+  }
+
+ public async deleteChapter(id: string) {
+  return await Chapter.findByIdAndDelete(id);
+}
+
 }
 
 export default new ChapterRepository();
