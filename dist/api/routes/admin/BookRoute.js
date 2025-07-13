@@ -8,4 +8,5 @@ router.post("/getSignedUrl", bookController_1.GenerateSignedUrl);
 router.post("/createBook", bookController_1.CreateBook);
 router.post("/createChapter", bookController_1.CreateChapter);
 router.put("/updateBook", bookController_1.UpdateBook);
+router.delete("/chapter", bookController_1.DeleteChapter);
 exports.default = router;

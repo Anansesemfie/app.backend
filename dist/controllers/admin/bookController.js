@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetBookAnalysis = exports.CreateChapter = exports.UpdateBook = exports.CreateBook = exports.GenerateSignedUrl = void 0;
+exports.DeleteChapter = exports.GetBookAnalysis = exports.CreateChapter = exports.UpdateBook = exports.CreateBook = exports.GenerateSignedUrl = void 0;
 const bookService_1 = __importDefault(require("../../services/admin/bookService"));
 const chapterService_1 = __importDefault(require("../../services/admin/chapterService"));
 const analysisService_1 = __importDefault(require("../../services/analysisService"));
@@ -85,3 +85,15 @@ const GetBookAnalysis = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.GetBookAnalysis = GetBookAnalysis;
+const DeleteChapter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { chapterURL } = req.body;
+        const result = yield chapterService_1.default.deleteChapter(chapterURL);
+        res.status(200).json(result);
+    }
+    catch (error) {
+        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
+        res.status(code).json({ error: message, message: exMessage });
+    }
+});
+exports.DeleteChapter = DeleteChapter;

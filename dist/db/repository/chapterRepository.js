@@ -104,5 +104,15 @@ class ChapterRepository {
             }
         });
     }
+    getChapterByFile(fileKey) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield models_1.Chapter.findOne({ file: fileKey });
+        });
+    }
+    deleteChapter(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield models_1.Chapter.findByIdAndDelete(id);
+        });
+    }
 }
 exports.default = new ChapterRepository();

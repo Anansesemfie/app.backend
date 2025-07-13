@@ -52,6 +52,7 @@ const env_1 = require("../../utils/env");
 const error_1 = __importStar(require("../../utils/error"));
 const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
+const chapterRepository_1 = __importDefault(require("../../db/repository/chapterRepository"));
 class ChapterService {
     constructor(bucketName = env_1.AWS_S3_BUCKET_IMAGES) {
         this.logInfo = "";
@@ -95,6 +96,35 @@ class ChapterService {
             }
             catch (error) {
                 this.logInfo = `${helpers_1.default.loggerInfo.error} updating chapter @ ${helpers_1.default.currentTime()}`;
+                throw error;
+            }
+            finally {
+                yield helpers_1.default.logger(this.logInfo);
+                this.logInfo = "";
+            }
+        });
+    }
+    deleteChapter(chapterURL) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!chapterURL)
+                    throw error_1.default.CustomError(error_1.ErrorEnum[400], "Chapter URL is required");
+                const urlParts = chapterURL.split('/');
+                const fileKey = urlParts.slice(3).join('/');
+                yield this.s3.deleteObject(fileKey);
+                const chapter = yield chapterRepository_1.default.getChapterByFile(chapterURL);
+                if (!(chapter === null || chapter === void 0 ? void 0 : chapter._id)) {
+                    throw error_1.default.CustomError(error_1.ErrorEnum[404], "Chapter not found");
+                }
+                yield chapterRepository_1.default.deleteChapter(chapter._id);
+                this.logInfo = `${helpers_1.default.loggerInfo.success} deleting chapter @ ${helpers_1.default.currentTime()}`;
+                return {
+                    message: "Chapter deleted successfully",
+                    fileKey,
+                };
+            }
+            catch (error) {
+                this.logInfo = `${helpers_1.default.loggerInfo.error} deleting chapter @ ${helpers_1.default.currentTime()}`;
                 throw error;
             }
             finally {

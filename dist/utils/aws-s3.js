@@ -77,5 +77,13 @@ class AWS_S3 {
             }
         });
     }
+    deleteObject(key) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.s3.send(new client_s3_1.DeleteObjectCommand({
+                Bucket: this.bucketName,
+                Key: key,
+            }));
+        });
+    }
 }
 exports.default = AWS_S3;
