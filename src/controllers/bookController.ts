@@ -1,28 +1,27 @@
 import booksService from "../services/booksService";
-import errorHandler from "../utils/error";
 import { Request, Response } from "express";
+
+import{ CustomErrorHandler } from "../utils/CustomError";
+import HELPERS from "../utils/helpers";
 
 export const getBooks = async (req: Request, res: Response) => {
   try {
-    const page = req.query.page as string;
-    const limit = req.query.limit as string;
-    const search = req.query.search as string
-    const token = res.locals.sessionId;
-    const books = await booksService.fetchBooks({
-      page: parseInt(page),
-      limit: parseInt(limit),
-      params: { title: {$regex:search} },
+    const page = Number(req.query.page as string) || 1;
+    const limit = Number(req.query.limit as string) || 10;
+    const search = req.query.search as string;
+    const token = res.locals.sessionId ?? '';
+    HELPERS.LOG({token})
+    const {books,page:index,limit:pageSize} = await booksService.fetchBooks({
+      page,
+      limit,
+      params: { title: { $regex: search } },
       token,
     });
     res
       .status(200)
-      .json({ data: { page: page, records: limit, results: books } });
-  } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+      .json({ data: { page: index, records: pageSize, results: books } });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 };
 
@@ -32,12 +31,8 @@ export const getBook = async (req: Request, res: Response) => {
     const sessionId = res.locals.sessionId;
     const book = await booksService.fetchBook(bookId, sessionId);
     res.status(200).json({ data: book });
-  } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 };
 
@@ -57,11 +52,7 @@ export const filterBooks = async (req: Request, res: Response) => {
       category,
     });
     res.status(200).json({ data: books });
-  } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 };

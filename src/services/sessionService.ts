@@ -3,6 +3,8 @@ import userService from "./userService";
 import { SessionType, UserType } from "../dto";
 import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
+import dayjs from "dayjs";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 
 class SessionService {
   private logInfo = new String();
@@ -10,20 +12,19 @@ class SessionService {
     duration: 5000,
     external: false,
   };
+  private day = dayjs().add(1, "day").toDate();
   public async create(
     userID: string,
     options: { duration: number; external: boolean } = this.options
   ): Promise<SessionType> {
     try {
       const now = new Date();
-      const expirationTime = new Date(
-        now.getTime() + options.duration
-      ).toString();
+      const expirationTime = dayjs(now).add(30, "day").toDate();
       const session: SessionType = {
         user: userID,
         external: options?.external,
         duration: options?.duration,
-        expiredAt: expirationTime,
+        expiredAt: String(expirationTime),
       };
 
       return await Repo.create(session);
@@ -34,23 +35,28 @@ class SessionService {
   public async getSession(
     sessionId: string
   ): Promise<{ session: SessionType; user: UserType }> {
-    try {
-      const session = await Repo.fetchOne(sessionId);
-      if (!session) {
-        throw errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
-      }
-      if (new Date(session.expiredAt) < new Date()) {
-        throw errorHandler.CustomError(ErrorEnum[403], "Session expired");
-      }
-      const user = await userService.fetchUser(session.user as string);
-
-      if (!user) {
-        throw errorHandler.CustomError(ErrorEnum[403], "Invalid User");
-      }
-      return { session, user };
-    } catch (error: any) {
-      throw error;
+    const session = await Repo.fetchOne(sessionId);
+    if (!session) {
+      throw new CustomError(
+        "Session not found",
+        "Invalid session ID",
+        ErrorCodes.NOT_FOUND
+      );
     }
+
+    if (new Date(session.expiredAt) <= new Date()) {
+      throw new CustomError(
+        "Session expired",
+        "Session expired",
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+    const user = await userService.fetchUser(session.user as string);
+
+    if (!user) {
+      throw errorHandler.CustomError(ErrorEnum[403], "Invalid User");
+    }
+    return { session, user };
   }
 
   public async endSession(sessionId: string): Promise<string> {

@@ -1,3 +1,4 @@
+import { CustomErrorHandler } from "../utils/CustomError";
 import playService from "../services/playService";
 import { Request, Response } from "express";
 
@@ -12,8 +13,8 @@ export const Play = async (req: Request, res: Response) => {
       chapter = await playService.unAuthorizedUserPlay(chapterId, userId);
     }
 
-    res.status(200).json({data:chapter});
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    res.status(200).json({ data: chapter });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 };

@@ -47,87 +47,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const reactionRepository_1 = __importDefault(require("../db/repository/reactionRepository"));
 const sessionService_1 = __importDefault(require("./sessionService"));
-const error_1 = __importStar(require("../utils/error"));
-const helpers_1 = __importDefault(require("../utils/helpers"));
+const periodService_1 = __importDefault(require("./periodService"));
+const error_1 = require("../utils/error");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class ReactionService {
     constructor() {
         this.logInfo = "";
     }
     createReaction(_a) {
         return __awaiter(this, arguments, void 0, function* ({ sessionID, bookID, action, }) {
-            try {
-                if (!sessionID || !bookID || !action) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid user, book or action");
-                }
-                const { session } = yield sessionService_1.default.getSession(sessionID);
-                const reactionRes = yield reactionRepository_1.default.getReaction(bookID, String(session.user));
-                if (reactionRes) {
-                    return this.updateReaction({ reaction: reactionRes, action });
-                }
-                const newReaction = yield reactionRepository_1.default.create({
-                    bookID,
-                    user: session === null || session === void 0 ? void 0 : session.user,
-                    action: action,
-                });
-                this.logInfo = `${helpers_1.default.loggerInfo.success} ${session === null || session === void 0 ? void 0 : session.user} ${action} book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                return newReaction;
+            var _b;
+            if (!sessionID || !bookID || !action) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid session ID, book ID or action", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} user with session: ${sessionID} failed to ${action} book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { session } = yield sessionService_1.default.getSession(sessionID);
+            const period = yield periodService_1.default.fetchLatest();
+            const newReaction = yield reactionRepository_1.default.create({
+                bookID,
+                user: session === null || session === void 0 ? void 0 : session.user,
+                action: action,
+                period: (_b = period._id) !== null && _b !== void 0 ? _b : "",
+            });
+            return newReaction;
         });
     }
     updateReaction(_a) {
         return __awaiter(this, arguments, void 0, function* ({ reaction, action, }) {
-            try {
-                if (!reaction || !action) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book ID or action");
-                }
-                if (action == reaction.action) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Can not take same action twice");
-                }
-                const react = {
-                    bookID: reaction.bookID,
-                    user: reaction.user,
-                    action,
-                };
-                const updatedReaction = yield reactionRepository_1.default.updateReaction(reaction === null || reaction === void 0 ? void 0 : reaction._id, react);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} ${reaction.user} ${action} book: ${reaction.bookID} @ ${helpers_1.default.currentTime()}`;
-                return updatedReaction;
+            if (!reaction || !action) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID or action", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} user with session: ${reaction.user} failed to ${action} book: ${reaction.bookID} @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            if (action == reaction.action) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Can not take same action twice", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const react = {
+                bookID: reaction.bookID,
+                user: reaction.user,
+                action,
+            };
+            const updatedReaction = yield reactionRepository_1.default.updateReaction(reaction === null || reaction === void 0 ? void 0 : reaction._id, react);
+            return updatedReaction;
         });
     }
     getReactions(bookID, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!bookID) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book ID");
-                }
-                const reactions = yield reactionRepository_1.default.getReactions(bookID, params);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching all reactions on book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                return reactions;
+            if (!bookID) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching all reactions on book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const reactions = yield reactionRepository_1.default.getReactions(bookID, params);
+            return reactions;
         });
     }
 }

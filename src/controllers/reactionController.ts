@@ -1,6 +1,6 @@
 import reactionService from "../services/reactionService";
-import errorHandler from "../utils/error";
 import { Request, Response } from "express";
+import { CustomErrorHandler } from "../utils/CustomError";
 
 export const likeBook = async (req: Request, res: Response) => {
   try {
@@ -13,11 +13,7 @@ export const likeBook = async (req: Request, res: Response) => {
     });
     res.status(200).json({ data: reaction });
   } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+    CustomErrorHandler.handle(error, res);
   }
 };
 
@@ -32,10 +28,6 @@ export const dislikeBook = async (req: Request, res: Response) => {
     });
     res.status(200).json({ data: reaction });
   } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+    CustomErrorHandler.handle(error, res);
   }
 };

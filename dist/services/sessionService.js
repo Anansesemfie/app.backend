@@ -49,6 +49,8 @@ const sessionRepository_1 = __importDefault(require("../db/repository/sessionRep
 const userService_1 = __importDefault(require("./userService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = __importStar(require("../utils/error"));
+const dayjs_1 = __importDefault(require("dayjs"));
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class SessionService {
     constructor() {
         this.logInfo = new String();
@@ -56,17 +58,18 @@ class SessionService {
             duration: 5000,
             external: false,
         };
+        this.day = (0, dayjs_1.default)().add(1, "day").toDate();
     }
     create(userID_1) {
         return __awaiter(this, arguments, void 0, function* (userID, options = this.options) {
             try {
                 const now = new Date();
-                const expirationTime = new Date(now.getTime() + options.duration).toString();
+                const expirationTime = (0, dayjs_1.default)(now).add(30, "day").toDate();
                 const session = {
                     user: userID,
                     external: options === null || options === void 0 ? void 0 : options.external,
                     duration: options === null || options === void 0 ? void 0 : options.duration,
-                    expiredAt: expirationTime,
+                    expiredAt: String(expirationTime),
                 };
                 return yield sessionRepository_1.default.create(session);
             }
@@ -77,23 +80,18 @@ class SessionService {
     }
     getSession(sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const session = yield sessionRepository_1.default.fetchOne(sessionId);
-                if (!session) {
-                    throw error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Session ID");
-                }
-                if (new Date(session.expiredAt) < new Date()) {
-                    throw error_1.default.CustomError(error_1.ErrorEnum[403], "Session expired");
-                }
-                const user = yield userService_1.default.fetchUser(session.user);
-                if (!user) {
-                    throw error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid User");
-                }
-                return { session, user };
+            const session = yield sessionRepository_1.default.fetchOne(sessionId);
+            if (!session) {
+                throw new CustomError_1.default("Session not found", "Invalid session ID", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            catch (error) {
-                throw error;
+            if (new Date(session.expiredAt) <= new Date()) {
+                throw new CustomError_1.default("Session expired", "Session expired", CustomError_1.ErrorCodes.UNAUTHORIZED);
             }
+            const user = yield userService_1.default.fetchUser(session.user);
+            if (!user) {
+                throw error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid User");
+            }
+            return { session, user };
         });
     }
     endSession(sessionId) {

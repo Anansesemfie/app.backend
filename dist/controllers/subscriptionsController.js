@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSubscriptions = exports.getSubscription = void 0;
 const subscriptionsService_1 = __importDefault(require("../services/subscriptionsService"));
-const error_1 = __importDefault(require("../utils/error"));
+const CustomError_1 = require("../utils/CustomError");
 const getSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subscriptionId = req.params.subscriptionId;
@@ -22,8 +22,7 @@ const getSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(200).json({ data: subscription });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getSubscription = getSubscription;
@@ -33,8 +32,7 @@ const getSubscriptions = (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(200).json({ data: subscriptions });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getSubscriptions = getSubscriptions;

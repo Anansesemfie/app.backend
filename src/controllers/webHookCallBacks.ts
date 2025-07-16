@@ -2,7 +2,7 @@ import subscribersService from "../services/subscribersService";
 import { Request, Response } from "express";
 import HELPERS from "../utils/helpers";
 
-import errorHandler from "../utils/error";
+import { CustomErrorHandler } from "../utils/CustomError";
 
 export const ActivateSubscription = async (req: Request, res: Response) => {
   try {
@@ -12,16 +12,7 @@ export const ActivateSubscription = async (req: Request, res: Response) => {
       (reference ?? trxref) as string
     );
     res.status(200).json({ data: response });
-  } catch (error: any) {
-    if (error instanceof Error) {
-      return res
-        .status(500)
-        .json({ error: "Internal Server Error", message: error.message });
-    }
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code!,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 };

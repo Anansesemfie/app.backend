@@ -13,36 +13,21 @@ const models_1 = require("../models");
 class SubscriberRepository {
     create(subscription) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield models_1.Subscriber.create(subscription);
-            }
-            catch (error) {
-                throw error;
-            }
+            return yield models_1.Subscriber.create(subscription);
         });
     }
     fetchOne(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fetchedSubscription = yield models_1.Subscriber.findOne(Object.assign({}, params));
-                return fetchedSubscription;
-            }
-            catch (error) {
-                throw error;
-            }
+            const fetchedSubscription = yield models_1.Subscriber.findOne(Object.assign({}, params));
+            return fetchedSubscription;
         });
     }
     update(subscription, subscriptionID) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedSubscription = yield models_1.Subscriber.findOneAndUpdate({ _id: subscriptionID }, subscription, {
-                    new: true,
-                });
-                return updatedSubscription;
-            }
-            catch (error) {
-                throw error;
-            }
+            const updatedSubscription = yield models_1.Subscriber.findOneAndUpdate({ _id: subscriptionID }, subscription, {
+                new: true,
+            });
+            return updatedSubscription;
         });
     }
 }

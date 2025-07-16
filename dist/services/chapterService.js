@@ -47,90 +47,64 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chapterRepository_1 = __importDefault(require("../db/repository/chapterRepository"));
 const booksService_1 = __importDefault(require("./booksService"));
-const helpers_1 = __importDefault(require("../utils/helpers"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class ChapterService {
     constructor() {
         this.logInfo = "";
     }
     createChapter(chapter) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const createdChapter = yield chapterRepository_1.default.createChapter(chapter);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} creating chapter @ ${helpers_1.default.currentTime()}`;
-                return yield this.formatChapter(createdChapter);
+            const createdChapter = yield chapterRepository_1.default.createChapter(chapter);
+            if (!createdChapter) {
+                throw new CustomError_1.default("Unknown error", "Could not create chapter", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} creating chapter @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            return yield this.formatChapter(createdChapter);
         });
     }
     fetchChapters(book_1) {
         return __awaiter(this, arguments, void 0, function* (book, token = "") {
-            try {
-                if (token) {
-                    const booksToFetch = yield booksService_1.default.fetchBooksInSubscription(token);
-                    if (booksToFetch.length && !booksToFetch.includes(book)) {
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorised access");
-                    }
+            if (token) {
+                const booksToFetch = yield booksService_1.default.fetchBooksInSubscription(token);
+                if (booksToFetch.length && !booksToFetch.includes(book)) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorised access", CustomError_1.ErrorCodes.FORBIDDEN);
                 }
-                const chapters = yield chapterRepository_1.default.getChapters(book);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching chapters for book: ${book} @ ${helpers_1.default.currentTime()}`;
-                return Promise.all(chapters.map(this.formatChapter));
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching chapters for book: ${book} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const chapters = yield chapterRepository_1.default.getChapters(book);
+            return Promise.all(chapters.map(this.formatChapter));
         });
     }
     fetchChapter(chapterId_1) {
         return __awaiter(this, arguments, void 0, function* (chapterId, substring = "") {
-            try {
-                const chapter = chapterId
-                    ? yield chapterRepository_1.default.getChapterById(chapterId)
-                    : yield chapterRepository_1.default.getChapterByTitle(substring);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching chapter: ${chapterId} @ ${helpers_1.default.currentTime()}`;
-                return yield this.formatChapter(chapter);
-            }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching chapter: ${chapterId} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const chapter = chapterId
+                ? yield chapterRepository_1.default.getChapterById(chapterId)
+                : yield chapterRepository_1.default.getChapterByTitle(substring);
+            return yield this.formatChapter(chapter);
+        });
+    }
+    updateChapter(chapterId, chapter) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield chapterRepository_1.default.updateChapter(chapterId, chapter);
+        });
+    }
+    deleteChapter(chapterId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chapterRepository_1.default.dropChapter(chapterId);
+        });
+    }
+    deleteManyChapters(bookId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield chapterRepository_1.default.bulkDelete(bookId);
         });
     }
     searchByKeyword(keyword) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const chapters = yield chapterRepository_1.default.searchByKeyword(keyword);
-                const books = yield Promise.all(chapters.map((chapter) => __awaiter(this, void 0, void 0, function* () {
-                    const book = yield booksService_1.default.fetchBook(String(chapter.book));
-                    return book;
-                })));
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching chapter with keyword: ${keyword} @ ${helpers_1.default.currentTime()}`;
-                return books;
-            }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching chapter with keyword: ${keyword} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const chapters = yield chapterRepository_1.default.searchByKeyword(keyword);
+            const books = yield Promise.all(chapters.map((chapter) => __awaiter(this, void 0, void 0, function* () {
+                const book = yield booksService_1.default.fetchBook(String(chapter.book));
+                return book;
+            })));
+            return books;
         });
     }
     formatChapter(chapter) {
@@ -141,6 +115,8 @@ class ChapterService {
                 id: (_a = chapter._id) !== null && _a !== void 0 ? _a : "",
                 title: chapter.title,
                 content: chapter.file,
+                description: chapter.description,
+                password: chapter.password,
                 book: Book,
                 createdAt: (_b = chapter.createdAt) !== null && _b !== void 0 ? _b : "",
             };

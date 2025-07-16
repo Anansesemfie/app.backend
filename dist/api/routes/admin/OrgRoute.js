@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const organizationController_1 = require("../../../controllers/admin/organizationController");
+const express_1 = require("express");
+const router = (0, express_1.Router)();
+router.post("/create", organizationController_1.CreateOrg);
+router.get("/", organizationController_1.FetchAllOrgs);
+router.get("/:id", organizationController_1.FetchOrg);
+router.put("/:id", organizationController_1.UpdateOrg);
+exports.default = router;

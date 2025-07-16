@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs";
-import path from "path";
 
-import errorHandler, { ErrorEnum } from "./error";
+import { ErrorEnum } from "./error";
+import CustomError, { ErrorCodes } from "./CustomError";
 import { SECRET_JWT, SERVER_LOG_FILE, CAN_LOG } from "./env";
 class HELPERS {
   public static readonly Chars =
@@ -29,11 +29,32 @@ class HELPERS {
     return dayjs().toISOString();
   }
 
+  public static async getFirstAndLastDateOfMonth(): Promise<{
+    firstDate: Date;
+    lastDate: Date;
+  }> {
+    try {
+      const firstDate = dayjs().startOf("month").toDate();
+      const lastDate = dayjs().endOf("month").toDate();
+      return { firstDate, lastDate };
+    } catch (error) {
+      throw new CustomError(
+        ErrorEnum[500],
+        "Failed to get first and last date of the month",
+        ErrorCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   public static async generateFolderName(name: string): Promise<string> {
     try {
       return name.replace(/\s/g, "-").toLowerCase();
     } catch (error) {
-      throw await errorHandler.CustomError(ErrorEnum[500], "Try again later");
+      throw new CustomError(
+        ErrorEnum[500],
+        "Failed to generate folder name",
+        ErrorCodes.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
@@ -52,9 +73,10 @@ class HELPERS {
       }
       fs.appendFile(dir + "logs.log", message, async (err): Promise<void> => {
         if (err) {
-          throw await errorHandler.CustomError(
+          throw new CustomError(
             ErrorEnum[500],
-            `Error Writing File to file: ${dir}`
+            `Error Writing File to file: ${dir}`,
+            ErrorCodes.INTERNAL_SERVER_ERROR
           );
         }
       });
@@ -68,52 +90,43 @@ class HELPERS {
 
   public static async ENCODE_Token(id: string = ""): Promise<string> {
     try {
-      if (!id) id = HELPERS.genRandCode();
+      if (!id) {
+        id = HELPERS.genRandCode();
+      }
       return jwt.sign({ id }, SECRET_JWT, {
         expiresIn: HELPERS.SessionMaxAge(),
       });
     } catch (error) {
-      throw await errorHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[500],
-        "Try again later 🙏🏼"
+        "Try again later 🙏🏼",
+        ErrorCodes.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   public static async DECODE_TOKEN(token: string): Promise<string | undefined> {
-    try {
-      if (token) {
-        const decodedToken: JwtPayload | null = jwt.verify(
-          token,
-          SECRET_JWT
-        ) as JwtPayload | null;
-
-        if (decodedToken?.id) {
-          return decodedToken.id;
-        } else {
-          errorHandler.CustomError(ErrorEnum[403], "Invalid Token Data");
-          // If the token is invalid or lacks required properties, throw an error
-          throw new Error("Invalid Token Data");
-        }
-      }
-
-      return;
-    } catch (error: any) {
-      throw error;
+    if (!token) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Token is required",
+        ErrorCodes.BAD_REQUEST
+      );
     }
-  }
+    const decodedToken: JwtPayload | null = jwt.verify(
+      token,
+      SECRET_JWT
+    ) as JwtPayload | null;
 
-  public static async GET_DIRECTORY(
-    file: string,
-    dir: string = __dirname
-  ): Promise<string> {
-    try {
-      let directory = path.join(dir, file);
-
-      return directory;
-    } catch (error) {
-      throw await errorHandler.CustomError(ErrorEnum[500], "Try again later");
+    if (!decodedToken?.id) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid Token",
+        ErrorCodes.UNAUTHORIZED
+      );
     }
+
+    return decodedToken.id;
   }
 
   public static genRandCode(size: number = 16): string {
@@ -127,15 +140,12 @@ class HELPERS {
       if (result.length < size) throw new Error(ErrorEnum[500]);
       return result;
     } catch (error) {
-      throw errorHandler.CustomError(ErrorEnum[500], "Try again later");
+      throw new CustomError(
+        ErrorEnum[500],
+        "Failed to generate random code",
+        ErrorCodes.INTERNAL_SERVER_ERROR
+      );
     }
-  }
-
-  public static FILE_DETAILS(file: { name: string }) {
-    try {
-      let ext = path.extname(file.name);
-      return { extension: ext };
-    } catch (error) {}
   }
 
   public static millisecondsToDays(milliseconds: number): number {

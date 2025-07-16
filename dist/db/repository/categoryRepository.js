@@ -43,46 +43,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../models/index");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class CategoryRepository {
     // Create a new category
     create(categoryData) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const category = yield index_1.Category.create(categoryData);
                 return category;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : 'Error creating category', CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     // Get a category by ID
     getById(categoryId) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const category = yield index_1.Category.findOne({ _id: categoryId, name: categoryId });
                 return category;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : 'Error fetching category', CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     getAll() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const categories = yield index_1.Category.find();
                 return categories;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : 'Error fetching categories', CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     // Update a category by ID
     updateById(categoryId, categoryData) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const updatedCategory = yield index_1.Category.findOneAndUpdate({ _id: categoryId }, categoryData, {
                     new: true,
@@ -90,7 +95,7 @@ class CategoryRepository {
                 return updatedCategory;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : 'Error updating category', CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }

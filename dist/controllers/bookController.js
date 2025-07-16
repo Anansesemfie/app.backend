@@ -14,26 +14,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterBooks = exports.getBook = exports.getBooks = void 0;
 const booksService_1 = __importDefault(require("../services/booksService"));
-const error_1 = __importDefault(require("../utils/error"));
+const CustomError_1 = require("../utils/CustomError");
+const helpers_1 = __importDefault(require("../utils/helpers"));
 const getBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const page = req.query.page;
-        const limit = req.query.limit;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
         const search = req.query.search;
-        const token = res.locals.sessionId;
-        const books = yield booksService_1.default.fetchBooks({
-            page: parseInt(page),
-            limit: parseInt(limit),
+        const token = (_a = res.locals.sessionId) !== null && _a !== void 0 ? _a : '';
+        helpers_1.default.LOG({ token });
+        const { books, page: index, limit: pageSize } = yield booksService_1.default.fetchBooks({
+            page,
+            limit,
             params: { title: { $regex: search } },
             token,
         });
         res
             .status(200)
-            .json({ data: { page: page, records: limit, results: books } });
+            .json({ data: { page: index, records: pageSize, results: books } });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getBooks = getBooks;
@@ -45,8 +47,7 @@ const getBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: book });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getBook = getBook;
@@ -67,8 +68,7 @@ const filterBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).json({ data: books });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.filterBooks = filterBooks;

@@ -61,7 +61,6 @@ class EmailService {
                 return true;
             }
             catch (error) {
-                console.error(`Error sending email: ${error}`);
                 throw error;
             }
             finally {

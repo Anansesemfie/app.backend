@@ -43,49 +43,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class CommentRepository {
     create(comment) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const newComment = yield models_1.Comment.create(comment);
-                return newComment;
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Error creating comment");
-            }
+            const newComment = yield models_1.Comment.create(comment);
+            return newComment;
         });
     }
     getComments(bookId, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const comments = yield models_1.Comment.find(Object.assign({ bookID: bookId }, params));
-                return comments;
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching comments");
-            }
+            const comments = yield models_1.Comment.find(Object.assign({ bookID: bookId }, params));
+            return comments;
         });
     }
     deleteComment(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield models_1.Comment.findByIdAndDelete(commentId);
+            if (!commentId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid comment ID", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Error deleting comment");
-            }
+            yield models_1.Comment.findByIdAndDelete(commentId);
         });
     }
     updateComment(commentId, comment) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedComment = yield models_1.Comment.findByIdAndUpdate(commentId, comment, { new: true });
-                return updatedComment;
+            if (!commentId || !comment) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid comment ID or comment data", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Error updating comment");
-            }
+            const updatedComment = yield models_1.Comment.findByIdAndUpdate(commentId, comment, { new: true });
+            return updatedComment;
         });
     }
 }

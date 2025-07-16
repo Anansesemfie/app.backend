@@ -17,76 +17,41 @@ class ReactionRepository {
     bookId: string,
     userId: string
   ): Promise<ReactionType> {
-    try {
-      const reaction = await Reaction.findOne({
-        bookID: bookId,
-        user: userId,
-      });
-      return reaction;
-    } catch (error: any) {
-      throw await errorHandle.CustomError(
-        ErrorEnum[401],
-        "Error fetching reactions"
-      );
-    }
+    const reaction = await Reaction.findOne({
+      bookID: bookId,
+      user: userId,
+    });
+    return reaction;
   }
   public async getReactions(
     bookId: string,
     params?: {}
   ): Promise<ReactionType[]> {
-    try {
-      const reactions = await Reaction.find({
-        bookID: bookId,
-        deletedAt: null,
-        ...params,
-      });
-      return reactions;
-    } catch (error: any) {
-      throw await errorHandle.CustomError(
-        ErrorEnum[400],
-        "Error fetching reactions"
-      );
-    }
+    const reactions = await Reaction.find({
+      bookID: bookId,
+      deletedAt: null,
+      ...params,
+    });
+    return reactions;
   }
   public async getAllReactions(bookID: string): Promise<ReactionType[]> {
-    try {
-      const reactions = await Reaction.find({ bookID: bookID });
-      return reactions;
-    } catch (error: any) {
-      throw await errorHandle.CustomError(
-        ErrorEnum[400],
-        "Error fetching reactions"
-      );
-    }
+    const reactions = await Reaction.find({ bookID: bookID });
+    return reactions;
   }
   public async deleteReactions(reactionID: string): Promise<void> {
-    try {
-      await Reaction.findByIdAndDelete(reactionID);
-    } catch (error: any) {
-      throw await errorHandle.CustomError(
-        ErrorEnum[400],
-        "Error deleting reaction"
-      );
-    }
+    await Reaction.findByIdAndDelete(reactionID);
   }
 
   public async updateReaction(
     reactionID: string,
     reaction: ReactionType
   ): Promise<ReactionType> {
-    try {
-      const updatedReaction = await Reaction.findByIdAndUpdate(
-        reactionID,
-        reaction,
-        { new: true }
-      );
-      return updatedReaction;
-    } catch (error: any) {
-      throw await errorHandle.CustomError(
-        ErrorEnum[400],
-        "Error updating reaction"
-      );
-    }
+    const updatedReaction = await Reaction.findByIdAndUpdate(
+      reactionID,
+      reaction,
+      { new: true }
+    );
+    return updatedReaction;
   }
 }
 

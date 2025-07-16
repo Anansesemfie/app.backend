@@ -1,81 +1,114 @@
 import HELPERS from "../utils/helpers";
 import seenRepository from "../db/repository/seenRepository";
-import { SeenType } from "../dto";
+import periodService from "./periodService";
+import type { SeenType } from "../dto";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { ErrorEnum } from "../utils/error";
 
 class SeenService {
   private logInfo = "";
   async createNewSeen(bookId: string, userId: string): Promise<SeenType> {
-    try {
-      const oldSeen = await seenRepository.fetchOne(bookId, userId);
-      if (oldSeen) return oldSeen;
-      const newSeen: SeenType = {
-        user: userId,
-        bookID: bookId,
-      };
-      const seen = await seenRepository.create(newSeen);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } creating new seen @ ${HELPERS.currentTime()}`;
-      return seen;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching books @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
+    if (!bookId || !userId) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Book ID and User ID are required to create a seen.",
+        ErrorCodes.BAD_REQUEST
+      );
     }
+    const period = await periodService.fetchLatest();
+    if (!period) {
+      throw new CustomError(
+        ErrorEnum[404],
+        "No active period found.",
+        ErrorCodes.NOT_FOUND
+      );
+    }
+    const oldSeen = await this.fetchSeen(userId, bookId, period._id ?? "");
+
+    const newSeen: SeenType = {
+      user: userId,
+      bookID: bookId,
+      period: period._id ?? "",
+    };
+    if (oldSeen) {
+      return this.updateSeen(oldSeen._id ?? "", newSeen);
+    }
+    const seen = await seenRepository.create(newSeen);
+    return seen;
   }
-  async updateSeen(
+  async updateSeen(id: string, payload: object): Promise<SeenType> {
+    if (!id) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Book ID and User ID are required to update a seen.",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const updatedSeen = await seenRepository.update(id, payload);
+    return updatedSeen;
+  }
+
+  async fetchSeen(id: string, book: string, period: string): Promise<SeenType> {
+    if (!id || !period) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Missing required details.",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+
+    const seen = await seenRepository.fetchOne( book,id, period);
+
+    return seen;
+  }
+
+  async recordPlay(
     bookId: string,
     userId: string,
-    payload: {}
-  ): Promise<SeenType> {
-    try {
-      const updatedSeen = await seenRepository.update(
-        {
-          bookID: bookId,
-          user: userId,
-        },
-        payload
+    playedAt: string | Date,
+    subscription: string
+  ): Promise<void> {
+    if (!bookId || !userId) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Book ID and User ID are required to record play.",
+        ErrorCodes.BAD_REQUEST
       );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } updating seen @ ${HELPERS.currentTime()}`;
-      return updatedSeen;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } updating seen @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
     }
+
+    const period = await periodService.fetchLatest();
+    let seen = await seenRepository.fetchOne(bookId, userId, period?._id ?? "");
+    if (!seen) {
+      seen = await this.createNewSeen(bookId, userId);
+    }
+    seen.playedAt?.push(playedAt || HELPERS.currentTime());
+
+    const newSeen = await this.updateSeen(seen._id ?? "", {
+      playedAt: seen.playedAt,
+      subscription,
+    });
+
+    return;
   }
 
   async getSeensAndPlay(
     bookId: string,
-    start: string,
-    end: string
+    periodId = ""
   ): Promise<{ seen: number; played: number }> {
-    try {
-      const seen = await seenRepository.findAll(bookId, {
-        seenAt: { $gte: new Date(start), $lt: new Date(end) },
-      });
-      const played = await seenRepository.findAll(bookId, {
-        playedAt: { $gte: new Date(start), $lt: new Date(end) },
-      });
-      return { seen: seen.length, played: played.length };
-    } catch (error: unknown) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching seen and played @ ${HELPERS.currentTime()}`;
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-      return { seen: 0, played: 0 };
+    if (!bookId) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Book ID is required to fetch seen and played counts.",
+        ErrorCodes.BAD_REQUEST
+      );
     }
+    const data = await seenRepository.findAll(bookId, {
+      period: periodId,
+    });
+    HELPERS.LOG((data.filter((item) => Number(item.playedAt?.length) > 0)).length)
+    const seen = data.filter((item) => item.seenAt);
+    const played = data.filter((item) => Number(item.playedAt?.length) > 0);
+    return { seen: seen.length, played: played.length };
   }
 }
 

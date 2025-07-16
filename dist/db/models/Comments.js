@@ -20,6 +20,11 @@ const Comments = (Mongoose) => {
             required: [true, "Comment is empty"],
             maxlength: [100, "Comment too long"],
         },
+        period: {
+            type: bson_1.ObjectId,
+            ref: "period",
+            required: [true, "Period is required"],
+        },
         createdAt: {
             type: Date,
             default: helpers_1.default.currentTime(),

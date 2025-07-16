@@ -1,8 +1,11 @@
 import { ReactionType } from "../dto";
 import reactionRepository from "../db/repository/reactionRepository";
 import sessionService from "./sessionService";
-import errorHandler, { ErrorEnum } from "../utils/error";
-import HELPERS from "../utils/helpers";
+import periodService from "./periodService";
+
+import { ErrorEnum } from "../utils/error";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
+
 
 class ReactionService {
   private logInfo = "";
@@ -15,40 +18,23 @@ class ReactionService {
     bookID: string;
     action: "Liked" | "Disliked";
   }): Promise<ReactionType> {
-    try {
       if (!sessionID || !bookID || !action) {
-        throw await errorHandler.CustomError(
+       throw new CustomError(
           ErrorEnum[403],
-          "Invalid user, book or action"
+          "Invalid session ID, book ID or action",
+          ErrorCodes.BAD_REQUEST
         );
       }
       const {session} = await sessionService.getSession(sessionID);
-      const reactionRes = await reactionRepository.getReaction(
-        bookID,
-        String(session.user)
-      );
+      const period = await periodService.fetchLatest();
 
-      if (reactionRes) {
-        return this.updateReaction({ reaction: reactionRes, action });
-      }
       const newReaction = await reactionRepository.create({
         bookID,
         user: session?.user as string,
         action: action,
+        period: period._id ?? "",
       });
-      this.logInfo = `${HELPERS.loggerInfo.success} ${
-        session?.user
-      } ${action} book: ${bookID} @ ${HELPERS.currentTime()}`;
       return newReaction;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } user with session: ${sessionID} failed to ${action} book: ${bookID} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
   }
   public async updateReaction({
     reaction,
@@ -57,19 +43,20 @@ class ReactionService {
     reaction: ReactionType;
     action: "Liked" | "Disliked";
   }): Promise<ReactionType> {
-    try {
-      if (!reaction || !action) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid book ID or action"
-        );
-      }
-      if (action == reaction.action) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Can not take same action twice"
-        );
-      }
+    if (!reaction || !action) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid book ID or action",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    if (action == reaction.action) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Can not take same action twice",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
       const react: ReactionType = {
         bookID: reaction.bookID,
         user: reaction.user,
@@ -79,38 +66,17 @@ class ReactionService {
         reaction?._id as string,
         react
       );
-      this.logInfo = `${HELPERS.loggerInfo.success} ${
-        reaction.user
-      } ${action} book: ${reaction.bookID} @ ${HELPERS.currentTime()}`;
       return updatedReaction;
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} user with session: ${
-        reaction.user
-      } failed to ${action} book: ${
-        reaction.bookID
-      } @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
   }
 
   public async getReactions(bookID: string, params?: {}): Promise<ReactionType[]> {
-    try {
+
       if (!bookID) {
-        throw await errorHandler.CustomError(ErrorEnum[403], "Invalid book ID");
+        throw new CustomError(ErrorEnum[403], "Invalid book ID", ErrorCodes.BAD_REQUEST);
       }
       const reactions = await reactionRepository.getReactions(bookID, params);
-      this.logInfo = `${HELPERS.loggerInfo.success} fetching all reactions on book: ${bookID} @ ${HELPERS.currentTime()}`;
       return reactions;
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} fetching all reactions on book: ${bookID} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
+    
   }
 }
 

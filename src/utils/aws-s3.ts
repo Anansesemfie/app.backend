@@ -6,7 +6,8 @@ import {
   AWS_SECRET_ACCESS_KEY,
   AWS_REGION,
 } from "./env";
-import errorHandler, { ErrorEnum } from "../utils/error";
+import  { ErrorEnum } from "../utils/error";
+import CustomError from "./CustomError";
 
 class AWS_S3 {
   private readonly accessKeyId = AWS_ACCESS_KEY_ID;
@@ -38,23 +39,22 @@ class AWS_S3 {
       Key: fileName,
       ContentType: fileType,
     };
-
-    try {
-      const signedURL = await getSignedUrl(
-        this.s3,
-        new PutObjectCommand(s3Params),
-        { expiresIn: this.expires }
-      );
-      return { signedURL, time: this.expires };
-    } catch (error) {
-      throw await errorHandler.CustomError(
-        ErrorEnum[403],
-        "Could not generate signed URL"
+    const signedURL = await getSignedUrl(
+      this.s3,
+      new PutObjectCommand(s3Params),
+      { expiresIn: this.expires }
+    );
+    if (!signedURL) {
+      throw new CustomError(
+        "Unknown error",
+        "Could not generate signed URL",
+        400
       );
     }
+    return { signedURL, time: this.expires };
   }
 
-  public async deleteObject(key: string): Promise<void> {
+  async deleteObject(key: string): Promise<void> {
     await this.s3.send(
       new DeleteObjectCommand({
         Bucket: this.bucketName,
@@ -62,7 +62,6 @@ class AWS_S3 {
       })
     );
   }
-
 }
 
 export default AWS_S3;

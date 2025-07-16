@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MakeAssociate = exports.FetchUsers = exports.SendEmail = exports.LoginUser = exports.CreateUser = void 0;
 const userService_1 = __importDefault(require("../../services/admin/userService"));
 const emailService_1 = __importDefault(require("../../services/emailService"));
-const error_1 = __importDefault(require("../../utils/error"));
+const CustomError_1 = require("../../utils/CustomError");
 const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user = req.body;
@@ -24,8 +24,7 @@ const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(201).json({ data: newUser });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.CreateUser = CreateUser;
@@ -38,8 +37,7 @@ const LoginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: fetchedUser });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.LoginUser = LoginUser;
@@ -50,8 +48,7 @@ const SendEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: emailSent });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.SendEmail = SendEmail;
@@ -63,8 +60,7 @@ const FetchUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json({ data: users });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.FetchUsers = FetchUsers;
@@ -76,8 +72,7 @@ const MakeAssociate = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).json({ data: user });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.MakeAssociate = MakeAssociate;

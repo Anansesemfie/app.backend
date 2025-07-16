@@ -47,9 +47,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const env_1 = require("../utils/env");
 const helpers_1 = __importDefault(require("../utils/helpers"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
 const nodeMailer_1 = __importDefault(require("../utils/nodeMailer"));
 const sendGrid_1 = __importDefault(require("../utils/sendGrid"));
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class EmailService {
     constructor() {
         this.sgEmail = new sendGrid_1.default();
@@ -347,61 +348,41 @@ a, a:hover {
     sendEmail(options, email) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
-            try {
-                helpers_1.default.LOG("EmailService.sendEmail", options, email);
-                yield this.checkEmailOptions(options);
-                const msg = {
-                    to: options.to,
-                    from: (_a = options.from) !== null && _a !== void 0 ? _a : this.defaultOptions.from,
-                    subject: (_b = options.subject) !== null && _b !== void 0 ? _b : this.defaultOptions.subject,
-                    html: this.generateEmailTemplate(email),
-                };
-                const sentBySendGrid = yield this.sendEmailWithSendGrid(msg);
-                if (!sentBySendGrid) {
-                    yield this.sendEmailWithNodeMailer(msg);
-                }
-                this.logInfo = `${helpers_1.default.loggerInfo.success} sending email: ${options.subject} @ ${helpers_1.default.currentTime()}`;
-                return "Email sent successfully";
+            helpers_1.default.LOG("EmailService.sendEmail", options, email);
+            yield this.checkEmailOptions(options);
+            const msg = {
+                to: options.to,
+                from: (_a = options.from) !== null && _a !== void 0 ? _a : this.defaultOptions.from,
+                subject: (_b = options.subject) !== null && _b !== void 0 ? _b : this.defaultOptions.subject,
+                html: this.generateEmailTemplate(email),
+            };
+            const sentBySendGrid = yield this.sendEmailWithSendGrid(msg);
+            if (!sentBySendGrid) {
+                yield this.sendEmailWithNodeMailer(msg);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} sending email: ${options.subject} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            this.logInfo = `${helpers_1.default.loggerInfo.success} sending email: ${options.subject} @ ${helpers_1.default.currentTime()}`;
+            return "Email sent successfully";
         });
     }
     sendEmailWithNodeMailer(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield this.node_mailer.init();
-                return yield this.node_mailer.send(options);
-            }
-            catch (error) {
-                throw error;
-            }
+            yield this.node_mailer.init();
+            return yield this.node_mailer.send(options);
         });
     }
     sendEmailWithSendGrid(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield this.sgEmail.init();
-                return yield this.sgEmail.send(options);
-            }
-            catch (error) {
-                throw error;
-            }
+            yield this.sgEmail.init();
+            return yield this.sgEmail.send(options);
         });
     }
     checkEmailOptions(options) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!options.to) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Email recipient is required");
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Email recipient is required", CustomError_1.ErrorCodes.UNAUTHORIZED);
             }
             if (!options.html) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Email content is required");
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Email content is required", CustomError_1.ErrorCodes.UNAUTHORIZED);
             }
         });
     }

@@ -16,7 +16,13 @@ const Seen = (Mongoose: any) => {
       default: Date.now,
     },
     playedAt: {
-      type: Date,
+      type: [Date],
+      default: [],
+    },
+    period: {
+      type: ObjectId,
+      ref: "period",
+      required: [true, "Period is required"],
     },
     subscription: {
       type: ObjectId,

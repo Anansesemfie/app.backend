@@ -49,61 +49,45 @@ const commentRepository_1 = __importDefault(require("../db/repository/commentRep
 const sessionService_1 = __importDefault(require("./sessionService"));
 const booksService_1 = __importDefault(require("./booksService"));
 const userService_1 = __importDefault(require("./userService"));
-const error_1 = __importStar(require("../utils/error"));
+const periodService_1 = __importDefault(require("./periodService"));
+const error_1 = require("../utils/error");
 const helpers_1 = __importDefault(require("../utils/helpers"));
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class CommentService {
     constructor() {
         this.logInfo = "";
     }
     createComment(_a) {
         return __awaiter(this, arguments, void 0, function* ({ bookID, sessionID, comment, }) {
-            try {
-                if (helpers_1.default.hasSpecialCharacters(comment)) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Comment contains special characters");
-                }
-                if (!bookID || !sessionID || !comment) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book, user or comment");
-                }
-                const { session } = yield sessionService_1.default.getSession(sessionID);
-                const newComment = yield commentRepository_1.default.create({
-                    bookID,
-                    user: session === null || session === void 0 ? void 0 : session.user,
-                    comment,
-                });
-                yield booksService_1.default.updateBookMeta(bookID, {
-                    meta: "comments",
-                    action: "Plus",
-                });
-                this.logInfo = `${helpers_1.default.loggerInfo.success} ${session === null || session === void 0 ? void 0 : session.user} commented on book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                return newComment;
+            var _b;
+            if (helpers_1.default.hasSpecialCharacters(comment)) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Comment contains special characters", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} user with session: ${sessionID} commented on book: ${bookID} @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            if (!bookID || !sessionID || !comment) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book, user or comment", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { session } = yield sessionService_1.default.getSession(sessionID);
+            const period = yield periodService_1.default.fetchLatest();
+            const newComment = yield commentRepository_1.default.create({
+                bookID,
+                user: session === null || session === void 0 ? void 0 : session.user,
+                comment,
+                period: (_b = period._id) !== null && _b !== void 0 ? _b : "",
+            });
+            yield booksService_1.default.updateBookMeta(bookID, {
+                meta: "comments",
+                action: "Plus",
+            });
+            return newComment;
         });
     }
     getComments(bookId, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!bookId)
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book ID");
-                const comments = yield commentRepository_1.default.getComments(bookId, params);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching all comments on book: ${bookId} @ ${helpers_1.default.currentTime()}`;
-                return yield Promise.all(comments.map((comment) => this.formatComment(comment)));
+            if (!bookId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching all comments on book: ${bookId} @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const comments = yield commentRepository_1.default.getComments(bookId, params);
+            return yield Promise.all(comments.map((comment) => this.formatComment(comment)));
         });
     }
     formatComment(comment) {

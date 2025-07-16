@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Play = void 0;
+const CustomError_1 = require("../utils/CustomError");
 const playService_1 = __importDefault(require("../services/playService"));
 const Play = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -28,7 +29,7 @@ const Play = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: chapter });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.Play = Play;

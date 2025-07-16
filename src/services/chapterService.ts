@@ -1,106 +1,75 @@
 import Repo from "../db/repository/chapterRepository";
 import booksService from "./booksService";
 import { ChapterResponseType, ChapterType } from "../dto";
-import HELPERS from "../utils/helpers";
-import errorHandler, { ErrorEnum } from "../utils/error";
-
+import { ErrorEnum } from "../utils/error";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 class ChapterService {
   private logInfo = "";
 
   public async createChapter(
     chapter: ChapterType
   ): Promise<ChapterResponseType> {
-    try {
-      const createdChapter = await Repo.createChapter(chapter);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } creating chapter @ ${HELPERS.currentTime()}`;
-      return await this.formatChapter(createdChapter);
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } creating chapter @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
+    const createdChapter = await Repo.createChapter(chapter);
+    if (!createdChapter) {
+      throw new CustomError(
+        "Unknown error",
+        "Could not create chapter",
+        ErrorCodes.BAD_REQUEST
+      );
     }
+
+    return await this.formatChapter(createdChapter);
   }
   public async fetchChapters(
     book: string,
     token: string = ""
   ): Promise<ChapterResponseType[]> {
-    try {
-      if (token) {
-        const booksToFetch = await booksService.fetchBooksInSubscription(token);
-        if (booksToFetch.length && !booksToFetch.includes(book)) {
-          throw await errorHandler.CustomError(
-            ErrorEnum[403],
-            "Unauthorised access"
-          );
-        }
+    if (token) {
+      const booksToFetch = await booksService.fetchBooksInSubscription(token);
+      if (booksToFetch.length && !booksToFetch.includes(book)) {
+        throw new CustomError(
+          ErrorEnum[403],
+          "Unauthorised access",
+          ErrorCodes.FORBIDDEN
+        );
       }
-      const chapters = await Repo.getChapters(book);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
-      return Promise.all(chapters.map(this.formatChapter));
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching chapters for book: ${book} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
     }
+    const chapters = await Repo.getChapters(book);
+
+    return Promise.all(chapters.map(this.formatChapter));
   }
 
   public async fetchChapter(
     chapterId: string,
     substring: string = ""
   ): Promise<ChapterResponseType> {
-    try {
-      const chapter = chapterId
-        ? await Repo.getChapterById(chapterId)
-        : await Repo.getChapterByTitle(substring);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;
-      return await this.formatChapter(chapter);
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching chapter: ${chapterId} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
+    const chapter = chapterId
+      ? await Repo.getChapterById(chapterId)
+      : await Repo.getChapterByTitle(substring);
+
+    return await this.formatChapter(chapter);
   }
 
+  public async updateChapter(chapterId: string, chapter: ChapterType) {
+    return await Repo.updateChapter(chapterId, chapter);
+  }
+
+  async deleteChapter(chapterId: string) {
+    await Repo.dropChapter(chapterId);
+  }
+
+  async deleteManyChapters(bookId: string) {
+    await Repo.bulkDelete(bookId);
+  }
   public async searchByKeyword(keyword: string) {
-    try {
-      const chapters = await Repo.searchByKeyword(keyword);
-      const books = await Promise.all(
-        chapters.map(async (chapter) => {
-          const book = await booksService.fetchBook(String(chapter.book));
-          return book;
-        })
-      );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching chapter with keyword: ${keyword} @ ${HELPERS.currentTime()}`;
-      return books;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching chapter with keyword: ${keyword} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
+    const chapters = await Repo.searchByKeyword(keyword);
+    const books = await Promise.all(
+      chapters.map(async (chapter) => {
+        const book = await booksService.fetchBook(String(chapter.book));
+        return book;
+      })
+    );
+    return books;
   }
   private async formatChapter(
     chapter: ChapterType
@@ -110,6 +79,8 @@ class ChapterService {
       id: chapter._id ?? "",
       title: chapter.title,
       content: chapter.file,
+      description: chapter.description,
+      password: chapter.password,
       book: Book,
       createdAt: chapter.createdAt ?? "",
     };

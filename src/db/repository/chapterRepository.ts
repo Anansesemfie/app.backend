@@ -1,6 +1,7 @@
 import { Chapter } from "../models";
 import { ChapterType } from "../../dto";
-import errHandler, { ErrorEnum } from "../../utils/error";
+import { ErrorEnum } from "../../utils/error";
+import CustomError, { ErrorCodes } from "../../utils/CustomError";
 
 class ChapterRepository {
   public async createChapter(chapter: ChapterType): Promise<ChapterType> {
@@ -8,10 +9,11 @@ class ChapterRepository {
       const newChapter = new Chapter(chapter);
       await newChapter.save();
       return newChapter;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
+    } catch (error) {
+      throw new CustomError(
         ErrorEnum[400],
-        error?.message ?? "Error creating chapter"
+        (error as Error).message ?? "Error creating chapter",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -20,9 +22,10 @@ class ChapterRepository {
       const chapters = await Chapter.find({ book: bookId });
       return chapters;
     } catch (error: any) {
-      throw await errHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[400],
-        "Error fetching chapters"
+        (error as Error).message ?? "Error fetching chapters",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -32,9 +35,10 @@ class ChapterRepository {
       const chapter = await Chapter.findOne({ _id: chapterId });
       return chapter;
     } catch (error: any) {
-      throw await errHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[400],
-        "Error fetching chapter"
+        (error as Error).message ?? "Error fetching chapter",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -44,10 +48,54 @@ class ChapterRepository {
     try {
       const chapter = await Chapter.findOne({ title: chapterTitle });
       return chapter;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
+    } catch (error) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error fetching chapter"
+        (error as Error).message ?? "Error fetching chapter",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+  }
+
+  public async updateChapter(id: string, chapter: ChapterType) {
+    try {
+      const updatedChapter = await Chapter.findOneAndUpdate(
+        { _id: id },
+        chapter,
+        {
+          new: true,
+        }
+      );
+      return updatedChapter;
+    } catch (error) {
+      throw new CustomError(
+        ErrorEnum[500],
+        (error as Error).message ?? "Error updating chapter",
+        ErrorCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  public async dropChapter(chapterId: string) {
+    try {
+      await Chapter.findByIdAndDelete(chapterId);
+    } catch (error) {
+      throw new CustomError(
+        ErrorEnum[500],
+        (error as Error).message ?? "Error deleting chapter",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+  }
+
+  public async bulkDelete(bookId: string) {
+    try {
+      await Chapter.deleteMany({ bookId });
+    } catch (error) {
+      throw new CustomError(
+        ErrorEnum[500],
+        (error as Error).message ?? "Error deleting bulk chapters",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -59,21 +107,13 @@ class ChapterRepository {
       });
       return matchedBooks;
     } catch (error: any) {
-      throw await errHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[400],
-        "Error searching books"
+        (error as Error).message ?? "Error searching books",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
-
-  public async getChapterByFile(fileKey: string) {
-    return await Chapter.findOne({ file: fileKey });
-  }
-
- public async deleteChapter(id: string) {
-  return await Chapter.findByIdAndDelete(id);
-}
-
 }
 
 export default new ChapterRepository();

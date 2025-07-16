@@ -14,49 +14,29 @@ const excludedFields = "-__v";
 class SubscriptionsRepository {
     create(subscription) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield models_1.Subscription.create(subscription);
-            }
-            catch (error) {
-                throw error;
-            }
+            return yield models_1.Subscription.create(subscription);
         });
     }
     getOne(subscriptionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const subscription = yield models_1.Subscription.findOne({
-                    _id: subscriptionId,
-                });
-                return subscription;
-            }
-            catch (error) {
-                throw error;
-            }
+            const subscription = yield models_1.Subscription.findOne({
+                _id: subscriptionId,
+            });
+            return subscription;
         });
     }
     getList(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const subscriptions = yield models_1.Subscription.find(Object.assign({}, params));
-                return subscriptions;
-            }
-            catch (error) {
-                throw error;
-            }
+            const subscriptions = yield models_1.Subscription.find(Object.assign({}, params));
+            return subscriptions;
         });
     }
     update(subscription, subscriptionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedSubscription = yield models_1.Subscription.findOneAndUpdate({ _id: subscriptionId }, subscription, {
-                    new: true,
-                });
-                return updatedSubscription;
-            }
-            catch (error) {
-                throw error;
-            }
+            const updatedSubscription = yield models_1.Subscription.findOneAndUpdate({ _id: subscriptionId }, subscription, {
+                new: true,
+            });
+            return updatedSubscription;
         });
     }
 }

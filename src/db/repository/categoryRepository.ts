@@ -1,6 +1,7 @@
 import { Category } from "../models/index";
 import { CategoryType } from "../../dto";
-import errHandler, { ErrorEnum } from "../../utils/error";
+import { ErrorEnum } from "../../utils/error";
+import CustomError,{ErrorCodes} from "../../utils/CustomError";
 
 class CategoryRepository {
   // Create a new category
@@ -8,8 +9,10 @@ class CategoryRepository {
     try {
       const category = await Category.create(categoryData);
       return category;
-    } catch (error: any) {
-      throw errHandler.CustomError(ErrorEnum[400], error?.message);
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400], 
+        (error as Error).message ?? 'Error creating category',
+         ErrorCodes.BAD_REQUEST);
     }
   }
 
@@ -18,16 +21,20 @@ class CategoryRepository {
     try {
       const category = await Category.findOne({_id:categoryId,name:categoryId});
       return category;
-    } catch (error: any) {
-      throw errHandler.CustomError(ErrorEnum[400], error?.message);
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400], 
+        (error as Error).message ?? 'Error fetching category',
+         ErrorCodes.BAD_REQUEST);
     }
   }
   async getAll(): Promise<CategoryType[]> {
     try {
       const categories = await Category.find();
       return categories;
-    } catch (error: any) {
-      throw errHandler.CustomError(ErrorEnum[400], error?.message);
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400], 
+        (error as Error).message ?? 'Error fetching categories',
+         ErrorCodes.BAD_REQUEST);
     }
   }
 
@@ -45,8 +52,10 @@ class CategoryRepository {
         }
       );
       return updatedCategory;
-    } catch (error: any) {
-      throw errHandler.CustomError(ErrorEnum[400], error?.message);
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400], 
+        (error as Error).message ?? 'Error updating category',
+         ErrorCodes.BAD_REQUEST);
     }
   }
 

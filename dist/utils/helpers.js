@@ -48,8 +48,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dayjs_1 = __importDefault(require("dayjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const error_1 = __importStar(require("./error"));
+const error_1 = require("./error");
+const CustomError_1 = __importStar(require("./CustomError"));
 const env_1 = require("./env");
 class HELPERS {
     static LOG(...arg) {
@@ -60,13 +60,25 @@ class HELPERS {
             return (0, dayjs_1.default)().format(formatBy);
         return (0, dayjs_1.default)().toISOString();
     }
+    static getFirstAndLastDateOfMonth() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const firstDate = (0, dayjs_1.default)().startOf("month").toDate();
+                const lastDate = (0, dayjs_1.default)().endOf("month").toDate();
+                return { firstDate, lastDate };
+            }
+            catch (error) {
+                throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to get first and last date of the month", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+            }
+        });
+    }
     static generateFolderName(name) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return name.replace(/\s/g, "-").toLowerCase();
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Try again later");
+                throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to generate folder name", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }
@@ -80,7 +92,7 @@ class HELPERS {
                 }
                 fs_1.default.appendFile(dir + "logs.log", message, (err) => __awaiter(this, void 0, void 0, function* () {
                     if (err) {
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[500], `Error Writing File to file: ${dir}`);
+                        throw new CustomError_1.default(error_1.ErrorEnum[500], `Error Writing File to file: ${dir}`, CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
                     }
                 }));
             }
@@ -94,47 +106,28 @@ class HELPERS {
     static ENCODE_Token() {
         return __awaiter(this, arguments, void 0, function* (id = "") {
             try {
-                if (!id)
+                if (!id) {
                     id = HELPERS.genRandCode();
+                }
                 return jsonwebtoken_1.default.sign({ id }, env_1.SECRET_JWT, {
                     expiresIn: HELPERS.SessionMaxAge(),
                 });
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Try again later 🙏🏼");
+                throw new CustomError_1.default(error_1.ErrorEnum[500], "Try again later 🙏🏼", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }
     static DECODE_TOKEN(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (token) {
-                    const decodedToken = jsonwebtoken_1.default.verify(token, env_1.SECRET_JWT);
-                    if (decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.id) {
-                        return decodedToken.id;
-                    }
-                    else {
-                        error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Token Data");
-                        // If the token is invalid or lacks required properties, throw an error
-                        throw new Error("Invalid Token Data");
-                    }
-                }
-                return;
+            if (!token) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Token is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                throw error;
+            const decodedToken = jsonwebtoken_1.default.verify(token, env_1.SECRET_JWT);
+            if (!(decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.id)) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Token", CustomError_1.ErrorCodes.UNAUTHORIZED);
             }
-        });
-    }
-    static GET_DIRECTORY(file_1) {
-        return __awaiter(this, arguments, void 0, function* (file, dir = __dirname) {
-            try {
-                let directory = path_1.default.join(dir, file);
-                return directory;
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Try again later");
-            }
+            return decodedToken.id;
         });
     }
     static genRandCode(size = 16) {
@@ -148,15 +141,8 @@ class HELPERS {
             return result;
         }
         catch (error) {
-            throw error_1.default.CustomError(error_1.ErrorEnum[500], "Try again later");
+            throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to generate random code", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
         }
-    }
-    static FILE_DETAILS(file) {
-        try {
-            let ext = path_1.default.extname(file.name);
-            return { extension: ext };
-        }
-        catch (error) { }
     }
     static millisecondsToDays(milliseconds) {
         // There are 86,400,000 milliseconds in a day

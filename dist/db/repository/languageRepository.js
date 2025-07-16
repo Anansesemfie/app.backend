@@ -43,66 +43,71 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../models/index");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class LanguageRepository {
     // Create a new language
     create(languageData) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const newLanguage = yield index_1.Language.create(languageData);
                 return newLanguage;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to create language", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     // Get a language by ID
     getById(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const language = yield index_1.Language.findOne({
                     title: id,
                 });
-                ;
                 return language;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get language", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     getAll() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const languages = yield index_1.Language.find();
                 return languages;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get languages", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     // Update a language by ID
     updateById(id, languageData) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const updatedLanguage = yield index_1.Language.findByIdAndUpdate(id, languageData, { new: true });
                 return updatedLanguage;
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to update language", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     // Delete a language by ID
     deleteById(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 yield index_1.Language.findByIdAndDelete(id);
             }
             catch (error) {
-                throw error_1.default.CustomError(error_1.ErrorEnum[400], error === null || error === void 0 ? void 0 : error.message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to delete language", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }

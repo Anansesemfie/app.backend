@@ -41,13 +41,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __importDefault(require("../utils/helpers"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
 const env_1 = require("./env");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class Paystack {
     constructor() {
         this.publicKey = env_1.PAYSTACK_PUBLIC_KEY;
@@ -60,74 +57,46 @@ class Paystack {
     }
     initializeTransaction(amount_1, email_1, metadata_1) {
         return __awaiter(this, arguments, void 0, function* (amount, email, metadata, callback_url = null) {
-            try {
-                if (!amount || !email) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "missing required fields for transaction initialization");
-                }
-                const response = yield fetch("https://api.paystack.co/transaction/initialize", {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${this.secretKey}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        amount: amount * 100,
-                        email,
-                        metadata,
-                        callback_url,
-                    }),
-                });
-                const data = yield response.json();
-                if (!data.status) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], data.message);
-                }
-                this.logInfo = `${helpers_1.default.loggerInfo.success} initializing transaction @ ${helpers_1.default.currentTime()}`;
-                if (!data.status) {
-                    throw new Error(data.message);
-                }
-                return data;
+            if (!amount || !email) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "missing required fields for transaction initialization", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} initializing transaction @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            const response = yield fetch("https://api.paystack.co/transaction/initialize", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${this.secretKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    amount: amount * 100,
+                    email,
+                    metadata,
+                    callback_url,
+                }),
+            });
+            const data = yield response.json();
+            if (!data.status) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], data.message, CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo, this.serviceName);
-                this.logInfo = null;
-            }
+            return data;
         });
     }
     verifyTransaction(reference) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!reference) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "missing required fields for transaction verification");
-                }
-                const response = yield fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${this.secretKey}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-                const data = yield response.json();
-                if (!data.status) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], data.message);
-                }
-                this.logInfo = `${helpers_1.default.loggerInfo.success} verifying transaction @ ${helpers_1.default.currentTime()}`;
-                if (!data.status) {
-                    throw new Error(data.message);
-                }
-                return data;
+            if (!reference) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Reference is required for verification", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} verifying transaction @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            const response = yield fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${this.secretKey}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = yield response.json();
+            if (!data.status) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], data.message, CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo, this.serviceName);
-                this.logInfo = null;
-            }
+            return data;
         });
     }
 }

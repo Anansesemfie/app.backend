@@ -19,6 +19,11 @@ const Reaction = (Mongoose) => {
             type: String,
             default: "Like",
         },
+        period: {
+            type: bson_1.ObjectId,
+            ref: "period",
+            required: [true, "Period is required"],
+        },
         createdAt: {
             type: Date,
             default: helpers_1.default.currentTime(),

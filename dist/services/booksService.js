@@ -49,172 +49,128 @@ const booksRepository_1 = __importDefault(require("../db/repository/booksReposit
 const seenService_1 = __importDefault(require("./seenService"));
 const sessionService_1 = __importDefault(require("./sessionService"));
 const subscribersService_1 = __importDefault(require("./subscribersService"));
+const chapterService_1 = __importDefault(require("./chapterService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
 const utils_1 = require("../db/models/utils");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class BookService {
     constructor() {
         this.logInfo = "";
     }
     createBook(book, session) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(session);
-                if (!user) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid session ID");
-                }
-                if (user.account !== utils_1.UsersTypes.admin) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized access");
-                }
-                book.uploader = user === null || user === void 0 ? void 0 : user._id;
-                book.folder = yield helpers_1.default.generateFolderName(book.title);
-                const valid = yield this.validateBookData(book);
-                if (!valid) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Invalid book data");
-                }
-                const newBook = yield booksRepository_1.default.create(book);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} creating book @ ${helpers_1.default.currentTime()}`;
-                return newBook;
+            const { user } = yield sessionService_1.default.getSession(session);
+            if (user.account !== utils_1.UsersTypes.admin) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "You are not authorized to create a book", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} creating book @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            book.uploader = user === null || user === void 0 ? void 0 : user._id;
+            book.folder = yield helpers_1.default.generateFolderName(book.title);
+            const valid = yield this.validateBookData(book);
+            if (!valid) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid book data", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
+            const newBook = yield booksRepository_1.default.create(book);
+            return this.formatBookData(newBook);
+        });
+    }
+    deleteBook(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!id) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Unable to delete book", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            //delete all chapters
+            yield chapterService_1.default.deleteManyChapters(id);
+            yield booksRepository_1.default.delete(id);
         });
     }
     //write a function that validates book data
     fetchBooks(_a) {
         return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, }) {
             let books = [];
-            try {
-                if (token) {
-                    const booksToFetch = yield this.fetchBooksInSubscription(token);
-                    if (!booksToFetch.length) {
-                        books = yield booksRepository_1.default.fetchAll(limit, page, params);
-                    }
-                    else {
-                        books = yield booksRepository_1.default.fetchAll(limit, page, Object.assign({ _id: { $in: booksToFetch } }, params));
-                    }
-                }
-                else {
+            helpers_1.default.LOG({ page, limit, token, params });
+            if (token) {
+                const booksToFetch = yield this.fetchBooksInSubscription(token);
+                if (!booksToFetch.length) {
                     books = yield booksRepository_1.default.fetchAll(limit, page, params);
                 }
-                //
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching books @ ${helpers_1.default.currentTime()}`;
-                return books;
+                else {
+                    books = yield booksRepository_1.default.fetchAll(limit, page, Object.assign({ _id: { $in: booksToFetch } }, params));
+                }
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching books @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            else {
+                books = yield booksRepository_1.default.fetchAll(limit, page, params);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const formattedBooks = yield Promise.all(books.map((book) => this.formatBookData(book)));
+            return { books: formattedBooks, page, limit };
         });
     }
     fetchBook(bookId_1) {
         return __awaiter(this, arguments, void 0, function* (bookId, sessionId = "") {
-            try {
-                if (!bookId) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book ID");
-                }
-                if (sessionId) {
-                    const booksToFetch = yield this.fetchBooksInSubscription(sessionId);
-                    if (booksToFetch.length && !booksToFetch.includes(bookId)) {
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Unauthorized access");
-                    }
-                }
-                const book = yield booksRepository_1.default.fetchOne(bookId);
-                if (sessionId) {
-                    const { user } = yield sessionService_1.default.getSession(sessionId);
-                    yield seenService_1.default.createNewSeen(book === null || book === void 0 ? void 0 : book._id, user._id);
-                }
-                this.logInfo = `${helpers_1.default.loggerInfo.success} fetching book @ ${helpers_1.default.currentTime()}`;
-                return book;
+            if (!bookId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} fetching book @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            if (sessionId) {
+                const booksToFetch = yield this.fetchBooksInSubscription(sessionId);
+                if (booksToFetch.length && !booksToFetch.includes(bookId)) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized access", CustomError_1.ErrorCodes.FORBIDDEN);
+                }
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
+            const book = yield booksRepository_1.default.fetchOne(bookId);
+            if (sessionId) {
+                const { user } = yield sessionService_1.default.getSession(sessionId);
+                yield seenService_1.default.createNewSeen(book === null || book === void 0 ? void 0 : book._id, user._id);
             }
+            if (!book) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Book not found", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
+            return this.formatBookData(book);
         });
     }
     updateBook(bookID, book) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (!bookID) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid book ID");
-                }
-                const updatedBook = yield booksRepository_1.default.update(bookID, book);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} updating book @ ${helpers_1.default.currentTime()}`;
-                return updatedBook;
+            if (!bookID) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} updating book @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const updatedBook = yield booksRepository_1.default.update(bookID, book);
+            return this.formatBookData(updatedBook);
         });
     }
     updateBookMeta(bookId, metaAction) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const book = yield this.fetchBook(bookId);
-                const newMeta = yield this.mutateBookMeta(book === null || book === void 0 ? void 0 : book.meta, metaAction);
-                book.meta = newMeta;
-                yield this.updateBook(bookId, book);
+            const book = yield booksRepository_1.default.fetchOne(bookId);
+            const newMeta = yield this.mutateBookMeta(book === null || book === void 0 ? void 0 : book.meta, metaAction);
+            if (!newMeta) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid meta action", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Invalid action");
-            }
+            book.meta = newMeta;
+            yield this.updateBook(bookId, book);
         });
     }
     fetchBooksInSubscription(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(token);
-                if (!user.subscription) {
-                    return [];
-                }
-                const subscription = yield subscribersService_1.default.fetchOne({
-                    _id: user.subscription,
-                });
-                if (!subscription) {
-                    return [];
-                }
-                return subscription.books;
-            }
-            catch (error) {
+            const { user } = yield sessionService_1.default.getSession(token);
+            if (!user.subscription) {
                 return [];
             }
-            finally {
+            const subscription = yield subscribersService_1.default.fetchOne({
+                _id: user.subscription,
+            });
+            if (!subscription) {
+                return [];
             }
+            return subscription.books;
         });
     }
     analyzeBook(bookId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const book = yield this.fetchBook(bookId);
-                return book.meta;
-            }
-            catch (error) {
-                throw error;
-            }
+            const book = yield this.fetchBook(bookId);
+            return book.meta;
         });
     }
     mutateBookMeta(bookMeta_1, _a) {
         return __awaiter(this, arguments, void 0, function* (bookMeta, { meta, action }) {
-            var _b, _c, _d, _e, _f;
+            var _b, _c, _d, _e, _f, _g;
             try {
                 const newBookMeta = {
                     played: (_b = bookMeta.played) !== null && _b !== void 0 ? _b : 0,
@@ -223,27 +179,27 @@ class BookService {
                     dislikes: (_e = bookMeta.dislikes) !== null && _e !== void 0 ? _e : 0,
                     comments: (_f = bookMeta.comments) !== null && _f !== void 0 ? _f : 0,
                 };
-                switch (meta) {
-                    case "comments":
-                    case "comment":
-                        action == "Plus" ? newBookMeta.comments++ : newBookMeta.comments--;
-                        break;
-                    case "likes":
-                        action == "Plus" ? newBookMeta.likes++ : newBookMeta.likes--;
-                        break;
-                    case "views":
-                        action == "Plus" ? newBookMeta.views++ : newBookMeta.views--;
-                        break;
-                    case "played":
-                        action == "Plus" ? newBookMeta.played++ : newBookMeta.played--;
-                        break;
-                    default:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[500], "Invalid action");
+                const metaMap = {
+                    comments: "comments",
+                    comment: "comments",
+                    likes: "likes",
+                    views: "views",
+                    played: "played",
+                };
+                const key = metaMap[meta];
+                if (!key) {
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[500], "Invalid action", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+                }
+                if (action === "Plus") {
+                    newBookMeta[key]++;
+                }
+                else {
+                    newBookMeta[key]--;
                 }
                 return newBookMeta;
             }
             catch (error) {
-                throw error;
+                throw new CustomError_1.default(error_1.ErrorEnum[500], (_g = error.message) !== null && _g !== void 0 ? _g : "Error mutating book meta", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }
@@ -285,20 +241,42 @@ class BookService {
         return __awaiter(this, void 0, void 0, function* () {
             switch (true) {
                 case !book.title:
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Title is required");
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Title is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.category.length:
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Category is required");
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Category is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.languages.length:
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Language is required");
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Language is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 // case !book.folder:
                 //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
                 case !book.cover:
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Cover is required");
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Cover is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.uploader:
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Uploader is required");
+                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Uploader is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 default:
                     return true;
             }
+        });
+    }
+    formatBookData(book) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f, _g;
+            const formattedBook = {
+                id: ((_a = book._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",
+                title: book.title.trim(),
+                description: ((_b = book.description) === null || _b === void 0 ? void 0 : _b.trim()) || "",
+                category: book.category,
+                authors: book.authors,
+                languages: book.languages,
+                cover: book.cover.trim(),
+                meta: {
+                    played: ((_c = book.meta) === null || _c === void 0 ? void 0 : _c.played) || 0,
+                    views: ((_d = book.meta) === null || _d === void 0 ? void 0 : _d.views) || 0,
+                    likes: ((_e = book.meta) === null || _e === void 0 ? void 0 : _e.likes) || 0,
+                    dislikes: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.dislikes) || 0,
+                    comments: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.comments) || 0,
+                },
+            };
+            return formattedBook;
         });
     }
 }

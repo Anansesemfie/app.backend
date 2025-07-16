@@ -61,6 +61,10 @@ const Books = (Mongoose) => {
             type: bson_1.ObjectId,
             required: [true, "Missing uploader"],
         },
+        organization: {
+            type: bson_1.ObjectId,
+            ref: "organization",
+        },
         createdAt: {
             type: Date,
             default: helpers_1.default.currentTime() || Date.now,

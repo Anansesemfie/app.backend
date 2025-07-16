@@ -46,46 +46,45 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const languageRepository_1 = __importDefault(require("../db/repository/languageRepository"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class LanguageService {
     createLanguage(language, sessionID) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                if (sessionID)
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid session ID");
-                const lang = yield languageRepository_1.default.create(language);
-                return lang;
+            if (sessionID) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid session ID", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            catch (error) {
-                throw error;
-            }
+            const lang = yield languageRepository_1.default.create(language);
+            return lang;
         });
     }
     getAllLanguages() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const langs = yield languageRepository_1.default.getAll();
                 if (!langs) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "Language not found");
+                    throw new CustomError_1.default(error_1.ErrorEnum[404], "Languages not found", CustomError_1.ErrorCodes.NOT_FOUND);
                 }
                 return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
             }
             catch (error) {
-                throw error;
+                throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get languages", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }
     getLanguageById(language) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const lang = yield languageRepository_1.default.getById(language);
                 if (!lang) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "Language not found");
+                    throw new CustomError_1.default(error_1.ErrorEnum[404], "Language not found", CustomError_1.ErrorCodes.NOT_FOUND);
                 }
                 return lang._id;
             }
             catch (error) {
-                throw error;
+                throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get language", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }
