@@ -4,7 +4,7 @@ import errorHandler, { ErrorEnum } from "../utils/error";
 import nodeMailer from "../utils/nodeMailer";
 import sendGRID from "../utils/sendGrid";
 import { EmailOptions, EmailTemplate } from "./utils/interfaces";
-
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 type Action = {
   link: string;
   label: string;
@@ -313,7 +313,6 @@ a, a:hover {
 </html>`;
 
   public async sendEmail(options: EmailOptions, email: EmailTemplate) {
-    try {
       HELPERS.LOG("EmailService.sendEmail", options, email);
       await this.checkEmailOptions(options);
       const msg = {
@@ -331,46 +330,33 @@ a, a:hover {
         options.subject
       } @ ${HELPERS.currentTime()}`;
       return "Email sent successfully";
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} sending email: ${
-        options.subject
-      } @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
   }
 
   private async sendEmailWithNodeMailer(options: EmailOptions) {
-    try {
       await this.node_mailer.init();
       return await this.node_mailer.send(options);
-    } catch (error: any) {
-      throw error;
-    }
   }
 
   private async sendEmailWithSendGrid(options: EmailOptions) {
-    try {
+
       await this.sgEmail.init();
       return await this.sgEmail.send(options);
-    } catch (error: any) {
-      throw error;
-    }
+    
   }
 
   private async checkEmailOptions(options: EmailOptions) {
     if (!options.to) {
-      throw await errorHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[401],
-        "Email recipient is required"
+        "Email recipient is required",
+        ErrorCodes.UNAUTHORIZED
       );
     }
     if (!options.html) {
-      throw await errorHandler.CustomError(
+      throw new CustomError(
         ErrorEnum[401],
-        "Email content is required"
+        "Email content is required",
+        ErrorCodes.UNAUTHORIZED
       );
     }
   }

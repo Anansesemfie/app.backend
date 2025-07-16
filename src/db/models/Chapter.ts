@@ -17,6 +17,9 @@ const chapters = (Mongoose: any) => {
       mimetype: {
         type: String,
       },
+      password:{
+        type:String
+      },
       book: {
         type: ObjectId,
         required: [true, "Missing Book"],

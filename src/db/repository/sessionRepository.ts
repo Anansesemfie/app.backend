@@ -1,6 +1,7 @@
 import { SessionType } from "../../dto";
 import { Session } from "../models";
-import errorHandler, { ErrorEnum } from "../../utils/error";
+import { ErrorEnum } from "../../utils/error";
+import CustomError, { ErrorCodes } from "../../utils/CustomError";
 
 class SessionRepository {
   public async create(session: SessionType): Promise<SessionType> {
@@ -11,24 +12,23 @@ class SessionRepository {
     }
   }
   public async fetchOne(sessionId: string): Promise<SessionType> {
-    try {
       const fetchedSession = await Session.findOne({
         _id: sessionId,
       });
       if (!fetchedSession) {
-        throw errorHandler.CustomError(ErrorEnum[403], "Invalid Session ID");
+        throw new CustomError(
+          ErrorEnum[404],
+          "Session not found",
+          ErrorCodes.NOT_FOUND
+        );
       }
       return fetchedSession;
-    } catch (error: any) {
-      throw error;
-    }
   }
 
   public async update(
     sessionId: string,
     session: SessionType
   ): Promise<SessionType | any> {
-    try {
       const updatedSession = await Session.findOneAndUpdate(
         { _id: sessionId },
         session,
@@ -37,21 +37,14 @@ class SessionRepository {
         }
       );
       return updatedSession;
-    } catch (error: any) {
-      throw error;
-    }
   }
 
   public async fetchOneByToken(token: string): Promise<SessionType | any> {
-    try {
       const fetchedSession = await Session.findOne({
         token: token,
         // expiredAt: { $gt: new Date() },
       });
       return fetchedSession;
-    } catch (error: any) {
-      throw error;
-    }
   }
 }
 

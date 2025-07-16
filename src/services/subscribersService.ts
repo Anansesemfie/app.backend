@@ -2,26 +2,29 @@ import subscribersRepository from "../db/repository/subscribersRepository";
 import subscriptionsService from "./subscriptionsService";
 import { subscriberDTO, UserType } from "../dto";
 import HELPERS from "../utils/helpers";
-import errorHandler, { ErrorEnum } from "../utils/error";
+import { ErrorEnum } from "../utils/error";
 import Paystack, { PAYSTACK_INIT_RESPONSE } from "../utils/paystack";
 import { APP_BASE_URL } from "../utils/env";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 import dayjs from "dayjs";
 
 class SubscriberService {
   private logInfo = "";
   public async create(parent: string, user: UserType, books: string[] = []) {
-    try {
+
       if (!parent || !user) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[400],
-          "Missing required fields"
+          "Parent subscription ID and user are required",
+          ErrorCodes.BAD_REQUEST
         );
       }
       const parentSubscription = await subscriptionsService.fetchOne(parent);
       if (!parentSubscription) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[404],
-          "Entity not found"
+          "Parent subscription not found",
+          ErrorCodes.NOT_FOUND
         );
       }
       const subscription: subscriberDTO = {
@@ -33,9 +36,10 @@ class SubscriberService {
       };
       const newSubscription = await subscribersRepository.create(subscription);
       if (!newSubscription) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[500],
-          "Error creating subscription"
+          "Failed to create subscription",
+          ErrorCodes.INTERNAL_SERVER_ERROR
         );
       }
       const callback_url = `${APP_BASE_URL}/api/v1/subscribers/callback`;
@@ -80,40 +84,32 @@ class SubscriberService {
           subscription: newSubscription,
         };
       }
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } creating subscription @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
+   
   }
 
   public async verifySubscription(ref: string): Promise<subscriberDTO> {
     const today = dayjs(new Date()).toISOString();
-    try {
       if (!ref) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[400],
-          "Reference is required"
+          "Reference is required for verification",
+          ErrorCodes.BAD_REQUEST
         );
       }
-      HELPERS.LOG("here");
-      const paystackResponse = await Paystack.verifyTransaction(ref);
-      HELPERS.LOG("after paystack", { paystackResponse });
+       await Paystack.verifyTransaction(ref);
       const subscription = await subscribersRepository.fetchOne({ ref });
       if (!subscription) {
-        throw await errorHandler.CustomError(
+       throw new CustomError(
           ErrorEnum[404],
-          "Subscription not found"
+          "Subscription not found",
+          ErrorCodes.NOT_FOUND
         );
       }
       if (subscription.active) {
-        throw await errorHandler.CustomError(
+       throw new CustomError(
           ErrorEnum[400],
-          "Subscription already active"
+          "Subscription is already active",
+          ErrorCodes.BAD_REQUEST
         );
       }
       const updatedSubscription = await this.update(
@@ -124,53 +120,40 @@ class SubscriberService {
         HELPERS.loggerInfo.success
       } verifying subscription @ ${HELPERS.currentTime()}`;
       return updatedSubscription;
-    } catch (error: any) {
-      HELPERS.LOG("error", error);
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } verifying subscription @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo);
-      this.logInfo = "";
-    }
+   
   }
 
   public async fetchOne(
     params: Partial<{ _id: string; ref: string }>
   ): Promise<subscriberDTO> {
-    try {
       const fetchedSubscription = await subscribersRepository.fetchOne({
         ...params,
       });
-      if (!fetchedSubscription)
-        throw await errorHandler.CustomError(
+      if (!fetchedSubscription){
+        throw new CustomError(
           ErrorEnum[404],
-          "Subscription not found"
+          "Subscription not found",
+          ErrorCodes.NOT_FOUND
         );
+      }
+       
       return fetchedSubscription ?? {};
-    } catch (error: any) {
-      throw error;
-    }
   }
 
   public async update(
     subscription: Partial<subscriberDTO>,
     subscriptionID: string
   ): Promise<subscriberDTO> {
-    try {
       const updatedSubscription = await subscribersRepository.update(
         { ...subscription },
         subscriptionID
       );
       return updatedSubscription;
-    } catch (error: any) {
-      throw error;
-    }
+  
   }
 
   public async validateSubscription(subscriptionId: string): Promise<boolean> {
-    try {
+
       const child = await this.fetchOne({ _id: String(subscriptionId) });
       const parent = await subscriptionsService.fetchOne(child.parent);
 
@@ -180,11 +163,10 @@ class SubscriberService {
         child?.createdAt as string,
         HELPERS.currentTime() as string
       );
+      
 
       return daysGone <= duration;
-    } catch (error: any) {
-      throw error;
-    }
+   
   }
 }
 

@@ -13,58 +13,36 @@ const models_1 = require("../models");
 class SeenRepository {
     create(seen) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield models_1.Seen.create(seen);
-            }
-            catch (error) {
-                throw error;
-            }
+            return yield models_1.Seen.create(seen);
         });
     }
     fetch(bookId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const seens = yield models_1.Seen.find({ bookId: bookId });
-                return seens;
-            }
-            catch (error) {
-                throw error;
-            }
+            const seens = yield models_1.Seen.find({ bookId: bookId });
+            return seens;
         });
     }
     fetchOne(bookId_1) {
-        return __awaiter(this, arguments, void 0, function* (bookId, userId = "") {
-            try {
-                const seen = yield models_1.Seen.findOne({ bookID: bookId, user: userId });
-                return seen;
-            }
-            catch (error) {
-                throw error;
-            }
+        return __awaiter(this, arguments, void 0, function* (bookId, userId = "", period) {
+            const seen = yield models_1.Seen.findOne({ bookID: bookId, user: userId, period });
+            return seen;
         });
     }
-    findAll(bookID, params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const seen = yield models_1.Seen.find(Object.assign({ bookID }, params));
-                return seen;
-            }
-            catch (error) {
-                throw error;
-            }
+    findAll(bookID_1) {
+        return __awaiter(this, arguments, void 0, function* (bookID, params = {}) {
+            const seen = yield models_1.Seen.find(Object.assign({ bookID }, params));
+            return seen;
         });
     }
-    update(params, payload) {
+    update(id, payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedSeen = yield models_1.Seen.findOneAndUpdate(params, payload, {
-                    new: true,
-                });
-                return updatedSeen;
+            const updatedSeen = yield models_1.Seen.findOneAndUpdate({ _id: id }, payload, {
+                new: true,
+            });
+            if (!updatedSeen) {
+                throw new Error("Seen not found or update failed");
             }
-            catch (error) {
-                throw error;
-            }
+            return updatedSeen;
         });
     }
 }

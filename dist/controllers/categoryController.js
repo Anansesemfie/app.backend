@@ -13,16 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCategories = void 0;
+const CustomError_1 = require("../utils/CustomError");
 const categoryService_1 = __importDefault(require("../services/categoryService"));
-const error_1 = __importDefault(require("../utils/error"));
 const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categories = yield categoryService_1.default.fetchAllCategories();
         res.status(200).json({ data: categories });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getCategories = getCategories;

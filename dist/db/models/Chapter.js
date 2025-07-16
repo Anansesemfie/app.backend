@@ -20,6 +20,9 @@ const chapters = (Mongoose) => {
         mimetype: {
             type: String,
         },
+        password: {
+            type: String
+        },
         book: {
             type: bson_1.ObjectId,
             required: [true, "Missing Book"],

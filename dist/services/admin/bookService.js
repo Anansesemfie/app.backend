@@ -45,13 +45,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __importDefault(require("../../utils/helpers"));
 const aws_s3_1 = __importDefault(require("../../utils/aws-s3"));
 const booksService_1 = __importDefault(require("../booksService"));
 const env_1 = require("../../utils/env");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
 const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class AudioService {
     constructor(bucketName = env_1.AWS_S3_BUCKET_IMAGES) {
         this.logInfo = "";
@@ -59,87 +59,56 @@ class AudioService {
     }
     getAWSURL(file, fileType, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(token);
-                this.checkForAdmin(user);
-                const signedUrl = yield this.s3.getSignedUrl(file, fileType);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} uploading audio @ ${helpers_1.default.currentTime()}`;
-                return signedUrl;
-            }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} uploading audio @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { user } = yield sessionService_1.default.getSession(token);
+            this.checkForAdmin(user);
+            const signedUrl = yield this.s3.getSignedUrl(file, fileType);
+            return signedUrl;
         });
     }
     CreateBook(book, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(token);
-                this.checkForAdmin(user);
-                const createdBook = yield booksService_1.default.createBook(book, token);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} creating book @ ${helpers_1.default.currentTime()}`;
-                return createdBook;
-            }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} creating book @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { user } = yield sessionService_1.default.getSession(token);
+            this.checkForAdmin(user);
+            const createdBook = yield booksService_1.default.createBook(book, token);
+            return createdBook;
         });
     }
-    UpdateBook(book, token) {
+    UpdateBook(id, book, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(token);
-                this.checkForAdmin(user);
-                if (!(book === null || book === void 0 ? void 0 : book._id))
-                    throw error_1.default.CustomError(error_1.ErrorEnum[401], "Book ID is required");
-                const updatedBook = yield booksService_1.default.updateBook(book === null || book === void 0 ? void 0 : book._id, book);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} updating book @ ${helpers_1.default.currentTime()}`;
-                return updatedBook;
+            const { user } = yield sessionService_1.default.getSession(token);
+            this.checkForAdmin(user);
+            if (!id) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Book ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} updating book @ ${helpers_1.default.currentTime()}`;
-                throw error;
+            const updatedBook = yield booksService_1.default.updateBook(id, book);
+            return updatedBook;
+        });
+    }
+    DeleteBook(id, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!id) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Book ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { user } = yield sessionService_1.default.getSession(token);
+            this.checkForAdmin(user);
+            yield booksService_1.default.deleteBook(id);
+            return "book deleted";
         });
     }
     AnalyzeBook(bookId, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { user } = yield sessionService_1.default.getSession(token);
-                this.checkForAdmin(user);
-                if (!bookId)
-                    throw error_1.default.CustomError(error_1.ErrorEnum[401], "Book ID is required");
-                const analyzedBook = yield booksService_1.default.analyzeBook(bookId);
-                this.logInfo = `${helpers_1.default.loggerInfo.success} analyzing book @ ${helpers_1.default.currentTime()}`;
-                return analyzedBook;
+            if (!bookId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Book ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            catch (error) {
-                this.logInfo = `${helpers_1.default.loggerInfo.error} analyzing book @ ${helpers_1.default.currentTime()}`;
-                throw error;
-            }
-            finally {
-                yield helpers_1.default.logger(this.logInfo);
-                this.logInfo = "";
-            }
+            const { user } = yield sessionService_1.default.getSession(token);
+            this.checkForAdmin(user);
+            const analyzedBook = yield booksService_1.default.analyzeBook(bookId);
+            return analyzedBook;
         });
     }
     checkForAdmin(user) {
         if (!user || (user === null || user === void 0 ? void 0 : user.account) !== utils_1.UsersTypes.admin)
-            throw error_1.default.CustomError(error_1.ErrorEnum[401], "Invalid User");
+            throw new CustomError_1.default(error_1.ErrorEnum[401], "Invalid User", CustomError_1.ErrorCodes.UNAUTHORIZED);
     }
 }
 exports.default = new AudioService();

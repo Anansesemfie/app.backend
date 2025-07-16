@@ -41,23 +41,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
 const utils_1 = require("../models/utils");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
+const helpers_1 = __importDefault(require("../../utils/helpers"));
 class BookRepository {
     create(book) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 return yield models_1.Book.create(book);
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], error._message);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error creating book", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     fetchOne(bookId) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const fetchedBook = yield models_1.Book.findOne({
                     _id: bookId,
@@ -65,12 +72,13 @@ class BookRepository {
                 return fetchedBook;
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching book");
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error fetching book", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     update(bookId, book) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, book, {
                     new: true,
@@ -78,23 +86,64 @@ class BookRepository {
                 return updatedBook;
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error updating book");
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error updating book", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+        });
+    }
+    delete(bookId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                helpers_1.default.LOG('delete', { bookId });
+                yield models_1.Book.findByIdAndDelete(bookId);
+            }
+            catch (error) {
+                throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Error deleting book", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }
     fetchAll() {
         return __awaiter(this, arguments, void 0, function* (numberOfRecords = 5, page = 0, params = { status: utils_1.BookStatus.Active }) {
+            var _a;
             try {
-                const fetchedBooks = yield models_1.Book.find(Object.assign({}, params))
+                const sanitizedParams = this.sanitizeRegex(params);
+                const fetchedBooks = yield models_1.Book.find(Object.assign({}, sanitizedParams))
                     .skip(numberOfRecords * (page - 1))
                     .limit(numberOfRecords)
                     .sort({ createdAt: -1 });
                 return fetchedBooks;
             }
             catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching books");
+                helpers_1.default.LOG("Error fetching books:", { error });
+                throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error fetching books", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
+    }
+    sanitizeRegex(obj) {
+        if (Array.isArray(obj)) {
+            return obj.map((item) => this.sanitizeRegex(item));
+        }
+        else if (obj && typeof obj === "object") {
+            const sanitized = {};
+            for (const key in obj) {
+                if (key === "$regex" && typeof obj[key] !== "string") {
+                    // Skip invalid $regex
+                    continue;
+                }
+                sanitized[key] = this.sanitizeRegex(obj[key]);
+            }
+            // Remove keys that became empty objects
+            for (const key in sanitized) {
+                if (sanitized[key] &&
+                    typeof sanitized[key] === "object" &&
+                    !Array.isArray(sanitized[key]) &&
+                    Object.keys(sanitized[key]).length === 0) {
+                    delete sanitized[key];
+                }
+            }
+            return sanitized;
+        }
+        return obj;
     }
 }
 exports.default = new BookRepository();

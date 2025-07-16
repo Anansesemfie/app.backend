@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dislikeBook = exports.likeBook = void 0;
 const reactionService_1 = __importDefault(require("../services/reactionService"));
-const error_1 = __importDefault(require("../utils/error"));
+const CustomError_1 = require("../utils/CustomError");
 const likeBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const bookId = req.params.bookId;
@@ -27,8 +27,7 @@ const likeBook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: reaction });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.likeBook = likeBook;
@@ -44,8 +43,7 @@ const dislikeBook = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).json({ data: reaction });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.dislikeBook = dislikeBook;

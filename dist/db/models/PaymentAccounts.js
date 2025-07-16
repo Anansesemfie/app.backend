@@ -26,6 +26,13 @@ const Account = (Mongoose) => {
             type: Date,
             default: helpers_1.default.currentTime(),
         },
+        updatedAt: {
+            type: Date,
+        },
+        organization: {
+            type: Mongoose.Schema.Types.ObjectId,
+            ref: "Organization",
+        }
     }, {
         timestamp: true,
     });

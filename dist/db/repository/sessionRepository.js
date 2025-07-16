@@ -43,7 +43,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class SessionRepository {
     create(session) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -57,45 +58,30 @@ class SessionRepository {
     }
     fetchOne(sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fetchedSession = yield models_1.Session.findOne({
-                    _id: sessionId,
-                });
-                if (!fetchedSession) {
-                    throw error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Session ID");
-                }
-                return fetchedSession;
+            const fetchedSession = yield models_1.Session.findOne({
+                _id: sessionId,
+            });
+            if (!fetchedSession) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Session not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            catch (error) {
-                throw error;
-            }
+            return fetchedSession;
         });
     }
     update(sessionId, session) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedSession = yield models_1.Session.findOneAndUpdate({ _id: sessionId }, session, {
-                    new: true,
-                });
-                return updatedSession;
-            }
-            catch (error) {
-                throw error;
-            }
+            const updatedSession = yield models_1.Session.findOneAndUpdate({ _id: sessionId }, session, {
+                new: true,
+            });
+            return updatedSession;
         });
     }
     fetchOneByToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fetchedSession = yield models_1.Session.findOne({
-                    token: token,
-                    // expiredAt: { $gt: new Date() },
-                });
-                return fetchedSession;
-            }
-            catch (error) {
-                throw error;
-            }
+            const fetchedSession = yield models_1.Session.findOne({
+                token: token,
+                // expiredAt: { $gt: new Date() },
+            });
+            return fetchedSession;
         });
     }
 }

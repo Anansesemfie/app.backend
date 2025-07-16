@@ -52,7 +52,6 @@ class EmailService implements IEmailService {
       if (!info) false;
       return true;
     } catch (error) {
-      console.error(`Error sending email: ${error}`);
       throw error;
     } finally {
       this.transporter.close();

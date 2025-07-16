@@ -43,101 +43,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 class UserRepository {
     create(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield models_1.User.create(user);
-            }
-            catch (error) {
-                switch (error === null || error === void 0 ? void 0 : error.code) {
-                    case 11000:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Email already exists");
-                    case 11001:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Username already exists");
-                    default:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[400], error.message);
-                }
-            }
+            return yield models_1.User.create(user);
         });
     }
     Login(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fetchedUser = yield models_1.User.findOne({ email: email });
-                if (!fetchedUser) {
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid user credentials");
-                }
-                return fetchedUser;
+            const fetchedUser = yield models_1.User.findOne({ email: email });
+            if (!fetchedUser) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "User not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], error.message);
-            }
+            return fetchedUser;
         });
     }
     update(payload, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const updatedUser = yield models_1.User.findOneAndUpdate({ _id: userId }, payload, {
-                    new: true,
-                });
-                return updatedUser;
-            }
-            catch (error) {
-                switch (error === null || error === void 0 ? void 0 : error.code) {
-                    case 11000:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Email already exists");
-                    case 11001:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[401], "Username already exists");
-                    default:
-                        throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error updating user");
-                }
-            }
+            const updatedUser = yield models_1.User.findOneAndUpdate({ _id: userId }, payload, {
+                new: true,
+            });
+            return updatedUser;
         });
     }
     fetchUser(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const fetchedUser = yield models_1.User.findOne({ _id: userId });
-                return fetchedUser;
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching user");
-            }
+            const fetchedUser = yield models_1.User.findOne({ _id: userId });
+            return fetchedUser;
         });
     }
     fetchAll(params_1) {
         return __awaiter(this, arguments, void 0, function* (params, limit = 100) {
-            try {
-                return yield models_1.User.find(Object.assign({}, params))
-                    .limit(limit)
-                    .sort({ createdAt: -1 });
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching users");
-            }
+            return yield models_1.User.find(Object.assign({}, params))
+                .limit(limit)
+                .sort({ createdAt: -1 });
         });
     }
     fetchOneByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield models_1.User.findOne({ email });
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching user");
-            }
+            return yield models_1.User.findOne({ email });
         });
     }
     fetchOneByKey(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield models_1.User.findOne({ key });
-                return user;
-            }
-            catch (error) {
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[400], "Error fetching user");
-            }
+            const user = yield models_1.User.findOne({ key });
+            return user;
         });
     }
 }

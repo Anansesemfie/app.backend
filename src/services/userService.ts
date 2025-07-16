@@ -1,7 +1,7 @@
 import Repo from "../db/repository/userRepository";
 import subscribersService from "./subscribersService";
 import type { UserResponse, UserType } from "../dto";
-import errorHandler, { ErrorEnum } from "../utils/error";
+import { ErrorEnum } from "../utils/error";
 import { APP_BASE_URL, STARTUP_SUBSCRIPTION } from "../utils/env";
 
 import HELPERS from "../utils/helpers";
@@ -9,17 +9,16 @@ import bcrypt from "bcrypt";
 
 import Session from "./sessionService";
 import EmailService from "./emailService";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 
 export class UserService {
   private logInfo: string | null = null;
 
   public async create(user: UserType): Promise<UserType> {
-    try {
-      if (!user.email || !user.username || !user.password)
-        throw await errorHandler.CustomError(
-          ErrorEnum[400],
-          "Invalid user data"
-        );
+      if (!user.email || !user.username || !user.password) {
+        throw new CustomError(ErrorEnum[400], "Invalid user data",ErrorCodes.BAD_REQUEST);
+      }
+
       const salt = await bcrypt.genSalt();
       user.password = await bcrypt.hash(user.password, salt);
       const newUser = await Repo.create(user);
@@ -58,111 +57,53 @@ export class UserService {
         }
       );
       return newUser;
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} creating ${
-        user.username
-      } @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = null;
-    }
   }
 
   public async updateUser(
     payload: Partial<UserType>,
     userID: string
   ): Promise<UserType> {
-    try {
       const updatedUser = (await Repo.update(payload, userID)) as UserType;
-      this.logInfo = `
-      ${
-        HELPERS.loggerInfo.success
-      } updating user ${userID} @ ${HELPERS.currentTime()}
-      `;
+     
       return updatedUser;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } updating user ${userID} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = null;
-    }
+    
   }
 
   public async login(user: { email: string; password: string }): Promise<any> {
-    try {
+    
       const fetchedUser = await Repo.Login(user?.email);
       if (!fetchedUser || !fetchedUser.active) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[403],
-          "Invalid user or credentials"
+        throw new CustomError(
+          ErrorEnum[404],
+          "User not found or inactive",
+          ErrorCodes.NOT_FOUND
         );
       }
       const isPasswordValid = await bcrypt.compare(
         user?.password,
         fetchedUser.password
       );
-      this.logInfo = `${HELPERS.loggerInfo.success} logging in ${
-        user.email
-      } @ ${HELPERS.currentTime()}`;
       if (!isPasswordValid) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[403],
-          "Invalid user credentials"
+          "Invalid user credentials",
+          ErrorCodes.FORBIDDEN
         );
       }
       return await this.formatForReturn(fetchedUser);
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} logging in ${
-        user.email
-      } @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = null;
-    }
+   
   }
 
-  public async logout(sessionId: string): Promise<string> {
-    try {
+  public async logout(sessionId: string) {
       const session = await Session.endSession(sessionId);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
-      return session;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } ended session: ${sessionId} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
+   
   }
   public async fetchUser(userId: string): Promise<UserType | null> {
-    try {
       const fetchedUser = await Repo.fetchUser(userId);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
       return fetchedUser;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } fetching user ${userId} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
   }
 
   private async formatForReturn(user: UserType): Promise<any> {
-    try {
       const token = await Session.create(user?._id as string, {
         duration: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
         external: false,
@@ -179,53 +120,37 @@ export class UserService {
           id: user.subscription ? user.subscription.toString() : "",
         },
       };
-    } catch (error: any) {
-      throw error;
-    }
   }
 
   public async resetPassword(
     token: string,
     newPassword: string
   ): Promise<void> {
-    try {
-      const code = await HELPERS.DECODE_TOKEN(token);
-      HELPERS.LOG(code);
-      const user = await Repo.fetchOneByKey(code ?? "");
-      if (!user) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[400],
-          "Invalid user data"
-        );
-      }
+    const code = await HELPERS.DECODE_TOKEN(token);
+    const user = await Repo.fetchOneByKey(code ?? "");
+    if (!user) {
+      throw new CustomError(
+        ErrorEnum[404],
+        "User not found or invalid token",
+        ErrorCodes.NOT_FOUND
+      );
+    }
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(newPassword, salt);
       await this.updateUser(
         { password: hashedPassword, active: true },
         user._id as string
       );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } resetting password for user with token ${token} @ ${HELPERS.currentTime()}`;
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
   }
 
   public async requestPasswordReset(email: string): Promise<void> {
-    try {
       const user = await Repo.fetchOneByEmail(email);
       if (!user) {
-        throw new Error("User not found");
+        throw new CustomError(
+          ErrorEnum[404],
+          "User not found",
+          ErrorCodes.NOT_FOUND
+        );
       }
       const token = await this.generatePasswordResetToken(user);
       const encryptedToken = await HELPERS.ENCODE_Token(token);
@@ -246,16 +171,13 @@ export class UserService {
           ],
         }
       );
-    } catch (error: any) {
-      throw error;
-    }
+  
   }
 
   public async createSubscription(
     sessionId: string,
     subscriptionParentID: string
   ) {
-    try {
       const session = await Session.getSession(sessionId);
       const curUser = (await Repo.fetchUser(
         session.user._id as string
@@ -267,9 +189,10 @@ export class UserService {
         curUser
       );
       if (!subscription) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[500],
-          "Error creating subscription"
+          "Failed to create subscription",
+          ErrorCodes.INTERNAL_SERVER_ERROR
         );
       }
       this.updateUser(
@@ -277,31 +200,20 @@ export class UserService {
         curUser._id as string
       );
 
-      this.logInfo = `
-      ${HELPERS.loggerInfo.success} creating subscription for user ${
-        curUser.username
-      } @ ${HELPERS.currentTime()}
-      `;
-
       return paymentDetails;
-    } catch (error: any) {
-      this.logInfo = `
-      ${
-        HELPERS.loggerInfo.error
-      } creating subscription for user with session ID ${sessionId} @ ${HELPERS.currentTime()}
-      `;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = null;
-    }
   }
 
   public async linkSubscription(sessionId: string, ref: string) {
-    try {
       const { user } = await Session.getSession(sessionId);
 
       const subscription = await subscribersService.fetchOne({ ref });
+      if (!subscription) {
+        throw new CustomError(
+          ErrorEnum[404],
+          "Subscription not found",
+          ErrorCodes.NOT_FOUND
+        );
+      }
       //create child subscription
       const payload = {
         subscription: subscription._id,
@@ -311,24 +223,7 @@ export class UserService {
         user._id as string
       );
 
-      this.logInfo = `
-      ${HELPERS.loggerInfo.success} linking subscription for user ${
-        user.username
-      } @ ${HELPERS.currentTime()}
-      `;
-
       return newSubscription;
-    } catch (error: any) {
-      this.logInfo = `
-      ${
-        HELPERS.loggerInfo.error
-      } linking subscription for user with session ID ${sessionId} @ ${HELPERS.currentTime()}
-      `;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = null;
-    }
   }
 
   private async generatePasswordResetToken(user: UserType): Promise<string> {
@@ -338,7 +233,7 @@ export class UserService {
   }
 
   private async generateVerification(userId: string) {
-    try {
+
       const token = HELPERS.genRandCode();
       await Repo.update(
         {
@@ -346,55 +241,37 @@ export class UserService {
         },
         userId
       );
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } creating verification code for useerId: ${userId} @ ${HELPERS.currentTime()}`;
 
       return HELPERS.ENCODE_Token(token);
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } creating verification code for user ${userId} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
+   
   }
 
   public async verifyAccount(verificationCode: string) {
-    try {
       HELPERS.LOG(verificationCode);
-      if (!verificationCode)
-        throw await errorHandler.CustomError(
+      if (!verificationCode){
+        throw new CustomError(
           ErrorEnum[400],
-          "Invalid verification code"
+          "Verification code is required",
+          ErrorCodes.BAD_REQUEST
         );
+      }
+        
       const code = await HELPERS.DECODE_TOKEN(verificationCode);
       const user = await Repo.fetchOneByKey(code ?? "");
       if (!user) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[404],
-          "User not found or already verified"
+          "User not found or already verified",
+          ErrorCodes.NOT_FOUND
         );
       }
       await this.updateUser({ active: true }, user._id as string);
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } verifying account for user ${user.username} @ ${HELPERS.currentTime()}`;
+     
       return user;
-    } catch (error: any) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } verifying account for user with verification code ${verificationCode} @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
+   
   }
   public async formatUser(user: UserType): Promise<UserResponse> {
-    try {
+
       const formattedUser = {
         id: user._id as string,
         email: user.email,
@@ -406,19 +283,7 @@ export class UserService {
         subscription: user.subscription as string,
         createdAt: user.createdAt as string,
       };
-      this.logInfo = `${HELPERS.loggerInfo.success} formatting user ${
-        user.username
-      } @ ${HELPERS.currentTime()}`;
       return formattedUser;
-    } catch (error: any) {
-      this.logInfo = `${HELPERS.loggerInfo.error} formatting user ${
-        user.username
-      } @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string);
-      this.logInfo = "";
-    }
   }
 }
 

@@ -1,5 +1,8 @@
+import { ErrorEnum } from "../utils/error";
 import repo from "../db/repository/subscriptionRepository";
 import { SubscriptionsType, SubscriptionsResponse } from "../dto";
+
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 
 class SubscriptionService {
   private logInfo = "";
@@ -7,22 +10,17 @@ class SubscriptionService {
   public async create(
     subscription: SubscriptionsType
   ): Promise<SubscriptionsType> {
-    try {
+  
+      await this.checkPayload(subscription);
       return await repo.create(subscription);
-    } catch (error: any) {
-      throw error;
-    }
+   
   }
   public async fetchOne(subscriptionId: string): Promise<SubscriptionsType> {
-    try {
       const fetchedSubscription = await repo.getOne(subscriptionId);
       return this.reformatSubscription(fetchedSubscription);
-    } catch (error: any) {
-      throw error;
-    }
+    
   }
   public async fetchAllSubscriptions(): Promise<SubscriptionsType[]> {
-    try {
       const fetchedSubscriptions = await repo.getList({
         visible: true,
         active: true,
@@ -33,22 +31,51 @@ class SubscriptionService {
         )
       );
       return formatedSubscriptions;
-    } catch (error: any) {
-      throw error;
-    }
+  
   }
   public async update(
     subscription: SubscriptionsType,
     subscriptionId: string
   ): Promise<SubscriptionsType> {
-    try {
+      if (!subscriptionId) {
+        throw new CustomError(
+          ErrorEnum[400],
+          "Subscription ID is required",
+          ErrorCodes.BAD_REQUEST
+        );
+      }
+      await this.checkPayload(subscription);
       const updatedSubscription = await repo.update(
         subscription,
         subscriptionId
       );
       return updatedSubscription;
-    } catch (error: any) {
-      throw error;
+   
+  }
+
+  private async checkPayload(
+    subscription: SubscriptionsType
+  ): Promise<void> {
+    if (!subscription.name || !subscription.amount) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Subscription name and amount are required",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    if (subscription.duration < 1){
+      throw new CustomError(
+        ErrorEnum[400],
+        "Invalid subscription duration",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    if (subscription.autorenew && typeof subscription.autorenew !== "boolean") {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Autorenew must be a boolean value",
+        ErrorCodes.BAD_REQUEST
+      );
     }
   }
 

@@ -46,8 +46,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CHECKAPPTOKEN = CHECKAPPTOKEN;
-const error_1 = __importStar(require("../../utils/error"));
+const error_1 = require("../../utils/error");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
+const CustomError_1 = __importStar(require("../../utils/CustomError"));
 function CHECKAPPTOKEN(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -58,18 +59,16 @@ function CHECKAPPTOKEN(req, res, next) {
             }
             // Extract the token from the Authorization header
             const tokenParts = authorizationHeader.split(" ");
-            if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer")
-                throw yield error_1.default.CustomError(error_1.ErrorEnum[403], "Invalid Authorization header format");
+            if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Authorization header format", CustomError_1.ErrorCodes.FORBIDDEN);
+            }
             let bearerToken = tokenParts[1];
             bearerToken = yield helpers_1.default.DECODE_TOKEN(bearerToken);
             res.locals.sessionId = bearerToken;
             next();
         }
         catch (error) {
-            let errors = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-            res
-                .status(errors.code)
-                .json({ error: errors.message, message: errors.exMessage });
+            CustomError_1.CustomErrorHandler.handle(error, res);
         }
     });
 }

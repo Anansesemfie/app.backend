@@ -1,5 +1,5 @@
+import CustomError, { CustomErrorHandler } from "../utils/CustomError";
 import language from "../services/languageService";
-import errorHandler from "../utils/error";
 import { Request, Response } from "express";
 
 export const createLanguage = async (req: Request, res: Response) => {
@@ -10,11 +10,7 @@ export const createLanguage = async (req: Request, res: Response) => {
 
     res.status(201).json({ data: result });
   } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+    CustomErrorHandler.handle(error, res);
   }
 };
 
@@ -24,10 +20,6 @@ export const getAll = async (req: Request, res: Response) => {
 
     res.status(200).json({ data: result });
   } catch (error: any) {
-    const { code, message, exMessage } = await errorHandler.HandleError(
-      error?.code,
-      error?.message
-    );
-    res.status(code).json({ error: message, message: exMessage });
+    CustomErrorHandler.handle(error, res);
   }
 };

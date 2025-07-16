@@ -1,15 +1,17 @@
 import { Organization } from "../models";
 import { OrganizationType } from "../../dto";
-import errHandler, { ErrorEnum } from "../../utils/error";
-
+import { ErrorEnum } from "../../utils/error";
+import CustomError, { ErrorCodes } from "../../utils/CustomError";
 class OrganizationRepository {
   public async create(
     organization: OrganizationType
   ): Promise<OrganizationType> {
     try {
       return await Organization.create(organization);
-    } catch (error: any) {
-      throw await errHandler.CustomError(ErrorEnum[400], error._message);
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400], 
+        (error as Error).message ?? "Error creating organization",
+         ErrorCodes.BAD_REQUEST);
     }
   }
 
@@ -21,10 +23,10 @@ class OrganizationRepository {
         $or: [{ _id: organizationNameOrId }, { name: organizationNameOrId }],
       });
       return fetchedOrganization;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error fetching organization"
+    } catch (error) {
+      throw new CustomError(ErrorEnum[400],
+        (error as Error).message ?? "Error fetching organization",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -39,10 +41,11 @@ class OrganizationRepository {
         { new: true }
       );
       return updatedOrganization;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
+    } catch (error) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error updating organization"
+        (error as Error).message ?? "Error updating organization",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
@@ -50,21 +53,24 @@ class OrganizationRepository {
     try {
       const fetchedOrganizations = await Organization.find();
       return fetchedOrganizations;
-    } catch (error: any) {
-      throw await errHandler.CustomError(
+    } catch (error) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error fetching organizations"
+        (error as Error).message ?? "Error fetching organizations",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
   public async delete(organizationId: string): Promise<void> {
     try {
       await Organization.findByIdAndDelete(organizationId);
-    } catch (error: any) {
-      throw await errHandler.CustomError(
+    } catch (error) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error deleting organization"
+        (error as Error).message ?? "Error deleting organization",
+        ErrorCodes.BAD_REQUEST
       );
+      
     }
   }
 }

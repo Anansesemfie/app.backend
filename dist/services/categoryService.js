@@ -46,32 +46,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const categoryRepository_1 = __importDefault(require("../db/repository/categoryRepository"));
-const error_1 = __importStar(require("../utils/error"));
+const error_1 = require("../utils/error");
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 class CategoryService {
     fetchCategory(term) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const categories = yield categoryRepository_1.default.getById(term);
-                if (!categories)
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "Category not found");
-                return yield this.formatCategory(categories);
+            const categories = yield categoryRepository_1.default.getById(term);
+            if (!categories) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Category not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            catch (error) {
-                throw error;
-            }
+            return yield this.formatCategory(categories);
         });
     }
     fetchAllCategories() {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const categories = yield categoryRepository_1.default.getAll();
-                if (!categories)
-                    throw yield error_1.default.CustomError(error_1.ErrorEnum[404], "Category not found");
-                return Promise.all(categories.map((category) => this.formatCategory(category)));
+            const categories = yield categoryRepository_1.default.getAll();
+            if (!categories) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Category not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            catch (error) {
-                throw error;
-            }
+            return Promise.all(categories.map((category) => this.formatCategory(category)));
         });
     }
     formatCategory(category) {

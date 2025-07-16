@@ -1,8 +1,8 @@
 import sendGrid from "@sendgrid/mail";
 import { EMAIL_OPERAND, SENDGRID_KEY } from "../utils/env";
 import { EmailOptions, IEmailService } from "../services/utils/interfaces";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 
-import HELPERS from "../utils/helpers";
 class SENDGRID implements IEmailService {
   private sgEmail = sendGrid;
   private defaultOptions = {
@@ -25,23 +25,16 @@ class SENDGRID implements IEmailService {
    */
   public async send(options: EmailOptions) {
     const email = { ...this.defaultOptions, ...options };
-
-    try {
       const response = await this.sgEmail.send(email);
-      if (!response) false;
-
-      this.logInfo = `SendGrid: Email sent to ${email.to}`;
-      return true;
-    } catch (error: unknown) {
-      this.logInfo = `SendGrid: Error sending email to ${email.to}`;
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("An error occurred while sending email");
+      if (!response){
+        throw new CustomError(
+          'Internal Server Error',
+          "Failed to send email",
+          ErrorCodes.INTERNAL_SERVER_ERROR
+        );
       }
-    } finally {
-      HELPERS.logger(this.logInfo);
-    }
+      return true;
+    
   }
 }
 

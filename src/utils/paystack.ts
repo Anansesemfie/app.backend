@@ -1,6 +1,7 @@
-import HELPERS from "../utils/helpers";
-import errorHandler, { ErrorEnum } from "../utils/error";
+
+import  { ErrorEnum } from "../utils/error";
 import { PAYSTACK_SECRET_KEY, PAYSTACK_PUBLIC_KEY } from "./env";
+import CustomError,{ErrorCodes} from "../utils/CustomError";
 type METADATA = {
   customer: {
     id: string;
@@ -116,17 +117,17 @@ class Paystack {
     metadata: METADATA,
     callback_url: string | null = null
   ): Promise<PAYSTACK_INIT_RESPONSE> {
-    try {
-      if (!amount || !email) {
-        throw await errorHandler.CustomError(
-          ErrorEnum[400],
-          "missing required fields for transaction initialization"
-        );
-      }
-      const response = await fetch(
-        "https://api.paystack.co/transaction/initialize",
-        {
-          method: "POST",
+    if (!amount || !email) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "missing required fields for transaction initialization",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const response = await fetch(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        method: "POST",
           headers: {
             Authorization: `Bearer ${this.secretKey}`,
             "Content-Type": "application/json",
@@ -141,37 +142,25 @@ class Paystack {
       );
       const data: PAYSTACK_INIT_RESPONSE = await response.json();
       if (!data.status) {
-        throw await errorHandler.CustomError(ErrorEnum[400], data.message);
-      }
-
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } initializing transaction @ ${HELPERS.currentTime()}`;
-
-      if (!data.status) {
-        throw new Error(data.message);
+        throw new CustomError(
+          ErrorEnum[400],
+          data.message,
+          ErrorCodes.BAD_REQUEST
+        );
       }
 
       return data;
-    } catch (error) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } initializing transaction @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string, this.serviceName);
-      this.logInfo = null;
-    }
+    
   }
 
   public async verifyTransaction(
     reference: string
   ): Promise<PAYSTACK_VERIFY_RESPONSE> {
-    try {
       if (!reference) {
-        throw await errorHandler.CustomError(
+        throw new CustomError(
           ErrorEnum[400],
-          "missing required fields for transaction verification"
+          "Reference is required for verification",
+          ErrorCodes.BAD_REQUEST
         );
       }
 
@@ -187,26 +176,14 @@ class Paystack {
       );
       const data: PAYSTACK_VERIFY_RESPONSE = await response.json();
       if (!data.status) {
-        throw await errorHandler.CustomError(ErrorEnum[400], data.message);
-      }
-      this.logInfo = `${
-        HELPERS.loggerInfo.success
-      } verifying transaction @ ${HELPERS.currentTime()}`;
-
-      if (!data.status) {
-        throw new Error(data.message);
+        throw new CustomError(
+          ErrorEnum[400],
+          data.message,
+          ErrorCodes.BAD_REQUEST
+        );
       }
 
       return data;
-    } catch (error) {
-      this.logInfo = `${
-        HELPERS.loggerInfo.error
-      } verifying transaction @ ${HELPERS.currentTime()}`;
-      throw error;
-    } finally {
-      await HELPERS.logger(this.logInfo as string, this.serviceName);
-      this.logInfo = null;
-    }
   }
 }
 

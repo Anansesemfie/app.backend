@@ -1,4 +1,4 @@
-import { S3, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   AWS_S3_BUCKET_IMAGES,
@@ -6,7 +6,8 @@ import {
   AWS_SECRET_ACCESS_KEY,
   AWS_REGION,
 } from "./env";
-import errorHandler, { ErrorEnum } from "../utils/error";
+import  { ErrorEnum } from "../utils/error";
+import CustomError from "./CustomError";
 
 class AWS_S3 {
   private readonly accessKeyId = AWS_ACCESS_KEY_ID;
@@ -38,21 +39,28 @@ class AWS_S3 {
       Key: fileName,
       ContentType: fileType,
     };
-
-    try {
-      const signedURL = await getSignedUrl(
-        this.s3,
-        new PutObjectCommand(s3Params),
-        { expiresIn: this.expires }
-      );
-      return { signedURL, time: this.expires };
-    } catch (error) {
-      console.log({error})
-      throw await errorHandler.CustomError(
-        ErrorEnum[500],
-        "Could not generate signed URL"
+    const signedURL = await getSignedUrl(
+      this.s3,
+      new PutObjectCommand(s3Params),
+      { expiresIn: this.expires }
+    );
+    if (!signedURL) {
+      throw new CustomError(
+        "Unknown error",
+        "Could not generate signed URL",
+        400
       );
     }
+    return { signedURL, time: this.expires };
+  }
+
+  async deleteObject(key: string): Promise<void> {
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      })
+    );
   }
 }
 

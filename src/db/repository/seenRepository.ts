@@ -1,5 +1,6 @@
 import { Seen } from "../models";
 import type { SeenType } from "../../dto";
+import HELPERS from "../../utils/helpers";
 
 class SeenRepository {
   public async create(seen: SeenType): Promise<SeenType> {
@@ -10,8 +11,12 @@ class SeenRepository {
     return seens;
   }
 
-  public async fetchOne(bookId: string, userId = ""): Promise<SeenType> {
-    const seen = await Seen.findOne({ bookID: bookId, user: userId });
+  public async fetchOne(
+    bookId: string,
+    userId = "",
+    period: string
+  ): Promise<SeenType> {
+    const seen = await Seen.findOne({ bookID: bookId, user: userId, period });
     return seen;
   }
 
@@ -23,13 +28,13 @@ class SeenRepository {
     return seen;
   }
 
-  public async update(
-    params: { bookID: string; user: string; periodId: string },
-    payload: object
-  ): Promise<SeenType> {
-    const updatedSeen = await Seen.findOneAndUpdate(params, payload, {
+  public async update(id: string, payload: object): Promise<SeenType> {
+    const updatedSeen = await Seen.findOneAndUpdate({ _id: id }, payload, {
       new: true,
     });
+    if (!updatedSeen) {
+      throw new Error("Seen not found or update failed");
+    }
     return updatedSeen;
   }
 }

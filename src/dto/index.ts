@@ -59,6 +59,13 @@ export type BookUpdateType = BookType & {
   languages?: string[];
   folder?: string;
   cover?: string;
+  meta?: {
+    played?: number;
+    views?: number;
+    likes?: number;
+    dislikes?: number;
+    comments?: number;
+  };
 };
 
 export type ChapterType = {
@@ -67,6 +74,7 @@ export type ChapterType = {
   description: string;
   file: string;
   mimetype: string;
+  password: string;
   book: string;
   createdAt?: Date;
 };
@@ -74,17 +82,19 @@ export type ChapterType = {
 export type ChapterResponseType = {
   id: string;
   title: string;
+  description: string;
   content?: string; //TODO:Remove this line
-  book: BookType;
+  book: BookResponseType;
+  password: string;
   createdAt: string | Date;
 };
 export type SeenType = {
   _id?: string;
-  periodId?: string;
+  period?: string;
   user: string;
   bookID: string;
   seenAt?: Date;
-  playedAt?: string;
+  playedAt?: (string | Date)[];
   createdAt?: string;
 };
 
@@ -160,6 +170,7 @@ export type ReactionType = {
   bookID: string;
   user: string;
   action: "Liked" | "Disliked";
+  period?: string;
   createdAt?: string;
   deletedAt?: string;
 };
@@ -169,6 +180,7 @@ export type CommentType = {
   bookID: string;
   user: string;
   comment: string;
+  period: string;
   createdAt?: string;
   deletedAt?: string;
 };

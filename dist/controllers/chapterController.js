@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getChapter = exports.getChapters = void 0;
+const CustomError_1 = require("../utils/CustomError");
 const chapterService_1 = __importDefault(require("../services/chapterService"));
 const getChapters = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -22,7 +23,7 @@ const getChapters = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).json({ data: chapters });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getChapters = getChapters;
@@ -32,7 +33,7 @@ const getChapter = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json({ data: chapter });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getChapter = getChapter;

@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAll = exports.createLanguage = void 0;
+const CustomError_1 = require("../utils/CustomError");
 const languageService_1 = __importDefault(require("../services/languageService"));
-const error_1 = __importDefault(require("../utils/error"));
 const createLanguage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
@@ -23,8 +23,7 @@ const createLanguage = (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(201).json({ data: result });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.createLanguage = createLanguage;
@@ -34,8 +33,7 @@ const getAll = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ data: result });
     }
     catch (error) {
-        const { code, message, exMessage } = yield error_1.default.HandleError(error === null || error === void 0 ? void 0 : error.code, error === null || error === void 0 ? void 0 : error.message);
-        res.status(code).json({ error: message, message: exMessage });
+        CustomError_1.CustomErrorHandler.handle(error, res);
     }
 });
 exports.getAll = getAll;

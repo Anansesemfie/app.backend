@@ -1,90 +1,96 @@
 import periodRepository from "../db/repository/periodRepository";
 import type { PeriodType, PeriodResponseType } from "../dto";
-import errHandler, { ErrorEnum } from "../utils/error";
+import { ErrorEnum } from "../utils/error";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 import HELPERS from "../utils/helpers";
 
 class PeriodService {
   public async create(period: PeriodType): Promise<PeriodResponseType> {
-    try {
-      const existingPeriod = await this.fetchLatest();
-      if (existingPeriod) {
-        await this.deactivate(existingPeriod._id ?? "");
-      }
-      const createdPeriod = await periodRepository.create(period);
-      return this.formatPeriod(createdPeriod);
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(ErrorEnum[400], error._message);
+    if (!period) {
+      period = await this.newPeriod();
     }
+    this.checkPayload(period);
+    const existingPeriod = await this.fetchLatest();
+    if (existingPeriod) {
+      await this.deactivate(existingPeriod._id ?? "");
+    }
+    const createdPeriod = await periodRepository.create(period);
+    return this.formatPeriod(createdPeriod);
   }
 
   public async fetchOne(periodId: string): Promise<PeriodResponseType> {
-    try {
-      const fetchedPeriod = await periodRepository.fetchOne(periodId);
-      return await this.formatPeriod(fetchedPeriod);
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error fetching period"
-      );
-    }
+    const fetchedPeriod = await periodRepository.fetchOne(periodId);
+    return await this.formatPeriod(fetchedPeriod);
   }
   public async fetchLatest(): Promise<PeriodType> {
-    try {
-      const fetchedPeriod = await periodRepository.fetchLatest();
-      return fetchedPeriod;
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error fetching latest period"
-      );
-    }
+    const fetchedPeriod = await periodRepository.fetchLatest();
+    return fetchedPeriod;
   }
 
   public async update(
     periodId: string,
     period: Partial<PeriodType>
   ): Promise<PeriodResponseType> {
-    try {
-      const updatedPeriod = await periodRepository.update(periodId, period);
-      return await this.formatPeriod(updatedPeriod);
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(
+    if (!periodId) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error updating period"
+        "Period ID is required",
+        ErrorCodes.BAD_REQUEST
       );
     }
+    const updatedPeriod = await periodRepository.update(periodId, period);
+    return await this.formatPeriod(updatedPeriod);
   }
 
   public async fetchAll(): Promise<PeriodResponseType[]> {
-    try {
-      const fetchedPeriods = await periodRepository.fetchAll();
-      return Promise.all(
-        fetchedPeriods.map((period) => this.formatPeriod(period))
-      );
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(
-        ErrorEnum[400],
-        "Error fetching periods"
-      );
-    }
+    const fetchedPeriods = await periodRepository.fetchAll();
+    return Promise.all(
+      fetchedPeriods.map((period) => this.formatPeriod(period))
+    );
   }
 
   public async deactivate(periodId: string): Promise<PeriodResponseType> {
-    try {
-      const updatedPeriod = await this.update(periodId, {
-        active: false,
-        endDate: HELPERS.currentTime("DD/MM/YYYY") as Date,
-        updatedAt: new Date(),
-      });
-      return updatedPeriod;
-    } catch (error: unknown) {
-      throw await errHandler.CustomError(
+    if (!periodId) {
+      throw new CustomError(
         ErrorEnum[400],
-        "Error deactivating period"
+        "Period ID is required",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const updatedPeriod = await this.update(periodId, {
+      active: false,
+      endDate: HELPERS.currentTime("YYYY-MM-DD") as Date,
+      updatedAt: new Date(),
+    });
+    return updatedPeriod;
+  }
+
+  private async newPeriod(): Promise<PeriodType> {
+    const { firstDate, lastDate } = await HELPERS.getFirstAndLastDateOfMonth();
+    return {
+      startDate: firstDate,
+      endDate: lastDate,
+      active: true,
+      year: firstDate.getFullYear(),
+      month: firstDate.getMonth() + 1, // JavaScript months are 0-indexed
+    };
+  }
+  private async checkPayload(period: PeriodType) {
+    if (!period.startDate || !period.endDate) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Period start and end dates are required",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    if (period.startDate > period.endDate) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Period start date cannot be after end date",
+        ErrorCodes.BAD_REQUEST
       );
     }
   }
-
   public async formatPeriod(period: PeriodType): Promise<PeriodResponseType> {
     return {
       id: period._id ?? "",
