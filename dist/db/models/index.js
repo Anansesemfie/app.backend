@@ -24,6 +24,7 @@ const Period_1 = __importDefault(require("./Period"));
 const Organization_1 = __importDefault(require("./Organization"));
 mongoose_1.default.connect(env_1.MONGODB_URI, {
     autoIndex: true,
+    dbName: env_1.MONGODB_DBNAME
 });
 exports.Book = mongoose_1.default.model("Books", (0, Books_1.default)(mongoose_1.default));
 exports.Chapter = mongoose_1.default.model("chapters", (0, Chapter_1.default)(mongoose_1.default));
