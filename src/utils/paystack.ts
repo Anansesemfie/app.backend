@@ -1,7 +1,6 @@
-
-import  { ErrorEnum } from "../utils/error";
+import { ErrorEnum } from "../utils/error";
 import { PAYSTACK_SECRET_KEY, PAYSTACK_PUBLIC_KEY } from "./env";
-import CustomError,{ErrorCodes} from "../utils/CustomError";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 type METADATA = {
   customer: {
     id: string;
@@ -128,62 +127,61 @@ class Paystack {
       "https://api.paystack.co/transaction/initialize",
       {
         method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.secretKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            amount: amount * 100,
-            email,
-            metadata,
-            callback_url,
-          }),
-        }
-      );
-      const data: PAYSTACK_INIT_RESPONSE = await response.json();
-      if (!data.status) {
-        throw new CustomError(
-          ErrorEnum[400],
-          data.message,
-          ErrorCodes.BAD_REQUEST
-        );
+        headers: {
+          Authorization: `Bearer ${this.secretKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: amount * 100,
+          email,
+          metadata,
+          callback_url,
+        }),
       }
+    );
+    const data: PAYSTACK_INIT_RESPONSE = await response.json();
+    if (!data.status) {
+      throw new CustomError(
+        ErrorEnum[400],
+        data.message,
+        ErrorCodes.BAD_REQUEST
+      );
+    }
 
-      return data;
-    
+    return data;
   }
 
   public async verifyTransaction(
     reference: string
   ): Promise<PAYSTACK_VERIFY_RESPONSE> {
-      if (!reference) {
-        throw new CustomError(
-          ErrorEnum[400],
-          "Reference is required for verification",
-          ErrorCodes.BAD_REQUEST
-        );
-      }
-
-      const response = await fetch(
-        `https://api.paystack.co/transaction/verify/${reference}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.secretKey}`,
-            "Content-Type": "application/json",
-          },
-        }
+    if (!reference) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Reference is required for verification",
+        ErrorCodes.BAD_REQUEST
       );
-      const data: PAYSTACK_VERIFY_RESPONSE = await response.json();
-      if (!data.status) {
-        throw new CustomError(
-          ErrorEnum[400],
-          data.message,
-          ErrorCodes.BAD_REQUEST
-        );
-      }
+    }
 
-      return data;
+    const response = await fetch(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.secretKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data: PAYSTACK_VERIFY_RESPONSE = await response.json();
+    if (!data.status) {
+      throw new CustomError(
+        ErrorEnum[400],
+        data.message,
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+
+    return data;
   }
 }
 
