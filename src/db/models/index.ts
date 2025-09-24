@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-import { MONGODB_URI } from "../../utils/env";
+import { MONGODB_URI, MONGODB_DBNAME } from "../../utils/env";
 
 import Books from "./Books";
 import Chapters from "./Chapter";
@@ -22,6 +22,7 @@ import { SessionType, UserType } from "../../dto/index";
 
 Mongoose.connect(MONGODB_URI, {
   autoIndex: true,
+  dbName: MONGODB_DBNAME
 });
 
 export const Book = Mongoose.model("Books", Books(Mongoose));

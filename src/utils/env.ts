@@ -3,6 +3,7 @@ import "dotenv/config";
 const isProduction = process.env.NODE_ENV === "production";
 
 export const MONGODB_URI = process.env.MONGODB_URI ?? "";
+export const MONGODB_DBNAME = process.env.MONGODB_DBNAME ?? "";
 export const HOST_URI = process.env.HOST_URI ?? "localhost";
 export const PORT = process.env.PORT ?? 5000;
 export const SERVER_LOG_FILE = process.env.SERVER_LOG_FILE ?? "/logs.log";
