@@ -247,7 +247,6 @@ export class UserService {
   }
 
   public async verifyAccount(verificationCode: string) {
-      HELPERS.LOG(verificationCode);
       if (!verificationCode){
         throw new CustomError(
           ErrorEnum[400],

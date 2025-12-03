@@ -25,6 +25,7 @@ class BookRepository {
       });
       return fetchedBook;
     } catch (error) {
+      // console.error("Error in fetchOne:", error);
       throw new CustomError(
         ErrorEnum[400],
         (error as Error).message ?? "Error fetching book",
@@ -48,13 +49,10 @@ class BookRepository {
     }
   }
 
-  public async delete(bookId:string) {
-    try{
-      HELPERS.LOG('delete',{bookId})
-      await Book.findByIdAndDelete(bookId)
-
-    }
-    catch(error){
+  public async delete(bookId: string) {
+    try {
+      await Book.findByIdAndDelete(bookId);
+    } catch (error) {
       throw new CustomError(
         ErrorEnum[500],
         (error as Error).message ?? "Error deleting book",
@@ -76,7 +74,6 @@ class BookRepository {
         .sort({ createdAt: -1 });
       return fetchedBooks;
     } catch (error) {
-      HELPERS.LOG("Error fetching books:", { error });
       throw new CustomError(
         ErrorEnum[400],
         (error as Error).message ?? "Error fetching books",

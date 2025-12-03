@@ -6,7 +6,6 @@ import periodService from "./periodService";
 import { ErrorEnum } from "../utils/error";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 
-
 class ReactionService {
   private logInfo = "";
   public async createReaction({
@@ -18,23 +17,23 @@ class ReactionService {
     bookID: string;
     action: "Liked" | "Disliked";
   }): Promise<ReactionType> {
-      if (!sessionID || !bookID || !action) {
-       throw new CustomError(
-          ErrorEnum[403],
-          "Invalid session ID, book ID or action",
-          ErrorCodes.BAD_REQUEST
-        );
-      }
-      const {session} = await sessionService.getSession(sessionID);
-      const period = await periodService.fetchLatest();
+    if (!sessionID || !bookID || !action) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid session ID, book ID or action",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const { session } = await sessionService.getSession(sessionID);
+    const period = await periodService.fetchLatest();
 
-      const newReaction = await reactionRepository.create({
-        bookID,
-        user: session?.user as string,
-        action: action,
-        period: period._id ?? "",
-      });
-      return newReaction;
+    const newReaction = await reactionRepository.create({
+      bookID,
+      user: session?.user as string,
+      action: action,
+      period: period._id ?? "",
+    });
+    return newReaction;
   }
   public async updateReaction({
     reaction,
@@ -57,26 +56,46 @@ class ReactionService {
         ErrorCodes.BAD_REQUEST
       );
     }
-      const react: ReactionType = {
-        bookID: reaction.bookID,
-        user: reaction.user,
-        action,
-      };
-      const updatedReaction = await reactionRepository.updateReaction(
-        reaction?._id as string,
-        react
-      );
-      return updatedReaction;
+    const react: ReactionType = {
+      bookID: reaction.bookID,
+      user: reaction.user,
+      action,
+    };
+    const updatedReaction = await reactionRepository.updateReaction(
+      reaction?._id as string,
+      react
+    );
+    return updatedReaction;
   }
 
-  public async getReactions(bookID: string, params?: {}): Promise<ReactionType[]> {
+  public async getReactions(
+    bookID: string,
+    params?: {}
+  ): Promise<ReactionType[]> {
+    if (!bookID) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid book ID",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const reactions = await reactionRepository.getReactions(bookID, params);
+    return reactions;
+  }
 
-      if (!bookID) {
-        throw new CustomError(ErrorEnum[403], "Invalid book ID", ErrorCodes.BAD_REQUEST);
-      }
-      const reactions = await reactionRepository.getReactions(bookID, params);
-      return reactions;
-    
+  public async getUserReaction(userId: string): Promise<string[]> {
+    if (!userId) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid user ID",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const reactions = await reactionRepository.getUserReactions(userId);
+    const likedBooks = reactions
+      .filter((reaction) => reaction.action === "Liked")
+      .map((reaction) => reaction.bookID);
+    return likedBooks;
   }
 }
 

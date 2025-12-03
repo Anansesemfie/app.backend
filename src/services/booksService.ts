@@ -3,6 +3,7 @@ import seenService from "./seenService";
 import sessionService from "./sessionService";
 import subscribersService from "./subscribersService";
 import chapterService from "./chapterService";
+import ReactionService from "./reactionService";
 
 import { BookResponseType, BookType, BookUpdateType } from "../dto";
 import HELPERS from "../utils/helpers";
@@ -64,7 +65,6 @@ class BookService {
     token?: string;
   }): Promise<{ books: BookResponseType[]; page: number; limit: number }> {
     let books: BookType[] = [];
-    HELPERS.LOG({ page, limit, token, params });
     if (token) {
       const booksToFetch = await this.fetchBooksInSubscription(token);
       if (!booksToFetch.length) {
@@ -250,8 +250,8 @@ class BookService {
     search?: string;
     language?: string;
     category?: string;
-  }) {
-    const books: BookType[] = [];
+  }): Promise<BookResponseType[]> {
+    const books: BookResponseType[] = [];
     try {
       const params: {
         status: BookStatus;
@@ -269,11 +269,29 @@ class BookService {
         params["category"] = { $in: [category] };
       }
       const fetchByBooks = await Repo.fetchAll(limit, page, params);
-      books.push(...fetchByBooks);
-      return this.getUniqueBooks(books);
+      const uniqueBooks = this.getUniqueBooks(fetchByBooks);
+      const formatBooks = await Promise.all(
+        uniqueBooks.map((book) => this.formatBookData(book))
+      );
+      books.push(...formatBooks);
+      return books;
     } catch (error: any) {
       throw error;
     }
+  }
+
+  public async getLikedBooksByUser(
+    sessionId: string
+  ): Promise<BookResponseType[]> {
+    const { user } = await sessionService.getSession(sessionId);
+    const userId = user._id as string;
+    const likedBookIds = await ReactionService.getUserReaction(userId);
+    const likedBooks: BookResponseType[] = [];
+    for (const bookId of likedBookIds) {
+      const book = await this.fetchBook(bookId);
+      likedBooks.push(book);
+    }
+    return likedBooks;
   }
 
   private getUniqueBooks(books: BookType[]): BookType[] {

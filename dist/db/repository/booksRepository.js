@@ -41,15 +41,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
 const error_1 = require("../../utils/error");
 const utils_1 = require("../models/utils");
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
-const helpers_1 = __importDefault(require("../../utils/helpers"));
 class BookRepository {
     create(book) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,6 +68,7 @@ class BookRepository {
                 return fetchedBook;
             }
             catch (error) {
+                // console.error("Error in fetchOne:", error);
                 throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error fetching book", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
@@ -94,7 +91,6 @@ class BookRepository {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                helpers_1.default.LOG('delete', { bookId });
                 yield models_1.Book.findByIdAndDelete(bookId);
             }
             catch (error) {
@@ -114,7 +110,6 @@ class BookRepository {
                 return fetchedBooks;
             }
             catch (error) {
-                helpers_1.default.LOG("Error fetching books:", { error });
                 throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error fetching books", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });

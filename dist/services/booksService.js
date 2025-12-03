@@ -50,6 +50,7 @@ const seenService_1 = __importDefault(require("./seenService"));
 const sessionService_1 = __importDefault(require("./sessionService"));
 const subscribersService_1 = __importDefault(require("./subscribersService"));
 const chapterService_1 = __importDefault(require("./chapterService"));
+const reactionService_1 = __importDefault(require("./reactionService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = require("../utils/error");
 const utils_1 = require("../db/models/utils");
@@ -88,7 +89,6 @@ class BookService {
     fetchBooks(_a) {
         return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, }) {
             let books = [];
-            helpers_1.default.LOG({ page, limit, token, params });
             if (token) {
                 const booksToFetch = yield this.fetchBooksInSubscription(token);
                 if (!booksToFetch.length) {
@@ -218,12 +218,27 @@ class BookService {
                     params["category"] = { $in: [category] };
                 }
                 const fetchByBooks = yield booksRepository_1.default.fetchAll(limit, page, params);
-                books.push(...fetchByBooks);
-                return this.getUniqueBooks(books);
+                const uniqueBooks = this.getUniqueBooks(fetchByBooks);
+                const formatBooks = yield Promise.all(uniqueBooks.map((book) => this.formatBookData(book)));
+                books.push(...formatBooks);
+                return books;
             }
             catch (error) {
                 throw error;
             }
+        });
+    }
+    getLikedBooksByUser(sessionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = yield sessionService_1.default.getSession(sessionId);
+            const userId = user._id;
+            const likedBookIds = yield reactionService_1.default.getUserReaction(userId);
+            const likedBooks = [];
+            for (const bookId of likedBookIds) {
+                const book = yield this.fetchBook(bookId);
+                likedBooks.push(book);
+            }
+            return likedBooks;
         });
     }
     getUniqueBooks(books) {

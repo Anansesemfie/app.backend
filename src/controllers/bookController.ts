@@ -1,7 +1,7 @@
 import booksService from "../services/booksService";
 import { Request, Response } from "express";
 
-import{ CustomErrorHandler } from "../utils/CustomError";
+import { CustomErrorHandler } from "../utils/CustomError";
 import HELPERS from "../utils/helpers";
 
 export const getBooks = async (req: Request, res: Response) => {
@@ -9,9 +9,12 @@ export const getBooks = async (req: Request, res: Response) => {
     const page = Number(req.query.page as string) || 1;
     const limit = Number(req.query.limit as string) || 10;
     const search = req.query.search as string;
-    const token = res.locals.sessionId ?? '';
-    HELPERS.LOG({token})
-    const {books,page:index,limit:pageSize} = await booksService.fetchBooks({
+    const token = res.locals.sessionId ?? "";
+    const {
+      books,
+      page: index,
+      limit: pageSize,
+    } = await booksService.fetchBooks({
       page,
       limit,
       params: { title: { $regex: search } },
@@ -52,6 +55,16 @@ export const filterBooks = async (req: Request, res: Response) => {
       category,
     });
     res.status(200).json({ data: books });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};
+
+export const getLikedBooksByUser = async (req: Request, res: Response) => {
+  try {
+    const sessionId = res.locals.sessionId;
+    const likedBooks = await booksService.getLikedBooksByUser(sessionId);
+    res.status(200).json({ data: likedBooks });
   } catch (error) {
     CustomErrorHandler.handle(error, res);
   }

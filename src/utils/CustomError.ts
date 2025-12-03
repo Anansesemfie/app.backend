@@ -39,7 +39,7 @@ class CustomError extends Error {
 
 class CustomErrorHandler {
   public static handle(error: unknown, res: Response) {
-   
+
     // If the error is an instance of CustomError, return its properties
     if (error instanceof CustomError) {
       return res.status(error.status).json({
@@ -47,15 +47,13 @@ class CustomErrorHandler {
         message: error.message,
         status: error.status,
       });
-    }
-    else if (error instanceof SyntaxError) {
+    } else if (error instanceof SyntaxError) {
       return res.status(ErrorCodes.BAD_REQUEST).json({
         code: "BAD_REQUEST",
         message: error.message,
         status: ErrorCodes.BAD_REQUEST,
       });
-    }
-    else if (error instanceof TypeError) {
+    } else if (error instanceof TypeError) {
       return res.status(ErrorCodes.BAD_REQUEST).json({
         code: "TYPE_ERROR",
         message: error.message,
@@ -69,16 +67,14 @@ class CustomErrorHandler {
         message: error.message,
         status: ErrorCodes.BAD_REQUEST,
       });
-    }
-    else if( error instanceof Error) {
+    } else if (error instanceof Error) {
       // If it's a standard Error, return a generic error response
       return res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({
         code: "INTERNAL_SERVER_ERROR",
         message: error.message,
         status: ErrorCodes.INTERNAL_SERVER_ERROR,
       });
-    }
-    else{
+    } else {
       // If it's an unknown type, return a generic error response
       return res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({
         code: "UNKNOWN_ERROR",
@@ -86,7 +82,6 @@ class CustomErrorHandler {
         status: ErrorCodes.INTERNAL_SERVER_ERROR,
       });
     }
-
   }
 }
 export default CustomError;

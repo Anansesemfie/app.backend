@@ -53,6 +53,14 @@ class ReactionRepository {
     );
     return updatedReaction;
   }
+
+  public async getUserReactions(userId: string): Promise<ReactionType[]> {
+    const reactions = await Reaction.find({
+      user: userId,
+      deletedAt: null,
+    });
+    return reactions;
+  }
 }
 
 export default new ReactionRepository();

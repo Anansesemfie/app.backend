@@ -52,20 +52,24 @@ const error_1 = __importStar(require("../../utils/error"));
 const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
+const helpers_1 = __importDefault(require("../../utils/helpers"));
 class ChapterService {
     constructor(bucketName = env_1.AWS_S3_BUCKET_IMAGES) {
-        this.logInfo = "";
         this.s3 = new aws_s3_1.default(bucketName);
     }
     CreateChapter(chapter, token) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = yield sessionService_1.default.getSession(token);
             this.checkForAdmin(user);
+            let password = "";
+            if (chapter.password) {
+                password = yield helpers_1.default.ENCODE_Token(chapter.password);
+            }
             const newChapter = {
                 title: chapter.title,
                 book: chapter.bookId,
                 file: chapter.content,
-                password: chapter.password,
+                password,
                 description: "",
                 mimetype: chapter.content.split(".").pop(),
             };
@@ -78,23 +82,19 @@ class ChapterService {
             var _a, _b;
             const { user } = yield sessionService_1.default.getSession(token);
             this.checkForAdmin(user);
+            let password = "";
+            if (chapter.password) {
+                password = yield helpers_1.default.ENCODE_Token(chapter.password);
+            }
             const newChapter = {
                 _id: chapter.id,
                 title: chapter.title,
                 file: (_a = chapter.content) !== null && _a !== void 0 ? _a : "",
-                password: chapter.password,
+                password,
                 description: "",
                 mimetype: (_b = chapter.content) === null || _b === void 0 ? void 0 : _b.split(".").pop(),
                 book: chapter.book.id,
             };
-            // _id?: string;
-            // title: string;
-            // description: string;
-            // file: string;
-            // mimetype: string;
-            // password: string;
-            // book: string;
-            // createdAt?: Date;
             const updated = yield chapterService_1.default.updateChapter(id, newChapter);
             return updated;
         });

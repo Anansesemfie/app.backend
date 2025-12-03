@@ -84,9 +84,9 @@ class AudioService {
   private checkForAdmin(user: any): void {
     if (!user || user?.account !== UsersTypes.admin)
       throw new CustomError(
-        ErrorEnum[401],
+        ErrorEnum[403],
         "Invalid User",
-        ErrorCodes.UNAUTHORIZED
+        ErrorCodes.FORBIDDEN
       );
   }
 }

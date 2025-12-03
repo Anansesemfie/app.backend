@@ -97,5 +97,17 @@ class ReactionService {
             return reactions;
         });
     }
+    getUserReaction(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!userId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid user ID", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            const reactions = yield reactionRepository_1.default.getUserReactions(userId);
+            const likedBooks = reactions
+                .filter((reaction) => reaction.action === "Liked")
+                .map((reaction) => reaction.bookID);
+            return likedBooks;
+        });
+    }
 }
 exports.default = new ReactionService();

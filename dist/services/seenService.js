@@ -122,7 +122,6 @@ class SeenService {
             const data = yield seenRepository_1.default.findAll(bookId, {
                 period: periodId,
             });
-            helpers_1.default.LOG((data.filter((item) => { var _a; return Number((_a = item.playedAt) === null || _a === void 0 ? void 0 : _a.length) > 0; })).length);
             const seen = data.filter((item) => item.seenAt);
             const played = data.filter((item) => { var _a; return Number((_a = item.playedAt) === null || _a === void 0 ? void 0 : _a.length) > 0; });
             return { seen: seen.length, played: played.length };

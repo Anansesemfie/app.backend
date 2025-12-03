@@ -87,6 +87,7 @@ export type ChapterResponseType = {
   book: BookResponseType;
   password: string;
   createdAt: string | Date;
+  type: "audio" | "ebook";
 };
 export type SeenType = {
   _id?: string;

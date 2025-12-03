@@ -87,5 +87,14 @@ class ReactionRepository {
             return updatedReaction;
         });
     }
+    getUserReactions(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const reactions = yield models_1.Reaction.find({
+                user: userId,
+                deletedAt: null,
+            });
+            return reactions;
+        });
+    }
 }
 exports.default = new ReactionRepository();

@@ -14,12 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActivateSubscription = void 0;
 const subscribersService_1 = __importDefault(require("../services/subscribersService"));
-const helpers_1 = __importDefault(require("../utils/helpers"));
 const CustomError_1 = require("../utils/CustomError");
 const ActivateSubscription = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { trxref, reference } = req.query;
-        helpers_1.default.LOG({ trxref, reference });
         const response = yield subscribersService_1.default.verifySubscription((reference !== null && reference !== void 0 ? reference : trxref));
         res.status(200).json({ data: response });
     }

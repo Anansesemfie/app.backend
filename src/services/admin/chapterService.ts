@@ -6,9 +6,9 @@ import ErrorHandler, { ErrorEnum } from "../../utils/error";
 import sessionService from "../sessionService";
 import { UsersTypes } from "../../db/models/utils";
 import CustomError, { ErrorCodes } from "../../utils/CustomError";
+import HELPERS from "../../utils/helpers";
 
 class ChapterService {
-  private logInfo = "";
   private s3: AWS_S3;
   constructor(bucketName: string = AWS_S3_BUCKET_IMAGES) {
     this.s3 = new AWS_S3(bucketName);
@@ -25,11 +25,15 @@ class ChapterService {
   ): Promise<object> {
     const { user } = await sessionService.getSession(token);
     this.checkForAdmin(user);
+    let password = "";
+    if (chapter.password) {
+      password = await HELPERS.ENCODE_Token(chapter.password);
+    }
     const newChapter: ChapterType = {
       title: chapter.title,
       book: chapter.bookId,
       file: chapter.content,
-      password: chapter.password,
+      password,
       description: "",
       mimetype: chapter.content.split(".").pop() as string,
     };
@@ -45,24 +49,19 @@ class ChapterService {
   ): Promise<object> {
     const { user } = await sessionService.getSession(token);
     this.checkForAdmin(user);
+    let password = "";
+    if (chapter.password) {
+      password = await HELPERS.ENCODE_Token(chapter.password);
+    }
     const newChapter = {
       _id: chapter.id,
       title: chapter.title,
       file: chapter.content ?? "",
-      password: chapter.password,
+      password,
       description: "",
       mimetype: chapter.content?.split(".").pop() as string,
       book: chapter.book.id,
     };
-
-    // _id?: string;
-    // title: string;
-    // description: string;
-    // file: string;
-    // mimetype: string;
-    // password: string;
-    // book: string;
-    // createdAt?: Date;
     const updated = await chapterService.updateChapter(id, newChapter);
     return updated;
   }
@@ -97,8 +96,6 @@ class ChapterService {
     if (!user || user?.account !== UsersTypes.admin)
       throw ErrorHandler.CustomError(ErrorEnum[401], "Invalid User");
   }
-
-
 }
 
 export default new ChapterService();

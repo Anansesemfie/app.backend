@@ -223,7 +223,6 @@ class UserService {
     }
     verifyAccount(verificationCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            helpers_1.default.LOG(verificationCode);
             if (!verificationCode) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Verification code is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }

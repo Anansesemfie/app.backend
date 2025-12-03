@@ -105,7 +105,6 @@ class SeenService {
     const data = await seenRepository.findAll(bookId, {
       period: periodId,
     });
-    HELPERS.LOG((data.filter((item) => Number(item.playedAt?.length) > 0)).length)
     const seen = data.filter((item) => item.seenAt);
     const played = data.filter((item) => Number(item.playedAt?.length) > 0);
     return { seen: seen.length, played: played.length };
