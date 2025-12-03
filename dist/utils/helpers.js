@@ -97,7 +97,6 @@ class HELPERS {
                 }));
             }
             catch (error) {
-                console.log(error);
                 throw error;
             }
         });
@@ -120,14 +119,19 @@ class HELPERS {
     }
     static DECODE_TOKEN(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!token) {
-                throw new CustomError_1.default(error_1.ErrorEnum[400], "Token is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+            try {
+                if (!token) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[401], "Token is required", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                }
+                const decodedToken = jsonwebtoken_1.default.verify(token, env_1.SECRET_JWT);
+                if (!(decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.id)) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Token", CustomError_1.ErrorCodes.FORBIDDEN);
+                }
+                return decodedToken.id;
             }
-            const decodedToken = jsonwebtoken_1.default.verify(token, env_1.SECRET_JWT);
-            if (!(decodedToken === null || decodedToken === void 0 ? void 0 : decodedToken.id)) {
-                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Token", CustomError_1.ErrorCodes.UNAUTHORIZED);
+            catch (_a) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Failed to generate random code", CustomError_1.ErrorCodes.UNAUTHORIZED);
             }
-            return decodedToken.id;
         });
     }
     static genRandCode(size = 16) {

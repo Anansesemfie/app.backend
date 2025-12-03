@@ -348,7 +348,6 @@ a, a:hover {
     sendEmail(options, email) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
-            helpers_1.default.LOG("EmailService.sendEmail", options, email);
             yield this.checkEmailOptions(options);
             const msg = {
                 to: options.to,
@@ -379,10 +378,10 @@ a, a:hover {
     checkEmailOptions(options) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!options.to) {
-                throw new CustomError_1.default(error_1.ErrorEnum[401], "Email recipient is required", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Email recipient is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             if (!options.html) {
-                throw new CustomError_1.default(error_1.ErrorEnum[401], "Email content is required", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Email content is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }

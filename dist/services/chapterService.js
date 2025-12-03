@@ -111,6 +111,7 @@ class ChapterService {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             const Book = yield booksService_1.default.fetchBook(chapter.book);
+            const type = chapter.mimetype == 'pdf' ? 'ebook' : 'audio';
             return {
                 id: (_a = chapter._id) !== null && _a !== void 0 ? _a : "",
                 title: chapter.title,
@@ -119,6 +120,7 @@ class ChapterService {
                 password: chapter.password,
                 book: Book,
                 createdAt: (_b = chapter.createdAt) !== null && _b !== void 0 ? _b : "",
+                type
             };
         });
     }

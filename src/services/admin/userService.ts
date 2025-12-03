@@ -14,7 +14,7 @@ class AdminUserService {
       throw new CustomError(
         ErrorEnum[403],
         "Unauthorized to create user",
-        ErrorCodes.UNAUTHORIZED
+        ErrorCodes.FORBIDDEN
       )
     }
       
@@ -24,7 +24,6 @@ class AdminUserService {
   async login({ email, password }: { email: string; password: string }) {
     
       const userRecord = await userRepository.fetchOneByEmail(email);
-      HELPERS.LOG({userRecord})
       if (
         userRecord?.account !== UsersTypes.admin &&
         userRecord?.account !== UsersTypes.associate
@@ -51,7 +50,7 @@ class AdminUserService {
         throw new CustomError(
           ErrorEnum[403],
           "Unauthorized to fetch users",
-          ErrorCodes.UNAUTHORIZED
+          ErrorCodes.FORBIDDEN
         );
       }
 
@@ -69,7 +68,7 @@ class AdminUserService {
       throw new CustomError(
         ErrorEnum[403],
         "Unauthorized to change user role",
-        ErrorCodes.UNAUTHORIZED
+        ErrorCodes.FORBIDDEN
       );
     const user = await userService.updateUser({ account: userType }, userId);
     

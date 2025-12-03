@@ -19,4 +19,5 @@ router.use("/comment", CommentRoute_1.default);
 router.get("/", bookController_1.getBooks);
 router.get("/:bookId", bookController_1.getBook);
 router.get("/filter/all", bookController_1.filterBooks);
+router.get("/liked/all", bookController_1.getLikedBooksByUser);
 exports.default = router;

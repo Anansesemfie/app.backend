@@ -3,6 +3,7 @@ import {
   getBook,
   getBooks,
   filterBooks,
+  getLikedBooksByUser,
 } from "../../../controllers/bookController";
 import Languages from "./LanguageRoute";
 import Chapter from "./ChapterRoute";
@@ -22,5 +23,6 @@ router.use("/comment", Comment);
 router.get("/", getBooks);
 router.get("/:bookId", getBook);
 router.get("/filter/all", filterBooks);
+router.get("/liked/all", getLikedBooksByUser);
 
 export default router;

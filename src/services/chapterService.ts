@@ -75,6 +75,7 @@ class ChapterService {
     chapter: ChapterType
   ): Promise<ChapterResponseType> {
     const Book = await booksService.fetchBook(chapter.book);
+    const type = chapter.mimetype == 'pdf' ? 'ebook':'audio'
     return {
       id: chapter._id ?? "",
       title: chapter.title,
@@ -83,6 +84,7 @@ class ChapterService {
       password: chapter.password,
       book: Book,
       createdAt: chapter.createdAt ?? "",
+      type
     };
   }
 }

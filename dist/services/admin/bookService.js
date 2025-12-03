@@ -108,7 +108,7 @@ class AudioService {
     }
     checkForAdmin(user) {
         if (!user || (user === null || user === void 0 ? void 0 : user.account) !== utils_1.UsersTypes.admin)
-            throw new CustomError_1.default(error_1.ErrorEnum[401], "Invalid User", CustomError_1.ErrorCodes.UNAUTHORIZED);
+            throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid User", CustomError_1.ErrorCodes.FORBIDDEN);
     }
 }
 exports.default = new AudioService();

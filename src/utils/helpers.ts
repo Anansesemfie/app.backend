@@ -5,6 +5,7 @@ import fs from "fs";
 import { ErrorEnum } from "./error";
 import CustomError, { ErrorCodes } from "./CustomError";
 import { SECRET_JWT, SERVER_LOG_FILE, CAN_LOG } from "./env";
+import { error } from "console";
 class HELPERS {
   public static readonly Chars =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" as const;
@@ -81,7 +82,6 @@ class HELPERS {
         }
       });
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -106,27 +106,35 @@ class HELPERS {
   }
 
   public static async DECODE_TOKEN(token: string): Promise<string | undefined> {
-    if (!token) {
-      throw new CustomError(
-        ErrorEnum[400],
-        "Token is required",
-        ErrorCodes.BAD_REQUEST
-      );
-    }
-    const decodedToken: JwtPayload | null = jwt.verify(
-      token,
-      SECRET_JWT
-    ) as JwtPayload | null;
+    try {
+      if (!token) {
+        throw new CustomError(
+          ErrorEnum[401],
+          "Token is required",
+          ErrorCodes.UNAUTHORIZED
+        );
+      }
+      const decodedToken: JwtPayload | null = jwt.verify(
+        token,
+        SECRET_JWT
+      ) as JwtPayload | null;
 
-    if (!decodedToken?.id) {
+      if (!decodedToken?.id) {
+        throw new CustomError(
+          ErrorEnum[403],
+          "Invalid Token",
+          ErrorCodes.FORBIDDEN
+        );
+      }
+
+      return decodedToken.id;
+    } catch {
       throw new CustomError(
-        ErrorEnum[403],
-        "Invalid Token",
+        ErrorEnum[401],
+        "Failed to generate random code",
         ErrorCodes.UNAUTHORIZED
       );
     }
-
-    return decodedToken.id;
   }
 
   public static genRandCode(size: number = 16): string {

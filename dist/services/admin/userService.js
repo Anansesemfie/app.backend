@@ -49,7 +49,6 @@ const userService_1 = __importDefault(require("../userService"));
 const userRepository_1 = __importDefault(require("../../db/repository/userRepository"));
 const error_1 = require("../../utils/error");
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
-const helpers_1 = __importDefault(require("../../utils/helpers"));
 const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
 class AdminUserService {
@@ -60,7 +59,7 @@ class AdminUserService {
         return __awaiter(this, void 0, void 0, function* () {
             const session = yield sessionService_1.default.getSession(sessionId);
             if (session.user.account !== utils_1.UsersTypes.admin) {
-                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to create user", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to create user", CustomError_1.ErrorCodes.FORBIDDEN);
             }
             return yield userService_1.default.create(user);
         });
@@ -68,7 +67,6 @@ class AdminUserService {
     login(_a) {
         return __awaiter(this, arguments, void 0, function* ({ email, password }) {
             const userRecord = yield userRepository_1.default.fetchOneByEmail(email);
-            helpers_1.default.LOG({ userRecord });
             if ((userRecord === null || userRecord === void 0 ? void 0 : userRecord.account) !== utils_1.UsersTypes.admin &&
                 (userRecord === null || userRecord === void 0 ? void 0 : userRecord.account) !== utils_1.UsersTypes.associate) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "User not found or unauthorized", CustomError_1.ErrorCodes.NOT_FOUND);
@@ -83,7 +81,7 @@ class AdminUserService {
             };
             const session = yield sessionService_1.default.getSession(sessionId);
             if (session.user.account !== utils_1.UsersTypes.admin) {
-                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to fetch users", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to fetch users", CustomError_1.ErrorCodes.FORBIDDEN);
             }
             const users = yield userRepository_1.default.fetchAll(filter);
             return Promise.all(users.map((user) => {
@@ -95,7 +93,7 @@ class AdminUserService {
         return __awaiter(this, void 0, void 0, function* () {
             const session = yield sessionService_1.default.getSession(sessionId);
             if (session.user.account !== utils_1.UsersTypes.admin)
-                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to change user role", CustomError_1.ErrorCodes.UNAUTHORIZED);
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to change user role", CustomError_1.ErrorCodes.FORBIDDEN);
             const user = yield userService_1.default.updateUser({ account: userType }, userId);
             return yield userService_1.default.formatUser(user);
         });

@@ -313,7 +313,6 @@ a, a:hover {
 </html>`;
 
   public async sendEmail(options: EmailOptions, email: EmailTemplate) {
-      HELPERS.LOG("EmailService.sendEmail", options, email);
       await this.checkEmailOptions(options);
       const msg = {
         to: options.to!,
@@ -347,16 +346,16 @@ a, a:hover {
   private async checkEmailOptions(options: EmailOptions) {
     if (!options.to) {
       throw new CustomError(
-        ErrorEnum[401],
+        ErrorEnum[400],
         "Email recipient is required",
-        ErrorCodes.UNAUTHORIZED
+        ErrorCodes.BAD_REQUEST
       );
     }
     if (!options.html) {
       throw new CustomError(
-        ErrorEnum[401],
+        ErrorEnum[400],
         "Email content is required",
-        ErrorCodes.UNAUTHORIZED
+        ErrorCodes.BAD_REQUEST
       );
     }
   }

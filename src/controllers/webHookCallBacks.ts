@@ -7,7 +7,6 @@ import { CustomErrorHandler } from "../utils/CustomError";
 export const ActivateSubscription = async (req: Request, res: Response) => {
   try {
     const { trxref, reference } = req.query;
-    HELPERS.LOG({ trxref, reference });
     const response = await subscribersService.verifySubscription(
       (reference ?? trxref) as string
     );

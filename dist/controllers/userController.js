@@ -48,7 +48,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyAccount = exports.linkSubscription = exports.createSubscription = exports.forgotPassword = exports.resetPassword = exports.LogoutUser = exports.LoginUser = exports.CreateUser = void 0;
 const userService_1 = __importDefault(require("../services/userService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
-const helpers_1 = __importDefault(require("../utils/helpers"));
 const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let user = req.body;
@@ -77,7 +76,6 @@ exports.LoginUser = LoginUser;
 const LogoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sessionId = res.locals.sessionId;
-        helpers_1.default.LOG("Session ID", sessionId);
         if (!sessionId) {
             throw new CustomError_1.default("Unknown action", "Not Found", CustomError_1.ErrorCodes.NOT_FOUND);
         }

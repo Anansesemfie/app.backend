@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import errorHandler, { ErrorEnum } from "../../utils/error";
+import { ErrorEnum } from "../../utils/error";
 import HELPER from "../../utils/helpers";
 import CustomError, { CustomErrorHandler, ErrorCodes } from "../../utils/CustomError";
 
@@ -31,7 +31,6 @@ export async function CHECKAPPTOKEN(
 
     next();
   } catch (error) {
-
    CustomErrorHandler.handle(error,res)
   }
 }

@@ -33,7 +33,6 @@ export const LoginUser = async (req: Request, res: Response) => {
 export const LogoutUser = async (req: Request, res: Response) => {
   try {
     const sessionId = res.locals.sessionId;
-    HELPERS.LOG("Session ID", sessionId);
     if (!sessionId){
       throw new CustomError(
       "Unknown action",
