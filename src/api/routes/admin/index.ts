@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PORT } from "../../../utils/env";
-import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
+import { REQUIREAUTH } from "../../middlewares/CheckApp";
 
 import Language from "./LanguageRoute";
 import User from "./UserRoute";
@@ -21,10 +21,10 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-router.use("/language", CHECKAPPTOKEN, Language);
+router.use("/language", REQUIREAUTH, Language);
 router.use("/user", User);
-router.use("/book", CHECKAPPTOKEN, Book);
-router.use("/period", CHECKAPPTOKEN, Period);
-router.use("/organization", CHECKAPPTOKEN, Org);
+router.use("/book", REQUIREAUTH, Book);
+router.use("/period", REQUIREAUTH, Period);
+router.use("/organization", REQUIREAUTH, Org);
 
 export default router;

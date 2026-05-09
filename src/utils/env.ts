@@ -28,3 +28,7 @@ export const AWS_S3_BUCKET_AUDIO = process.env.AWS_S3_BUCKET_AUDIO ?? "";
 export const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY ?? "";
 export const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY ?? "";
 export const STARTUP_SUBSCRIPTION = process.env.STARTUP_SUBSCRIPTION ?? "";
+
+export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : ["http://localhost:3000"];
