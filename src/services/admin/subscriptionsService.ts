@@ -51,7 +51,7 @@ class AdminSubscriptionsService {
         { $match: { active: true } },
         { $group: { _id: "$parent", count: { $sum: 1 } } },
       ]) as Promise<{ _id: string; count: number }[]>,
-      Sub.find({ active: true })
+      Sub.find({ active: true, activatedAt: { $ne: null } })
         .sort({ activatedAt: -1 })
         .limit(20)
         .populate({ path: "user", select: "username email dp", model: "users" })
