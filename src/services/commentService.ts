@@ -1,16 +1,15 @@
 import commentRepository from "../db/repository/commentRepository";
-import sessionService from "./sessionService";
 import booksService from "./booksService";
-import userService from "./userService";
 import periodService from "./periodService";
+import sessionService from "./sessionService";
+import userService from "./userService";
 
+import type { CommentResponse, CommentType } from "../dto";
+import CustomError, { ErrorCodes } from "../utils/CustomError";
 import { ErrorEnum } from "../utils/error";
 import HELPERS from "../utils/helpers";
-import { CommentType, CommentResponse } from "../dto";
-import CustomError, { ErrorCodes } from "../utils/CustomError";
 
 class CommentService {
-  private logInfo = "";
   public async createComment({
     bookID,
     sessionID,
@@ -36,11 +35,18 @@ class CommentService {
     }
     const { session } = await sessionService.getSession(sessionID);
     const period = await periodService.fetchLatest();
+    if (!period) {
+      throw new CustomError(
+        ErrorEnum[404],
+        "No active period found. Cannot create comment.",
+        ErrorCodes.NOT_FOUND
+      );
+    }
     const newComment = await commentRepository.create({
       bookID,
       user: session?.user as string,
       comment,
-      period: period._id ?? "",
+      period: period._id as string,
     });
     await booksService.updateBookMeta(bookID, {
       meta: "comments",
@@ -49,7 +55,7 @@ class CommentService {
     return newComment;
   }
 
-  public async getComments(bookId: string, params?: {}) {
+  public async getComments(bookId: string, params?: Record<string, unknown>) {
     if (!bookId) {
       throw new CustomError(
         ErrorEnum[403],
@@ -79,7 +85,9 @@ class CommentService {
         };
         return formatted;
       }
-    } catch (error: unknown) {}
+    } catch {
+      // user lookup failure should not surface to the caller
+    }
   }
 }
 

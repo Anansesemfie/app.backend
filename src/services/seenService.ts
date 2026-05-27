@@ -1,20 +1,17 @@
-import HELPERS from "../utils/helpers";
 import seenRepository from "../db/repository/seenRepository";
 import periodService from "./periodService";
-import type { SeenType } from "../dto";
+
+import type { PeriodType, SeenType } from "../dto";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 import { ErrorEnum } from "../utils/error";
+import HELPERS from "../utils/helpers";
 
 class SeenService {
-  private logInfo = "";
-  async createNewSeen(bookId: string, userId: string): Promise<SeenType> {
-    if (!bookId || !userId) {
-      throw new CustomError(
-        ErrorEnum[400],
-        "Book ID and User ID are required to create a seen.",
-        ErrorCodes.BAD_REQUEST
-      );
-    }
+  /**
+   * Fetch the current active period or throw NOT_FOUND.
+   * Single source of truth used by every public method.
+   */
+  private async requireActivePeriod(): Promise<PeriodType> {
     const period = await periodService.fetchLatest();
     if (!period) {
       throw new CustomError(
@@ -23,6 +20,18 @@ class SeenService {
         ErrorCodes.NOT_FOUND
       );
     }
+    return period;
+  }
+
+  async createNewSeen(bookId: string, userId: string): Promise<SeenType> {
+    if (!bookId || !userId) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Book ID and User ID are required to create a seen.",
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const period = await this.requireActivePeriod();
     const oldSeen = await this.fetchSeen(userId, bookId, period._id ?? "");
 
     const newSeen: SeenType = {
@@ -30,22 +39,22 @@ class SeenService {
       bookID: bookId,
       period: period._id ?? "",
     };
+
     if (oldSeen) {
       return this.updateSeen(oldSeen._id ?? "", newSeen);
     }
-    const seen = await seenRepository.create(newSeen);
-    return seen;
+    return seenRepository.create(newSeen);
   }
+
   async updateSeen(id: string, payload: object): Promise<SeenType> {
     if (!id) {
       throw new CustomError(
         ErrorEnum[400],
-        "Book ID and User ID are required to update a seen.",
+        "Seen ID is required to update a seen.",
         ErrorCodes.BAD_REQUEST
       );
     }
-    const updatedSeen = await seenRepository.update(id, payload);
-    return updatedSeen;
+    return seenRepository.update(id, payload);
   }
 
   async fetchSeen(id: string, book: string, period: string): Promise<SeenType> {
@@ -56,10 +65,7 @@ class SeenService {
         ErrorCodes.BAD_REQUEST
       );
     }
-
-    const seen = await seenRepository.fetchOne( book,id, period);
-
-    return seen;
+    return seenRepository.fetchOne(book, id, period);
   }
 
   async recordPlay(
@@ -76,19 +82,17 @@ class SeenService {
       );
     }
 
-    const period = await periodService.fetchLatest();
-    let seen = await seenRepository.fetchOne(bookId, userId, period?._id ?? "");
+    const period = await this.requireActivePeriod();
+    let seen = await seenRepository.fetchOne(bookId, userId, period._id ?? "");
     if (!seen) {
       seen = await this.createNewSeen(bookId, userId);
     }
     seen.playedAt?.push(playedAt || HELPERS.currentTime());
 
-    const newSeen = await this.updateSeen(seen._id ?? "", {
+    await this.updateSeen(seen._id ?? "", {
       playedAt: seen.playedAt,
       subscription,
     });
-
-    return;
   }
 
   async getSeensAndPlay(
@@ -102,9 +106,7 @@ class SeenService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    const data = await seenRepository.findAll(bookId, {
-      period: periodId,
-    });
+    const data = await seenRepository.findAll(bookId, { period: periodId });
     const seen = data.filter((item) => item.seenAt);
     const played = data.filter((item) => Number(item.playedAt?.length) > 0);
     return { seen: seen.length, played: played.length };

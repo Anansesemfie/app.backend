@@ -46,20 +46,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const commentRepository_1 = __importDefault(require("../db/repository/commentRepository"));
-const sessionService_1 = __importDefault(require("./sessionService"));
 const booksService_1 = __importDefault(require("./booksService"));
-const userService_1 = __importDefault(require("./userService"));
 const periodService_1 = __importDefault(require("./periodService"));
+const sessionService_1 = __importDefault(require("./sessionService"));
+const userService_1 = __importDefault(require("./userService"));
+const CustomError_1 = __importStar(require("../utils/CustomError"));
 const error_1 = require("../utils/error");
 const helpers_1 = __importDefault(require("../utils/helpers"));
-const CustomError_1 = __importStar(require("../utils/CustomError"));
 class CommentService {
-    constructor() {
-        this.logInfo = "";
-    }
     createComment(_a) {
         return __awaiter(this, arguments, void 0, function* ({ bookID, sessionID, comment, }) {
-            var _b;
             if (helpers_1.default.hasSpecialCharacters(comment)) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Comment contains special characters", CustomError_1.ErrorCodes.FORBIDDEN);
             }
@@ -68,11 +64,14 @@ class CommentService {
             }
             const { session } = yield sessionService_1.default.getSession(sessionID);
             const period = yield periodService_1.default.fetchLatest();
+            if (!period) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "No active period found. Cannot create comment.", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
             const newComment = yield commentRepository_1.default.create({
                 bookID,
                 user: session === null || session === void 0 ? void 0 : session.user,
                 comment,
-                period: (_b = period._id) !== null && _b !== void 0 ? _b : "",
+                period: period._id,
             });
             yield booksService_1.default.updateBookMeta(bookID, {
                 meta: "comments",
@@ -108,7 +107,9 @@ class CommentService {
                     return formatted;
                 }
             }
-            catch (error) { }
+            catch (_a) {
+                // user lookup failure should not surface to the caller
+            }
         });
     }
 }

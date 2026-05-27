@@ -1,20 +1,20 @@
+import { Router } from "express";
+
 import {
   CreatePeriod,
-  FetchPeriod,
-  FetchLatestPeriod,
-  FetchAllPeriods,
-  UpdatePeriod,
   DeactivatePeriod,
+  FetchAllPeriods,
+  FetchLatestPeriod,
+  FetchPeriod,
+  UpdatePeriod,
 } from "../../../controllers/admin/periodController";
-
-import { Router } from "express";
 const router = Router();
 
 router.post("/create", CreatePeriod);
 router.get("/single/:id", FetchPeriod);
 router.put("/:id", UpdatePeriod);
+router.put("/:id/deactivate", DeactivatePeriod);
 router.get("/", FetchLatestPeriod);
 router.get("/all", FetchAllPeriods);
-router.put("/:id", DeactivatePeriod);
 
 export default router;
