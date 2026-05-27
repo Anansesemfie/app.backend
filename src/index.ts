@@ -7,6 +7,7 @@ import Mongoose from "./db/models";
 
 import ConsumerRouter from "./api/routes/consumer";
 import AdminRouter from "./api/routes/admin";
+import { startPeriodJob } from "./jobs/periodJob";
 import path from "path";
 
 const app: Application = express();
@@ -38,6 +39,7 @@ app.on("ready", () => {
   try {
     console.log('Allowed Origins: ', ALLOWED_ORIGINS);
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
+    startPeriodJob();
   } catch (error) {
     console.log(error);
   }
