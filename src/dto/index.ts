@@ -141,6 +141,20 @@ export type SubscriptionsResponse = {
   createdAt: string;
 };
 
+export type AdminSubscriberRecord = {
+  id: string;
+  user: {
+    username: string;
+    email: string;
+    dp: string;
+  };
+  plan: string;           // plan name from parent Subscription
+  autorenew: boolean;     // parent plan's autorenew flag
+  activatedAt: Date | null;
+  expiresAt: Date | null;        // activatedAt + plan.duration ms; null if never activated
+  daysRemaining: number | null;  // signed integer; negative = already expired; null if never activated
+};
+
 export type UserType = {
   _id?: string;
   email: string;
