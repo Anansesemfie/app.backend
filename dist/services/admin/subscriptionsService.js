@@ -150,5 +150,23 @@ class AdminSubscriptionsService {
             return subscription;
         });
     }
+    delete(token, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.assertAdmin(token);
+            if (!id) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            // Guard: refuse if any subscribers are still active on this plan
+            const activeCount = yield models_1.Subscriber.countDocuments({ parent: id, active: true });
+            if (activeCount > 0) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], `Cannot delete: ${activeCount} active subscriber(s) on this plan`, CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            const subscription = yield models_1.Subscription.findByIdAndDelete(id).lean();
+            if (!subscription) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Subscription not found", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
+            return subscription;
+        });
+    }
 }
 exports.default = new AdminSubscriptionsService();

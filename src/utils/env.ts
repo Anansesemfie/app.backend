@@ -15,6 +15,9 @@ export const EMAIL_OPERAND =
   process.env.EMAIL_OPERAND ?? "mancuniamoe@mail.com";
 export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD ?? "";
 export const SENDGRID_KEY = process.env.SENDGRID_KEY ?? "";
+export const BREVO_KEY = process.env.BREVO_KEY ?? "";
+/** Sender phone number registered in the Brevo WhatsApp dashboard (E.164 format, e.g. "+233241234567") */
+export const BREVO_WHATSAPP_SENDER = process.env.BREVO_WHATSAPP_SENDER ?? "";
 export const BASE_URL = process.env.BASE_URL ?? "";
 export const APP_BASE_URL = process.env.APP_BASE_URL ?? "";
 export const CAN_LOG = process.env.CAN_LOG === "YES";

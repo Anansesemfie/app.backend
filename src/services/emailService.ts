@@ -3,6 +3,7 @@ import HELPERS from "../utils/helpers";
 import errorHandler, { ErrorEnum } from "../utils/error";
 import nodeMailer from "../utils/nodeMailer";
 import sendGRID from "../utils/sendGrid";
+import BREVO from "../utils/brevo";
 import { EmailOptions, EmailTemplate } from "./utils/interfaces";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 type Action = {
@@ -13,6 +14,7 @@ type Action = {
 class EmailService {
   private sgEmail = new sendGRID();
   private node_mailer = new nodeMailer();
+  private brevo = new BREVO();
   private defaultOptions = {
     from: EMAIL_OPERAND,
     subject: "From Anansesemfie",
@@ -320,15 +322,49 @@ a, a:hover {
         subject: options.subject ?? this.defaultOptions.subject,
         html: this.generateEmailTemplate(email),
       };
-      const sentBySendGrid = await this.sendEmailWithSendGrid(msg);
-      if (!sentBySendGrid) {
-        await this.sendEmailWithNodeMailer(msg);
+
+      // Primary: Brevo
+      const sentByBrevo = await this.sendEmailWithBrevo(msg);
+      if (sentByBrevo) {
+        this.logSuccess(options.subject);
+        return "Email sent successfully via Brevo";
       }
 
-      this.logInfo = `${HELPERS.loggerInfo.success} sending email: ${
-        options.subject
-      } @ ${HELPERS.currentTime()}`;
-      return "Email sent successfully";
+      // Secondary: SendGrid
+      const sentBySendGrid = await this.sendEmailWithSendGrid(msg);
+      if (sentBySendGrid) {
+        this.logSuccess(options.subject);
+        return "Email sent successfully via SendGrid";
+      }
+
+      // Tertiary: NodeMailer (Gmail)
+      const sentByNodeMailer = await this.sendEmailWithNodeMailer(msg);
+      if (sentByNodeMailer) {
+        this.logSuccess(options.subject);
+        return "Email sent successfully via NodeMailer";
+      }
+
+      throw new CustomError(
+        ErrorEnum[500],
+        "Failed to send email through all available providers",
+        ErrorCodes.INTERNAL_SERVER_ERROR
+      );
+  }
+
+  private logSuccess(subject: string) {
+    this.logInfo = `${HELPERS.loggerInfo.success} sending email: ${
+      subject
+    } @ ${HELPERS.currentTime()}`;
+  }
+
+  private async sendEmailWithBrevo(options: EmailOptions) {
+    try {
+      await this.brevo.init();
+      return await this.brevo.send(options);
+    } catch (error) {
+      console.error("Brevo failed, falling back...");
+      return false;
+    }
   }
 
   private async sendEmailWithNodeMailer(options: EmailOptions) {
@@ -337,10 +373,13 @@ a, a:hover {
   }
 
   private async sendEmailWithSendGrid(options: EmailOptions) {
-
+    try {
       await this.sgEmail.init();
       return await this.sgEmail.send(options);
-    
+    } catch (error) {
+      console.error("SendGrid failed, falling back...");
+      return false;
+    }
   }
 
   private async checkEmailOptions(options: EmailOptions) {

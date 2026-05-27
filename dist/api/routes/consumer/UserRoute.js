@@ -16,11 +16,13 @@ const authLimiter = (0, express_rate_limit_1.default)({
 const userController_1 = require("../../../controllers/userController");
 const router = (0, express_1.Router)();
 router.get("/logout/", CheckApp_1.REQUIREAUTH, userController_1.LogoutUser);
+router.get("/profile", CheckApp_1.REQUIREAUTH, userController_1.getProfile);
 router.get("/verify/:token", userController_1.verifyAccount);
 router.post("/add", authLimiter, userController_1.CreateUser);
 router.post("/login", authLimiter, userController_1.LoginUser);
 router.post("/forgot-password", authLimiter, userController_1.forgotPassword);
 router.post("/subscribe", CheckApp_1.REQUIREAUTH, userController_1.createSubscription);
+router.patch("/profile", CheckApp_1.REQUIREAUTH, userController_1.updateProfile);
 router.put("/subscribe/link", CheckApp_1.REQUIREAUTH, userController_1.linkSubscription);
 router.put("/reset-password", userController_1.resetPassword);
 router.put("/forgot-password", userController_1.forgotPassword);

@@ -121,6 +121,27 @@ class AdminSubscriptionsService {
     }
     return subscription;
   }
+
+  async delete(token: string, id: string) {
+    await this.assertAdmin(token);
+    if (!id) {
+      throw new CustomError(ErrorEnum[400], "Subscription ID is required", ErrorCodes.BAD_REQUEST);
+    }
+    // Guard: refuse if any subscribers are still active on this plan
+    const activeCount = await Subscriber.countDocuments({ parent: id, active: true });
+    if (activeCount > 0) {
+      throw new CustomError(
+        ErrorEnum[400],
+        `Cannot delete: ${activeCount} active subscriber(s) on this plan`,
+        ErrorCodes.BAD_REQUEST
+      );
+    }
+    const subscription = await Subscription.findByIdAndDelete(id).lean();
+    if (!subscription) {
+      throw new CustomError(ErrorEnum[404], "Subscription not found", ErrorCodes.NOT_FOUND);
+    }
+    return subscription;
+  }
 }
 
 export default new AdminSubscriptionsService();

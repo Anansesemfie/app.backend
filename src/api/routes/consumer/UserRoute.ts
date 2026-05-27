@@ -18,11 +18,14 @@ import {
   createSubscription,
   linkSubscription,
   verifyAccount,
+  getProfile,
+  updateProfile,
 } from "../../../controllers/userController";
 
 const router = Router();
 
 router.get("/logout/", REQUIREAUTH, LogoutUser);
+router.get("/profile", REQUIREAUTH, getProfile);
 router.get("/verify/:token", verifyAccount);
 
 router.post("/add", authLimiter, CreateUser);
@@ -31,6 +34,7 @@ router.post("/login", authLimiter, LoginUser);
 router.post("/forgot-password", authLimiter, forgotPassword);
 router.post("/subscribe", REQUIREAUTH, createSubscription);
 
+router.patch("/profile", REQUIREAUTH, updateProfile);
 router.put("/subscribe/link", REQUIREAUTH, linkSubscription);
 router.put("/reset-password", resetPassword);
 router.put("/forgot-password", forgotPassword);

@@ -36,9 +36,17 @@ class BookRepository {
 
   public async update(bookId: string, book: BookUpdateType): Promise<BookType> {
     try {
-      const updatedBook = await Book.findOneAndUpdate({ _id: bookId }, book, {
-        new: true,
-      });
+      // Strip top-level empty-string values to avoid ObjectId cast errors
+      // (e.g. when the client sends organization: "" instead of omitting the field)
+      const cleanBook = Object.fromEntries(
+        Object.entries(book).filter(([, v]) => v !== "")
+      ) as BookUpdateType;
+
+      const updatedBook = await Book.findOneAndUpdate(
+        { _id: bookId },
+        cleanBook,
+        { new: true }
+      );
       return updatedBook;
     } catch (error) {
       throw new CustomError(
@@ -56,7 +64,7 @@ class BookRepository {
       throw new CustomError(
         ErrorEnum[500],
         (error as Error).message ?? "Error deleting book",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.INTERNAL_SERVER_ERROR
       );
     }
   }

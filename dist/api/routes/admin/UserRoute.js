@@ -9,4 +9,5 @@ router.post("/login", userController_1.LoginUser);
 router.post("/sendEmail", CheckApp_1.REQUIREAUTH, userController_1.SendEmail);
 router.post("/fetchUsers", CheckApp_1.REQUIREAUTH, userController_1.FetchUsers);
 router.put("/changeRole", CheckApp_1.REQUIREAUTH, userController_1.MakeAssociate);
+router.get("/:id", CheckApp_1.REQUIREAUTH, userController_1.FetchUser);
 exports.default = router;
