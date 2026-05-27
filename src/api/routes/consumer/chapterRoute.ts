@@ -4,11 +4,11 @@ import {
   getChapter,
 } from "../../../controllers/chapterController";
 
-import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
+import { REQUIREAUTH } from "../../middlewares/CheckApp";
 
 const router = Router();
 
-router.get("/all/:bookId", CHECKAPPTOKEN, getChapters);
-router.get("/:chapterId", CHECKAPPTOKEN, getChapter);
+router.get("/all/:bookId", REQUIREAUTH, getChapters);
+router.get("/:chapterId", REQUIREAUTH, getChapter);
 
 export default router;

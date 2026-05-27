@@ -1,6 +1,6 @@
 import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
-import { isEmail, isStrongPassword } from "validator";
+import { isEmail, isMobilePhone, isStrongPassword } from "validator";
 import { UsersTypes } from "./utils";
 
 const Users = (Mongoose: any) => {
@@ -40,6 +40,15 @@ const Users = (Mongoose: any) => {
       type: String,
       required: false,
       default: "This user is secretive",
+    },
+    whatsappNumber: {
+      type: String,
+      required: false,
+      default: "",
+      validate: {
+        validator: (v: string) => v === "" || isMobilePhone(v, "any", { strictMode: true }),
+        message: "Please enter a valid phone number in international format (e.g. +233241234567)",
+      },
     },
     key: {
       type: String,

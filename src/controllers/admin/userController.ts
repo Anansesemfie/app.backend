@@ -1,8 +1,11 @@
 import userService from "../../services/admin/userService";
+import consumerUserService from "../../services/userService";
 import emailService from "../../services/emailService";
+import userRepository from "../../db/repository/userRepository";
 import { Request, Response } from "express";
 import { UsersTypes } from "../../db/models/utils";
-import CustomError, { CustomErrorHandler } from "../../utils/CustomError";
+import CustomError, { CustomErrorHandler, ErrorCodes } from "../../utils/CustomError";
+import { ErrorEnum } from "../../utils/error";
 export const CreateUser = async (req: Request, res: Response) => {
   try {
     let user = req.body;
@@ -57,6 +60,25 @@ export const MakeAssociate = async (req: Request, res: Response) => {
       sessionId
     );
     res.status(200).json({ data: user });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};
+
+export const FetchUser = async (req: Request, res: Response) => {
+  try {
+    const sessionId = res.locals.sessionId;
+    const { user: sessionUser } = await (await import("../../services/sessionService")).default.getSession(sessionId);
+    if (!sessionUser || sessionUser.account !== UsersTypes.admin) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    const userId = req.params.id;
+    const user = await userRepository.fetchUser(userId);
+    if (!user) {
+      throw new CustomError("User not found", "User not found", ErrorCodes.NOT_FOUND);
+    }
+    const formatted = await consumerUserService.formatUser(user);
+    res.status(200).json({ data: formatted });
   } catch (error) {
     CustomErrorHandler.handle(error, res);
   }

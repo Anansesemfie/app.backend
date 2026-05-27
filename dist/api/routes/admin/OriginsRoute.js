@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const originsController_1 = require("../../../controllers/admin/originsController");
+const router = (0, express_1.Router)();
+router.get("/all", originsController_1.ListOrigins);
+router.get("/:id", originsController_1.GetOrigin);
+router.post("/create", originsController_1.CreateOrigin);
+router.put("/:id", originsController_1.UpdateOrigin);
+router.patch("/:id/toggle", originsController_1.ToggleOriginActive);
+exports.default = router;

@@ -42,7 +42,7 @@ class EmailService implements IEmailService {
 
     try {
       const mailOptions = {
-        from: process.env.EMAIL_USERNAME,
+        from: EMAIL_OPERAND,
         to,
         subject,
         html,

@@ -14,7 +14,6 @@ export async function CHECKAPPTOKEN(
       res.locals.sessionId = null;
       return next();
     }
-    // Extract the token from the Authorization header
     const tokenParts = authorizationHeader.split(" ");
     if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
       throw new CustomError(
@@ -23,7 +22,6 @@ export async function CHECKAPPTOKEN(
         ErrorCodes.FORBIDDEN
       );
     }
-    
 
     let bearerToken: string | undefined = tokenParts[1];
     bearerToken = await HELPER.DECODE_TOKEN(bearerToken);
@@ -31,6 +29,39 @@ export async function CHECKAPPTOKEN(
 
     next();
   } catch (error) {
-   CustomErrorHandler.handle(error,res)
+    CustomErrorHandler.handle(error, res);
+  }
+}
+
+export async function REQUIREAUTH(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const authorizationHeader = req.headers["authorization"];
+    if (!authorizationHeader) {
+      throw new CustomError(
+        ErrorEnum[401],
+        "Authentication required",
+        ErrorCodes.UNAUTHORIZED
+      );
+    }
+    const tokenParts = authorizationHeader.split(" ");
+    if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+      throw new CustomError(
+        ErrorEnum[403],
+        "Invalid Authorization header format",
+        ErrorCodes.FORBIDDEN
+      );
+    }
+
+    let bearerToken: string | undefined = tokenParts[1];
+    bearerToken = await HELPER.DECODE_TOKEN(bearerToken);
+    res.locals.sessionId = bearerToken;
+
+    next();
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
   }
 }

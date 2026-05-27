@@ -1,13 +1,13 @@
-import { ReactionType } from "../dto";
 import reactionRepository from "../db/repository/reactionRepository";
-import sessionService from "./sessionService";
+import booksService from "./booksService";
 import periodService from "./periodService";
+import sessionService from "./sessionService";
 
-import { ErrorEnum } from "../utils/error";
+import type { ReactionType } from "../dto";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { ErrorEnum } from "../utils/error";
 
 class ReactionService {
-  private logInfo = "";
   public async createReaction({
     sessionID,
     bookID,
@@ -16,7 +16,7 @@ class ReactionService {
     sessionID: string;
     bookID: string;
     action: "Liked" | "Disliked";
-  }): Promise<ReactionType> {
+  }): Promise<ReactionType | null> {
     if (!sessionID || !bookID || !action) {
       throw new CustomError(
         ErrorEnum[403],
@@ -25,16 +25,68 @@ class ReactionService {
       );
     }
     const { session } = await sessionService.getSession(sessionID);
+    const userId = session?.user as string;
     const period = await periodService.fetchLatest();
+    if (!period) {
+      throw new CustomError(
+        ErrorEnum[404],
+        "No active period found. Cannot create reaction.",
+        ErrorCodes.NOT_FOUND
+      );
+    }
 
+    const existingReaction = await reactionRepository.getReaction(bookID, userId);
+    if (existingReaction) {
+      return this.handleExistingReaction(existingReaction, bookID, action);
+    }
+
+    // Create new reaction
     const newReaction = await reactionRepository.create({
       bookID,
-      user: session?.user as string,
-      action: action,
-      period: period._id ?? "",
+      user: userId,
+      action,
+      period: period._id,
     });
+
+    await booksService.updateBookMeta(bookID, {
+      meta: action === "Liked" ? "likes" : "dislikes",
+      action: "Plus",
+    });
+
     return newReaction;
   }
+
+  private async handleExistingReaction(
+    existingReaction: ReactionType,
+    bookID: string,
+    action: "Liked" | "Disliked"
+  ): Promise<ReactionType | null> {
+    if (existingReaction.action === action) {
+      // Toggle off: delete and decrement
+      await reactionRepository.deleteReactions(existingReaction._id as string);
+      await booksService.updateBookMeta(bookID, {
+        meta: action === "Liked" ? "likes" : "dislikes",
+        action: "Minus",
+      });
+      return null;
+    }
+
+    // Switch action: update, decrement old, increment new
+    const updated = await reactionRepository.updateReaction(
+      existingReaction._id as string,
+      { ...existingReaction, action }
+    );
+    await booksService.updateBookMeta(bookID, {
+      meta: existingReaction.action === "Liked" ? "likes" : "dislikes",
+      action: "Minus",
+    });
+    await booksService.updateBookMeta(bookID, {
+      meta: action === "Liked" ? "likes" : "dislikes",
+      action: "Plus",
+    });
+    return updated;
+  }
+
   public async updateReaction({
     reaction,
     action,
@@ -49,7 +101,7 @@ class ReactionService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    if (action == reaction.action) {
+    if (action === reaction.action) {
       throw new CustomError(
         ErrorEnum[403],
         "Can not take same action twice",
@@ -70,7 +122,7 @@ class ReactionService {
 
   public async getReactions(
     bookID: string,
-    params?: {}
+    params?: Record<string, unknown>
   ): Promise<ReactionType[]> {
     if (!bookID) {
       throw new CustomError(
@@ -79,8 +131,7 @@ class ReactionService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    const reactions = await reactionRepository.getReactions(bookID, params);
-    return reactions;
+    return reactionRepository.getReactions(bookID, params);
   }
 
   public async getUserReaction(userId: string): Promise<string[]> {
@@ -92,10 +143,9 @@ class ReactionService {
       );
     }
     const reactions = await reactionRepository.getUserReactions(userId);
-    const likedBooks = reactions
+    return reactions
       .filter((reaction) => reaction.action === "Liked")
       .map((reaction) => reaction.bookID);
-    return likedBooks;
   }
 }
 

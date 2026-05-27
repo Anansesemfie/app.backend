@@ -17,6 +17,7 @@ import Externals from "./Externals";
 import Sessions from "./Session";
 import Period from "./Period";
 import organization from "./Organization";
+import AppConfigSchema from "./AppConfig";
 
 import { SessionType, UserType } from "../../dto/index";
 
@@ -52,6 +53,10 @@ export const Periods = Mongoose.model("period", Period(Mongoose));
 export const Organization = Mongoose.model(
   "organization",
   organization(Mongoose)
+);
+export const AppConfig = Mongoose.model(
+  "appConfig",
+  AppConfigSchema(Mongoose)
 );
 
 export default Mongoose;

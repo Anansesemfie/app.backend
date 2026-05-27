@@ -155,18 +155,22 @@ class SubscriberService {
   public async validateSubscription(subscriptionId: string): Promise<boolean> {
 
       const child = await this.fetchOne({ _id: String(subscriptionId) });
+
+      // An unactivated subscription is never valid regardless of duration
+      if (!child.activatedAt) return false;
+
       const parent = await subscriptionsService.fetchOne(child.parent);
 
       const duration = HELPERS.millisecondsToDays(parent.duration);
 
+      // Measure from activatedAt (payment confirmed), not createdAt (payment initiated)
       const daysGone = HELPERS.countDaysBetweenDates(
-        child?.createdAt as string,
+        child.activatedAt as string,
         HELPERS.currentTime() as string
       );
-      
 
       return daysGone <= duration;
-   
+
   }
 }
 

@@ -45,14 +45,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __importDefault(require("../utils/helpers"));
 const seenRepository_1 = __importDefault(require("../db/repository/seenRepository"));
 const periodService_1 = __importDefault(require("./periodService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const error_1 = require("../utils/error");
+const helpers_1 = __importDefault(require("../utils/helpers"));
 class SeenService {
-    constructor() {
-        this.logInfo = "";
+    /**
+     * Fetch the current active period or throw NOT_FOUND.
+     * Single source of truth used by every public method.
+     */
+    requireActivePeriod() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const period = yield periodService_1.default.fetchLatest();
+            if (!period) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "No active period found.", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
+            return period;
+        });
     }
     createNewSeen(bookId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -60,10 +70,7 @@ class SeenService {
             if (!bookId || !userId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Book ID and User ID are required to create a seen.", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const period = yield periodService_1.default.fetchLatest();
-            if (!period) {
-                throw new CustomError_1.default(error_1.ErrorEnum[404], "No active period found.", CustomError_1.ErrorCodes.NOT_FOUND);
-            }
+            const period = yield this.requireActivePeriod();
             const oldSeen = yield this.fetchSeen(userId, bookId, (_a = period._id) !== null && _a !== void 0 ? _a : "");
             const newSeen = {
                 user: userId,
@@ -73,17 +80,15 @@ class SeenService {
             if (oldSeen) {
                 return this.updateSeen((_c = oldSeen._id) !== null && _c !== void 0 ? _c : "", newSeen);
             }
-            const seen = yield seenRepository_1.default.create(newSeen);
-            return seen;
+            return seenRepository_1.default.create(newSeen);
         });
     }
     updateSeen(id, payload) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!id) {
-                throw new CustomError_1.default(error_1.ErrorEnum[400], "Book ID and User ID are required to update a seen.", CustomError_1.ErrorCodes.BAD_REQUEST);
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Seen ID is required to update a seen.", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const updatedSeen = yield seenRepository_1.default.update(id, payload);
-            return updatedSeen;
+            return seenRepository_1.default.update(id, payload);
         });
     }
     fetchSeen(id, book, period) {
@@ -91,8 +96,7 @@ class SeenService {
             if (!id || !period) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Missing required details.", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const seen = yield seenRepository_1.default.fetchOne(book, id, period);
-            return seen;
+            return seenRepository_1.default.fetchOne(book, id, period);
         });
     }
     recordPlay(bookId, userId, playedAt, subscription) {
@@ -101,17 +105,16 @@ class SeenService {
             if (!bookId || !userId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Book ID and User ID are required to record play.", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const period = yield periodService_1.default.fetchLatest();
-            let seen = yield seenRepository_1.default.fetchOne(bookId, userId, (_a = period === null || period === void 0 ? void 0 : period._id) !== null && _a !== void 0 ? _a : "");
+            const period = yield this.requireActivePeriod();
+            let seen = yield seenRepository_1.default.fetchOne(bookId, userId, (_a = period._id) !== null && _a !== void 0 ? _a : "");
             if (!seen) {
                 seen = yield this.createNewSeen(bookId, userId);
             }
             (_b = seen.playedAt) === null || _b === void 0 ? void 0 : _b.push(playedAt || helpers_1.default.currentTime());
-            const newSeen = yield this.updateSeen((_c = seen._id) !== null && _c !== void 0 ? _c : "", {
+            yield this.updateSeen((_c = seen._id) !== null && _c !== void 0 ? _c : "", {
                 playedAt: seen.playedAt,
                 subscription,
             });
-            return;
         });
     }
     getSeensAndPlay(bookId_1) {
@@ -119,9 +122,7 @@ class SeenService {
             if (!bookId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Book ID is required to fetch seen and played counts.", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const data = yield seenRepository_1.default.findAll(bookId, {
-                period: periodId,
-            });
+            const data = yield seenRepository_1.default.findAll(bookId, { period: periodId });
             const seen = data.filter((item) => item.seenAt);
             const played = data.filter((item) => { var _a; return Number((_a = item.playedAt) === null || _a === void 0 ? void 0 : _a.length) > 0; });
             return { seen: seen.length, played: played.length };

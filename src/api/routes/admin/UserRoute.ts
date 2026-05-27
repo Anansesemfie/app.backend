@@ -5,17 +5,20 @@ import {
   LoginUser,
   MakeAssociate,
   SendEmail,
+  FetchUser,
 } from "../../../controllers/admin/userController";
-import { CHECKAPPTOKEN } from "../../../api/middlewares/CheckApp";
+import { REQUIREAUTH } from "../../../api/middlewares/CheckApp";
 
 const router = Router();
 
-router.post("/add", CHECKAPPTOKEN, CreateUser);
+router.post("/add", REQUIREAUTH, CreateUser);
 router.post("/login", LoginUser);
-router.post("/sendEmail", CHECKAPPTOKEN, SendEmail);
+router.post("/sendEmail", REQUIREAUTH, SendEmail);
 
-router.post("/fetchUsers", CHECKAPPTOKEN, FetchUsers);
+router.post("/fetchUsers", REQUIREAUTH, FetchUsers);
 
-router.put("/changeRole", CHECKAPPTOKEN, MakeAssociate);
+router.put("/changeRole", REQUIREAUTH, MakeAssociate);
+
+router.get("/:id", REQUIREAUTH, FetchUser);
 
 export default router;

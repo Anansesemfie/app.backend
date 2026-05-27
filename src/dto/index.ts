@@ -76,6 +76,7 @@ export type ChapterType = {
   mimetype: string;
   password: string;
   book: string;
+  order?: number;
   createdAt?: Date;
 };
 
@@ -86,6 +87,7 @@ export type ChapterResponseType = {
   content?: string; //TODO:Remove this line
   book: BookResponseType;
   password: string;
+  order: number;
   createdAt: string | Date;
   type: "audio" | "ebook";
 };
@@ -139,6 +141,20 @@ export type SubscriptionsResponse = {
   createdAt: string;
 };
 
+export type AdminSubscriberRecord = {
+  id: string;
+  user: {
+    username: string;
+    email: string;
+    dp: string;
+  };
+  plan: string;           // plan name from parent Subscription
+  autorenew: boolean;     // parent plan's autorenew flag
+  activatedAt: Date | null;
+  expiresAt: Date | null;        // activatedAt + plan.duration ms; null if never activated
+  daysRemaining: number | null;  // signed integer; negative = already expired; null if never activated
+};
+
 export type UserType = {
   _id?: string;
   email: string;
@@ -148,6 +164,8 @@ export type UserType = {
   active: boolean;
   dp: string;
   bio: string;
+  /** E.164 phone number used for WhatsApp notifications, e.g. "+233241234567" */
+  whatsappNumber?: string;
   organization?: string;
   subscription?: string;
   createdAt?: string;
@@ -162,6 +180,8 @@ export type UserResponse = {
   active: boolean;
   dp: string;
   bio: string;
+  /** E.164 phone number used for WhatsApp notifications */
+  whatsappNumber?: string;
   subscription?: string;
   createdAt: string;
 };
@@ -255,4 +275,32 @@ export type PeriodResponseType = {
   year: number;
   month: number;
   status: "active" | "inactive";
+};
+
+export type AppConfigType = {
+  _id?: string;
+  autoPeriodCreation: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type AppConfigResponseType = {
+  id: string;
+  autoPeriodCreation: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type OriginCurrencyType = {
+  name?: string;
+  symbol?: string;
+};
+
+export type OriginType = {
+  _id?: string;
+  name: string;
+  flag: string;
+  currency?: OriginCurrencyType;
+  active?: boolean;
+  createdAt?: string;
 };

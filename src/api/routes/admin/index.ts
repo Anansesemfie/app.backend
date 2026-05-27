@@ -1,12 +1,18 @@
 import { Router, Request, Response } from "express";
 import { PORT } from "../../../utils/env";
-import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
+import { REQUIREAUTH } from "../../middlewares/CheckApp";
 
 import Language from "./LanguageRoute";
 import User from "./UserRoute";
 import Book from "./BookRoute";
 import Period from "./PeriodRoute";
 import Org from "./OrgRoute";
+import Dashboard from "./DashboardRoute";
+import Subscriptions from "./SubscriptionsRoute";
+import Conversation from "./ConversationRoute";
+import Revenue from "./RevenueRoute";
+import AppConfigRoute from "./AppConfigRoute";
+import Origins from "./OriginsRoute";
 
 const router = Router();
 
@@ -21,10 +27,17 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-router.use("/language", CHECKAPPTOKEN, Language);
+router.use("/language", REQUIREAUTH, Language);
 router.use("/user", User);
-router.use("/book", CHECKAPPTOKEN, Book);
-router.use("/period", CHECKAPPTOKEN, Period);
-router.use("/organization", CHECKAPPTOKEN, Org);
+router.use("/book", REQUIREAUTH, Book);
+router.use("/period", REQUIREAUTH, Period);
+router.use("/organization", REQUIREAUTH, Org);
+router.use("/dashboard", REQUIREAUTH, Dashboard);
+router.use("/subscription", REQUIREAUTH, Subscriptions);
+router.use("/subscriptions", REQUIREAUTH, Subscriptions);
+router.use("/conversation", REQUIREAUTH, Conversation);
+router.use("/revenue", REQUIREAUTH, Revenue);
+router.use("/settings", REQUIREAUTH, AppConfigRoute);
+router.use("/origin", REQUIREAUTH, Origins);
 
 export default router;

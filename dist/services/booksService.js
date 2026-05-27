@@ -183,12 +183,13 @@ class BookService {
                     comments: "comments",
                     comment: "comments",
                     likes: "likes",
+                    dislikes: "dislikes",
                     views: "views",
                     played: "played",
                 };
                 const key = metaMap[meta];
                 if (!key) {
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[500], "Invalid action", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+                    throw new CustomError_1.default(error_1.ErrorEnum[500], "Invalid action", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
                 }
                 if (action === "Plus") {
                     newBookMeta[key]++;
@@ -209,7 +210,7 @@ class BookService {
             try {
                 const params = { status: utils_1.BookStatus.Active };
                 if (search) {
-                    params["title"] = { $regex: search };
+                    params["title"] = { $regex: search, $options: "i" };
                 }
                 if (language) {
                     params["languages"] = { $in: [language] };
@@ -256,17 +257,17 @@ class BookService {
         return __awaiter(this, void 0, void 0, function* () {
             switch (true) {
                 case !book.title:
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Title is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Title is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.category.length:
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Category is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Category is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.languages.length:
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Language is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Language is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 // case !book.folder:
                 //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
                 case !book.cover:
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Cover is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Cover is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.uploader:
-                    throw yield new CustomError_1.default(error_1.ErrorEnum[400], "Uploader is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Uploader is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 default:
                     return true;
             }

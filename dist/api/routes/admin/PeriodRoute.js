@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const periodController_1 = require("../../../controllers/admin/periodController");
 const express_1 = require("express");
+const periodController_1 = require("../../../controllers/admin/periodController");
 const router = (0, express_1.Router)();
 router.post("/create", periodController_1.CreatePeriod);
 router.get("/single/:id", periodController_1.FetchPeriod);
 router.put("/:id", periodController_1.UpdatePeriod);
+router.put("/:id/deactivate", periodController_1.DeactivatePeriod);
 router.get("/", periodController_1.FetchLatestPeriod);
 router.get("/all", periodController_1.FetchAllPeriods);
-router.put("/:id", periodController_1.DeactivatePeriod);
 exports.default = router;

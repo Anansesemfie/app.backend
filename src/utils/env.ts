@@ -15,6 +15,9 @@ export const EMAIL_OPERAND =
   process.env.EMAIL_OPERAND ?? "mancuniamoe@mail.com";
 export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD ?? "";
 export const SENDGRID_KEY = process.env.SENDGRID_KEY ?? "";
+export const BREVO_KEY = process.env.BREVO_KEY ?? "";
+/** Sender phone number registered in the Brevo WhatsApp dashboard (E.164 format, e.g. "+233241234567") */
+export const BREVO_WHATSAPP_SENDER = process.env.BREVO_WHATSAPP_SENDER ?? "";
 export const BASE_URL = process.env.BASE_URL ?? "";
 export const APP_BASE_URL = process.env.APP_BASE_URL ?? "";
 export const CAN_LOG = process.env.CAN_LOG === "YES";
@@ -28,3 +31,7 @@ export const AWS_S3_BUCKET_AUDIO = process.env.AWS_S3_BUCKET_AUDIO ?? "";
 export const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY ?? "";
 export const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY ?? "";
 export const STARTUP_SUBSCRIPTION = process.env.STARTUP_SUBSCRIPTION ?? "";
+
+export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : ["http://localhost:3000"];
