@@ -276,3 +276,17 @@ export type AppConfigResponseType = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type OriginCurrencyType = {
+  name?: string;
+  symbol?: string;
+};
+
+export type OriginType = {
+  _id?: string;
+  name: string;
+  flag: string;
+  currency?: OriginCurrencyType;
+  active?: boolean;
+  createdAt?: string;
+};
