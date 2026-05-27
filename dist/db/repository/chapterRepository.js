@@ -63,7 +63,7 @@ class ChapterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const chapters = yield models_1.Chapter.find({ book: bookId });
+                const chapters = yield models_1.Chapter.find({ book: bookId }).sort({ order: 1 });
                 return chapters;
             }
             catch (error) {
@@ -124,7 +124,7 @@ class ChapterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                yield models_1.Chapter.deleteMany({ bookId });
+                yield models_1.Chapter.deleteMany({ book: bookId });
             }
             catch (error) {
                 throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Error deleting bulk chapters", CustomError_1.ErrorCodes.BAD_REQUEST);

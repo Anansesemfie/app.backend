@@ -19,7 +19,7 @@ class ChapterRepository {
   }
   public async getChapters(bookId: string): Promise<ChapterType[]> {
     try {
-      const chapters = await Chapter.find({ book: bookId });
+      const chapters = await Chapter.find({ book: bookId }).sort({ order: 1 });
       return chapters;
     } catch (error: any) {
       throw new CustomError(
@@ -90,7 +90,7 @@ class ChapterRepository {
 
   public async bulkDelete(bookId: string) {
     try {
-      await Chapter.deleteMany({ bookId });
+      await Chapter.deleteMany({ book: bookId });
     } catch (error) {
       throw new CustomError(
         ErrorEnum[500],

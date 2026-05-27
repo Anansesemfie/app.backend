@@ -269,6 +269,36 @@ export class UserService {
       return user;
    
   }
+  public async getProfile(sessionId: string): Promise<UserResponse> {
+    const { user } = await Session.getSession(sessionId);
+    const fullUser = await Repo.fetchUser(user._id as string);
+    if (!fullUser) {
+      throw new CustomError(ErrorEnum[404], "User not found", ErrorCodes.NOT_FOUND);
+    }
+    return this.formatUser(fullUser);
+  }
+
+  public async updateProfile(
+    sessionId: string,
+    payload: Pick<Partial<UserType>, "username" | "bio" | "dp" | "whatsappNumber">
+  ): Promise<UserResponse> {
+    const { user } = await Session.getSession(sessionId);
+
+    // Only permit safe, user-editable fields
+    const allowedFields: Partial<UserType> = {};
+    if (payload.username !== undefined) allowedFields.username = payload.username;
+    if (payload.bio !== undefined) allowedFields.bio = payload.bio;
+    if (payload.dp !== undefined) allowedFields.dp = payload.dp;
+    if (payload.whatsappNumber !== undefined) allowedFields.whatsappNumber = payload.whatsappNumber;
+
+    if (Object.keys(allowedFields).length === 0) {
+      throw new CustomError(ErrorEnum[400], "No valid fields to update", ErrorCodes.BAD_REQUEST);
+    }
+
+    const updated = await this.updateUser(allowedFields, user._id as string);
+    return this.formatUser(updated);
+  }
+
   public async formatUser(user: UserType): Promise<UserResponse> {
 
       const formattedUser = {
@@ -279,6 +309,7 @@ export class UserService {
         active: user.active,
         dp: user.dp,
         bio: user.bio,
+        whatsappNumber: user.whatsappNumber ?? "",
         subscription: user.subscription as string,
         createdAt: user.createdAt as string,
       };

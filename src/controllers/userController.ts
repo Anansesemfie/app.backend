@@ -104,3 +104,29 @@ export const verifyAccount = async (req: Request, res: Response) => {
     CustomErrorHandler.handle(error, res);
   }
 };
+
+export const getProfile = async (_req: Request, res: Response) => {
+  try {
+    const sessionId = res.locals.sessionId;
+    const user = await userService.getProfile(sessionId);
+    res.status(200).json({ data: user });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const sessionId = res.locals.sessionId;
+    const { username, bio, dp, whatsappNumber } = req.body;
+    const updated = await userService.updateProfile(sessionId, {
+      username,
+      bio,
+      dp,
+      whatsappNumber,
+    });
+    res.status(200).json({ data: updated });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};

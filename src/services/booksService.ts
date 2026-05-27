@@ -209,13 +209,14 @@ class BookService {
         comments: "comments",
         comment: "comments",
         likes: "likes",
+        dislikes: "dislikes",
         views: "views",
         played: "played",
       };
 
       const key = metaMap[meta];
       if (!key) {
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[500],
           "Invalid action",
           ErrorCodes.INTERNAL_SERVER_ERROR
@@ -260,7 +261,7 @@ class BookService {
         languages?: {};
       } = { status: BookStatus.Active };
       if (search) {
-        params["title"] = { $regex: search };
+        params["title"] = { $regex: search, $options: "i" };
       }
       if (language) {
         params["languages"] = { $in: [language] };
@@ -310,19 +311,19 @@ class BookService {
   private async validateBookData(book: BookType) {
     switch (true) {
       case !book.title:
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[400],
           "Title is required",
           ErrorCodes.BAD_REQUEST
         );
       case !book.category.length:
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[400],
           "Category is required",
           ErrorCodes.BAD_REQUEST
         );
       case !book.languages.length:
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[400],
           "Language is required",
           ErrorCodes.BAD_REQUEST
@@ -330,13 +331,13 @@ class BookService {
       // case !book.folder:
       //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
       case !book.cover:
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[400],
           "Cover is required",
           ErrorCodes.BAD_REQUEST
         );
       case !book.uploader:
-        throw await new CustomError(
+        throw new CustomError(
           ErrorEnum[400],
           "Uploader is required",
           ErrorCodes.BAD_REQUEST

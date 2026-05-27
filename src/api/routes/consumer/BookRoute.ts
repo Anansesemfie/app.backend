@@ -7,7 +7,7 @@ import {
 } from "../../../controllers/bookController";
 import { REQUIREAUTH } from "../../middlewares/CheckApp";
 import Languages from "./LanguageRoute";
-import Chapter from "./ChapterRoute";
+import Chapter from "./chapterRoute";
 
 import Reaction from "./ReactionRoute";
 import Category from "./CategoryRoute";

@@ -50,7 +50,7 @@ class EmailService {
             }
             try {
                 const mailOptions = {
-                    from: process.env.EMAIL_USERNAME,
+                    from: env_1.EMAIL_OPERAND,
                     to,
                     subject,
                     html,

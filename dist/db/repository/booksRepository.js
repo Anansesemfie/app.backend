@@ -77,9 +77,10 @@ class BookRepository {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, book, {
-                    new: true,
-                });
+                // Strip top-level empty-string values to avoid ObjectId cast errors
+                // (e.g. when the client sends organization: "" instead of omitting the field)
+                const cleanBook = Object.fromEntries(Object.entries(book).filter(([, v]) => v !== ""));
+                const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, cleanBook, { new: true });
                 return updatedBook;
             }
             catch (error) {
@@ -94,7 +95,7 @@ class BookRepository {
                 yield models_1.Book.findByIdAndDelete(bookId);
             }
             catch (error) {
-                throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Error deleting book", CustomError_1.ErrorCodes.BAD_REQUEST);
+                throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Error deleting book", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
         });
     }

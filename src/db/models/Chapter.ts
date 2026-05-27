@@ -24,6 +24,10 @@ const chapters = (Mongoose: any) => {
         type: ObjectId,
         required: [true, "Missing Book"],
       },
+      order: {
+        type: Number,
+        default: 0,
+      },
       createdAt: {
         type: Date,
         default: HELPERS.currentTime(),

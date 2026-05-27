@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyAccount = exports.linkSubscription = exports.createSubscription = exports.forgotPassword = exports.resetPassword = exports.LogoutUser = exports.LoginUser = exports.CreateUser = void 0;
+exports.updateProfile = exports.getProfile = exports.verifyAccount = exports.linkSubscription = exports.createSubscription = exports.forgotPassword = exports.resetPassword = exports.LogoutUser = exports.LoginUser = exports.CreateUser = void 0;
 const userService_1 = __importDefault(require("../services/userService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const CreateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -148,3 +148,31 @@ const verifyAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.verifyAccount = verifyAccount;
+const getProfile = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sessionId = res.locals.sessionId;
+        const user = yield userService_1.default.getProfile(sessionId);
+        res.status(200).json({ data: user });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.getProfile = getProfile;
+const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sessionId = res.locals.sessionId;
+        const { username, bio, dp, whatsappNumber } = req.body;
+        const updated = yield userService_1.default.updateProfile(sessionId, {
+            username,
+            bio,
+            dp,
+            whatsappNumber,
+        });
+        res.status(200).json({ data: updated });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.updateProfile = updateProfile;

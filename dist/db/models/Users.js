@@ -45,6 +45,15 @@ const Users = (Mongoose) => {
             required: false,
             default: "This user is secretive",
         },
+        whatsappNumber: {
+            type: String,
+            required: false,
+            default: "",
+            validate: {
+                validator: (v) => v === "" || (0, validator_1.isMobilePhone)(v, "any", { strictMode: true }),
+                message: "Please enter a valid phone number in international format (e.g. +233241234567)",
+            },
+        },
         key: {
             type: String,
             require: false,

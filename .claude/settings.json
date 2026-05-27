@@ -1,4 +1,40 @@
 {
+  "permissions": {
+    "allow": [
+      "Skill(commands-utilities-debugging:debug-error)",
+      "Skill(commands-utilities-debugging:debug-error:*)",
+      "Bash(xargs ls -la)",
+      "Bash(npm run *)",
+      "Bash(xargs cat)",
+      "Bash(node -e \"const v = require\\('validator'\\); console.log\\(typeof v.isMobilePhone, typeof v.matches\\)\")",
+      "Skill(commands-utilities-debugging:git-status)",
+      "Skill(commands-utilities-debugging:git-status:*)",
+      "Skill(commands-version-control-git:bug-fix)",
+      "Skill(commands-version-control-git:bug-fix:*)",
+      "Bash(brew install *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node -e \"const cron = require\\('node-cron'\\); console.log\\(Object.keys\\(cron\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('eslintConfig',{}\\), indent=2\\)\\); print\\(json.dumps\\(d.get\\('dependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('devDependencies',{}\\), indent=2\\)\\)\")",
+      "Skill(interview:big-features-interview)",
+      "Skill(interview:big-features-interview:*)",
+      "Bash(echo \"Build exit code: $?\")",
+      "Bash(npm test *)",
+      "Read(//Users/user/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/subagent-driven-development/**)",
+      "Bash(find /Users/user/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/requesting-code-review -type f | sort)",
+      "Read(//Users/user/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/requesting-code-review/**)",
+      "Bash(node -e ' *)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(git checkout *)",
+      "Skill(commands-version-control-git:pr-review)",
+      "Skill(commands-version-control-git:pr-review:*)",
+      "Bash(pkill -f \"nodemon app.js\")",
+      "Bash(git push *)"
+    ]
+  },
   "enabledPlugins": {
     "skill-creator@claude-plugins-official": true
   }

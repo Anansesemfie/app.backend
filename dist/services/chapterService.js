@@ -71,7 +71,7 @@ class ChapterService {
                 }
             }
             const chapters = yield chapterRepository_1.default.getChapters(book);
-            return Promise.all(chapters.map(this.formatChapter));
+            return Promise.all(chapters.map((chapter) => this.formatChapter(chapter)));
         });
     }
     fetchChapter(chapterId_1) {
@@ -79,6 +79,9 @@ class ChapterService {
             const chapter = chapterId
                 ? yield chapterRepository_1.default.getChapterById(chapterId)
                 : yield chapterRepository_1.default.getChapterByTitle(substring);
+            if (!chapter) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "Chapter not found", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
             return yield this.formatChapter(chapter);
         });
     }
@@ -109,7 +112,7 @@ class ChapterService {
     }
     formatChapter(chapter) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             const Book = yield booksService_1.default.fetchBook(chapter.book);
             const type = chapter.mimetype == 'pdf' ? 'ebook' : 'audio';
             return {
@@ -118,8 +121,9 @@ class ChapterService {
                 content: chapter.file,
                 description: chapter.description,
                 password: chapter.password,
+                order: (_b = chapter.order) !== null && _b !== void 0 ? _b : 0,
                 book: Book,
-                createdAt: (_b = chapter.createdAt) !== null && _b !== void 0 ? _b : "",
+                createdAt: (_c = chapter.createdAt) !== null && _c !== void 0 ? _c : "",
                 type
             };
         });

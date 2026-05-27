@@ -5,6 +5,7 @@ import {
   LoginUser,
   MakeAssociate,
   SendEmail,
+  FetchUser,
 } from "../../../controllers/admin/userController";
 import { REQUIREAUTH } from "../../../api/middlewares/CheckApp";
 
@@ -17,5 +18,7 @@ router.post("/sendEmail", REQUIREAUTH, SendEmail);
 router.post("/fetchUsers", REQUIREAUTH, FetchUsers);
 
 router.put("/changeRole", REQUIREAUTH, MakeAssociate);
+
+router.get("/:id", REQUIREAUTH, FetchUser);
 
 export default router;

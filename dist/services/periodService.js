@@ -53,7 +53,7 @@ class PeriodService {
     create(period) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            if (!period) {
+            if (!(period === null || period === void 0 ? void 0 : period.startDate) || !(period === null || period === void 0 ? void 0 : period.endDate)) {
                 period = yield this.newPeriod();
             }
             this.checkPayload(period);

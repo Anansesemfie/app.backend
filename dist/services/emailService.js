@@ -50,11 +50,13 @@ const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = require("../utils/error");
 const nodeMailer_1 = __importDefault(require("../utils/nodeMailer"));
 const sendGrid_1 = __importDefault(require("../utils/sendGrid"));
+const brevo_1 = __importDefault(require("../utils/brevo"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 class EmailService {
     constructor() {
         this.sgEmail = new sendGrid_1.default();
         this.node_mailer = new nodeMailer_1.default();
+        this.brevo = new brevo_1.default();
         this.defaultOptions = {
             from: env_1.EMAIL_OPERAND,
             subject: "From Anansesemfie",
@@ -355,12 +357,40 @@ a, a:hover {
                 subject: (_b = options.subject) !== null && _b !== void 0 ? _b : this.defaultOptions.subject,
                 html: this.generateEmailTemplate(email),
             };
-            const sentBySendGrid = yield this.sendEmailWithSendGrid(msg);
-            if (!sentBySendGrid) {
-                yield this.sendEmailWithNodeMailer(msg);
+            // Primary: Brevo
+            const sentByBrevo = yield this.sendEmailWithBrevo(msg);
+            if (sentByBrevo) {
+                this.logSuccess(options.subject);
+                return "Email sent successfully via Brevo";
             }
-            this.logInfo = `${helpers_1.default.loggerInfo.success} sending email: ${options.subject} @ ${helpers_1.default.currentTime()}`;
-            return "Email sent successfully";
+            // Secondary: SendGrid
+            const sentBySendGrid = yield this.sendEmailWithSendGrid(msg);
+            if (sentBySendGrid) {
+                this.logSuccess(options.subject);
+                return "Email sent successfully via SendGrid";
+            }
+            // Tertiary: NodeMailer (Gmail)
+            const sentByNodeMailer = yield this.sendEmailWithNodeMailer(msg);
+            if (sentByNodeMailer) {
+                this.logSuccess(options.subject);
+                return "Email sent successfully via NodeMailer";
+            }
+            throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to send email through all available providers", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+        });
+    }
+    logSuccess(subject) {
+        this.logInfo = `${helpers_1.default.loggerInfo.success} sending email: ${subject} @ ${helpers_1.default.currentTime()}`;
+    }
+    sendEmailWithBrevo(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.brevo.init();
+                return yield this.brevo.send(options);
+            }
+            catch (error) {
+                console.error("Brevo failed, falling back...");
+                return false;
+            }
         });
     }
     sendEmailWithNodeMailer(options) {
@@ -371,8 +401,14 @@ a, a:hover {
     }
     sendEmailWithSendGrid(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.sgEmail.init();
-            return yield this.sgEmail.send(options);
+            try {
+                yield this.sgEmail.init();
+                return yield this.sgEmail.send(options);
+            }
+            catch (error) {
+                console.error("SendGrid failed, falling back...");
+                return false;
+            }
         });
     }
     checkEmailOptions(options) {

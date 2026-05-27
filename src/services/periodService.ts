@@ -6,7 +6,7 @@ import HELPERS from "../utils/helpers";
 
 class PeriodService {
   public async create(period?: PeriodType): Promise<PeriodResponseType> {
-    if (!period) {
+    if (!period?.startDate || !period?.endDate) {
       period = await this.newPeriod();
     }
     this.checkPayload(period);

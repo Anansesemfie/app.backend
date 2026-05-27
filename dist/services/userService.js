@@ -235,8 +235,39 @@ class UserService {
             return user;
         });
     }
+    getProfile(sessionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = yield sessionService_1.default.getSession(sessionId);
+            const fullUser = yield userRepository_1.default.fetchUser(user._id);
+            if (!fullUser) {
+                throw new CustomError_1.default(error_1.ErrorEnum[404], "User not found", CustomError_1.ErrorCodes.NOT_FOUND);
+            }
+            return this.formatUser(fullUser);
+        });
+    }
+    updateProfile(sessionId, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = yield sessionService_1.default.getSession(sessionId);
+            // Only permit safe, user-editable fields
+            const allowedFields = {};
+            if (payload.username !== undefined)
+                allowedFields.username = payload.username;
+            if (payload.bio !== undefined)
+                allowedFields.bio = payload.bio;
+            if (payload.dp !== undefined)
+                allowedFields.dp = payload.dp;
+            if (payload.whatsappNumber !== undefined)
+                allowedFields.whatsappNumber = payload.whatsappNumber;
+            if (Object.keys(allowedFields).length === 0) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "No valid fields to update", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            const updated = yield this.updateUser(allowedFields, user._id);
+            return this.formatUser(updated);
+        });
+    }
     formatUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const formattedUser = {
                 id: user._id,
                 email: user.email,
@@ -245,6 +276,7 @@ class UserService {
                 active: user.active,
                 dp: user.dp,
                 bio: user.bio,
+                whatsappNumber: (_a = user.whatsappNumber) !== null && _a !== void 0 ? _a : "",
                 subscription: user.subscription,
                 createdAt: user.createdAt,
             };

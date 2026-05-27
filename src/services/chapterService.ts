@@ -36,7 +36,7 @@ class ChapterService {
     }
     const chapters = await Repo.getChapters(book);
 
-    return Promise.all(chapters.map(this.formatChapter));
+    return Promise.all(chapters.map((chapter) => this.formatChapter(chapter)));
   }
 
   public async fetchChapter(
@@ -46,6 +46,14 @@ class ChapterService {
     const chapter = chapterId
       ? await Repo.getChapterById(chapterId)
       : await Repo.getChapterByTitle(substring);
+
+    if (!chapter) {
+      throw new CustomError(
+        ErrorEnum[404],
+        "Chapter not found",
+        ErrorCodes.NOT_FOUND
+      );
+    }
 
     return await this.formatChapter(chapter);
   }
@@ -82,6 +90,7 @@ class ChapterService {
       content: chapter.file,
       description: chapter.description,
       password: chapter.password,
+      order: chapter.order ?? 0,
       book: Book,
       createdAt: chapter.createdAt ?? "",
       type
