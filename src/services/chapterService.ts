@@ -92,6 +92,7 @@ class ChapterService {
       password: chapter.password,
       order: chapter.order ?? 0,
       book: Book,
+      order: chapter.order ?? 0,
       createdAt: chapter.createdAt ?? "",
       type
     };
