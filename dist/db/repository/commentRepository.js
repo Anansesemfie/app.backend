@@ -41,6 +41,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
 const error_1 = require("../../utils/error");
@@ -52,18 +63,54 @@ class CommentRepository {
             return newComment;
         });
     }
-    getComments(bookId, params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const comments = yield models_1.Comment.find(Object.assign({ bookID: bookId }, params));
-            return comments;
-        });
-    }
-    deleteComment(commentId) {
+    findById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!commentId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid comment ID", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            yield models_1.Comment.findByIdAndDelete(commentId);
+            const comment = yield models_1.Comment.findById(commentId);
+            return comment;
+        });
+    }
+    countComments(bookId_1) {
+        return __awaiter(this, arguments, void 0, function* (bookId, filters = {}) {
+            return models_1.Comment.countDocuments(Object.assign({ bookID: bookId, parentId: null, deletedAt: null }, filters));
+        });
+    }
+    getComments(bookId_1) {
+        return __awaiter(this, arguments, void 0, function* (bookId, _a = {}) {
+            var { skip = 0, limit = 20 } = _a, filters = __rest(_a, ["skip", "limit"]);
+            const comments = yield models_1.Comment.find(Object.assign({ bookID: bookId, parentId: null, deletedAt: null }, filters))
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
+            return comments;
+        });
+    }
+    getReplies(parentIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!parentIds.length)
+                return [];
+            const replies = yield models_1.Comment.find({
+                parentId: { $in: parentIds },
+                deletedAt: null,
+            }).sort({ createdAt: 1 });
+            return replies;
+        });
+    }
+    softDelete(commentId, deletedAt) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!commentId) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid comment ID", CustomError_1.ErrorCodes.FORBIDDEN);
+            }
+            yield models_1.Comment.findByIdAndUpdate(commentId, { deletedAt });
+        });
+    }
+    softDeleteReplies(parentId, deletedAt) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!parentId)
+                return;
+            yield models_1.Comment.updateMany({ parentId }, { deletedAt });
         });
     }
     updateComment(commentId, comment) {

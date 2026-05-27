@@ -21,6 +21,12 @@ const Comments = (Mongoose: any) => {
       ref: "period",
       required: [true, "Period is required"],
     },
+    parentId: {
+      type: ObjectId,
+      ref: "BookComments",
+      required: false,
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: HELPERS.currentTime(),

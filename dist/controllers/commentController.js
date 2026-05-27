@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getComments = exports.postComment = void 0;
+exports.deleteComment = exports.postReply = exports.getComments = exports.postComment = void 0;
 const CustomError_1 = require("../utils/CustomError");
 const commentService_1 = __importDefault(require("../services/commentService"));
 const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -20,8 +20,8 @@ const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const { bookId, comment } = req.body;
         const sessionID = res.locals.sessionId;
         const newComment = yield commentService_1.default.createComment({
-            comment: comment,
-            sessionID: sessionID,
+            comment,
+            sessionID,
             bookID: bookId,
         });
         res.status(201).json({ data: newComment });
@@ -34,7 +34,9 @@ exports.postComment = postComment;
 const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const bookId = req.params.bookId;
-        const comments = yield commentService_1.default.getComments(bookId);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 20;
+        const comments = yield commentService_1.default.getComments(bookId, { page, limit });
         res.status(200).json({ data: comments });
     }
     catch (error) {
@@ -42,3 +44,33 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getComments = getComments;
+const postReply = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const parentId = req.params.commentId;
+        const { bookId, comment } = req.body;
+        const sessionID = res.locals.sessionId;
+        const newReply = yield commentService_1.default.createComment({
+            comment,
+            sessionID,
+            bookID: bookId,
+            parentId,
+        });
+        res.status(201).json({ data: newReply });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.postReply = postReply;
+const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const commentId = req.params.commentId;
+        const sessionID = res.locals.sessionId;
+        yield commentService_1.default.deleteComment(commentId, sessionID);
+        res.status(200).json({ data: { message: "Comment deleted successfully" } });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.deleteComment = deleteComment;

@@ -18,6 +18,7 @@ router.use("/reaction", ReactionRoute_1.default);
 router.use("/category", CategoryRoute_1.default);
 router.use("/comment", CommentRoute_1.default);
 router.get("/", bookController_1.getBooks);
+router.get("/:bookId/stats", bookController_1.getBookStats);
 router.get("/:bookId", bookController_1.getBook);
 router.get("/filter/all", bookController_1.filterBooks);
 router.get("/liked/all", CheckApp_1.REQUIREAUTH, bookController_1.getLikedBooksByUser);

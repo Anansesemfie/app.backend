@@ -11,3 +11,14 @@ export const GetSummary = async (req: Request, res: Response) => {
     CustomErrorHandler.handle(error, res);
   }
 };
+
+export const GetBookRevenue = async (req: Request, res: Response) => {
+  try {
+    const token = res.locals.sessionId;
+    const bookId = req.params.bookId;
+    const revenue = await revenueService.getBookRevenue(bookId, token);
+    res.status(200).json({ data: revenue });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};

@@ -1,4 +1,4 @@
-import { S3, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   AWS_S3_BUCKET_IMAGES,
@@ -16,10 +16,10 @@ class AWS_S3 {
   private readonly expires = 60;
 
   private bucketName: string;
-  private s3: S3;
+  private s3: S3Client;
 
   constructor(preferedBucket?: string) {
-    this.s3 = new S3({
+    this.s3 = new S3Client({
       region: this.region,
       credentials: {
         accessKeyId: this.accessKeyId,

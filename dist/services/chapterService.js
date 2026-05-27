@@ -123,7 +123,6 @@ class ChapterService {
                 password: chapter.password,
                 order: (_b = chapter.order) !== null && _b !== void 0 ? _b : 0,
                 book: Book,
-                order: (_b = chapter.order) !== null && _b !== void 0 ? _b : 0,
                 createdAt: (_c = chapter.createdAt) !== null && _c !== void 0 ? _c : "",
                 type
             };

@@ -45,6 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dayjs_1 = __importDefault(require("dayjs"));
 const models_1 = require("../../db/models");
 const sessionService_1 = __importDefault(require("../sessionService"));
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
@@ -71,8 +72,9 @@ class RevenueService {
             const byPlan = grouped.map((g) => {
                 const plan = plans.find((p) => { var _a; return p._id.toString() === ((_a = g._id) === null || _a === void 0 ? void 0 : _a.toString()); });
                 const amount = plan ? plan.amount : 0;
-                const duration = plan ? plan.duration : 30;
-                const monthlyRate = amount / (duration / 30);
+                const durationMs = plan ? plan.duration : 2592000000;
+                const months = durationMs / 2592000000;
+                const monthlyRate = amount / months;
                 const contribution = Math.round(monthlyRate * g.count);
                 return {
                     name: plan ? plan.name : "Unknown",
@@ -84,6 +86,59 @@ class RevenueService {
             const mrr = byPlan.reduce((sum, p) => sum + p.contribution, 0);
             const totalActiveSubscribers = byPlan.reduce((sum, p) => sum + p.count, 0);
             return { mrr, totalActiveSubscribers, byPlan };
+        });
+    }
+    getBookRevenue(bookId, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user } = yield sessionService_1.default.getSession(token);
+            const isAdmin = user.account === utils_1.UsersTypes.admin;
+            if (!isAdmin) {
+                if (!user.organization) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[403], "Forbidden", CustomError_1.ErrorCodes.FORBIDDEN);
+                }
+                const book = yield models_1.Book.findById(bookId, "organization");
+                if (!book ||
+                    String(book.organization) !== String(user.organization)) {
+                    throw new CustomError_1.default(error_1.ErrorEnum[403], "Forbidden", CustomError_1.ErrorCodes.FORBIDDEN);
+                }
+            }
+            // Active subscribers whose subscription includes this book
+            const subscribers = yield models_1.Subscriber
+                .find({ active: true, books: bookId })
+                .populate("parent", "amount duration name");
+            let totalRevenue = 0;
+            const totalSubscribers = subscribers.length;
+            for (const sub of subscribers) {
+                const plan = sub.parent;
+                if (plan && plan.amount) {
+                    totalRevenue += plan.amount;
+                }
+            }
+            if (!isAdmin) {
+                return { totalRevenue, totalSubscribers };
+            }
+            // Admin: full breakdown grouped by activatedAt year-month
+            const periodMap = {};
+            for (const sub of subscribers) {
+                const plan = sub.parent;
+                const activatedAt = sub.activatedAt;
+                const periodKey = activatedAt
+                    ? (0, dayjs_1.default)(activatedAt).format("YYYY-MM")
+                    : "unknown";
+                if (!periodMap[periodKey]) {
+                    periodMap[periodKey] = {
+                        period: periodKey,
+                        subscribers: 0,
+                        revenue: 0,
+                    };
+                }
+                periodMap[periodKey].subscribers++;
+                if (plan && plan.amount) {
+                    periodMap[periodKey].revenue += plan.amount;
+                }
+            }
+            const byPeriod = Object.values(periodMap).sort((a, b) => a.period.localeCompare(b.period));
+            return { totalRevenue, totalSubscribers, byPeriod };
         });
     }
 }

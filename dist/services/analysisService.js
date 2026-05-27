@@ -65,14 +65,14 @@ class Analysis {
             }
             const [{ seen, played }, comments, likes, dislikes] = yield Promise.all([
                 seenService_1.default.getSeensAndPlay(bookId, period),
-                commentService_1.default.getComments(bookId, { period }),
+                commentService_1.default.getComments(bookId, { period, limit: 1 }), // we only need the total
                 reactionService_1.default.getReactions(bookId, { period, action: "like" }),
                 reactionService_1.default.getReactions(bookId, { period, action: "dislike" }),
             ]);
             return [
                 { label: "Seen", data: seen },
                 { label: "Played", data: played },
-                { label: "Comments", data: comments.length },
+                { label: "Comments", data: comments.total },
                 { label: "Likes", data: likes.length },
                 { label: "Dislikes", data: dislikes.length },
             ];

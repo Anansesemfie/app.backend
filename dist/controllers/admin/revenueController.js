@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetSummary = void 0;
+exports.GetBookRevenue = exports.GetSummary = void 0;
 const CustomError_1 = require("../../utils/CustomError");
 const revenueService_1 = __importDefault(require("../../services/admin/revenueService"));
 const GetSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -26,3 +26,15 @@ const GetSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.GetSummary = GetSummary;
+const GetBookRevenue = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = res.locals.sessionId;
+        const bookId = req.params.bookId;
+        const revenue = yield revenueService_1.default.getBookRevenue(bookId, token);
+        res.status(200).json({ data: revenue });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.GetBookRevenue = GetBookRevenue;

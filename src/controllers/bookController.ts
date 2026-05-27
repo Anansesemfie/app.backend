@@ -69,3 +69,13 @@ export const getLikedBooksByUser = async (req: Request, res: Response) => {
     CustomErrorHandler.handle(error, res);
   }
 };
+
+export const getBookStats = async (req: Request, res: Response) => {
+  try {
+    const bookId = req.params.bookId;
+    const stats = await booksService.analyzeBook(bookId);
+    res.status(200).json({ data: stats });
+  } catch (error) {
+    CustomErrorHandler.handle(error, res);
+  }
+};

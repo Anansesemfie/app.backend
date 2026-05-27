@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLikedBooksByUser = exports.filterBooks = exports.getBook = exports.getBooks = void 0;
+exports.getBookStats = exports.getLikedBooksByUser = exports.filterBooks = exports.getBook = exports.getBooks = void 0;
 const booksService_1 = __importDefault(require("../services/booksService"));
 const CustomError_1 = require("../utils/CustomError");
 const getBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -81,3 +81,14 @@ const getLikedBooksByUser = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getLikedBooksByUser = getLikedBooksByUser;
+const getBookStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const bookId = req.params.bookId;
+        const stats = yield booksService_1.default.analyzeBook(bookId);
+        res.status(200).json({ data: stats });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.getBookStats = getBookStats;

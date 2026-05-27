@@ -202,6 +202,7 @@ export type CommentType = {
   user: string;
   comment: string;
   period: string;
+  parentId?: string | null;
   createdAt?: string;
   deletedAt?: string;
 };
@@ -215,6 +216,14 @@ export type CommentResponse = {
   };
   comment: string;
   createdAt?: string;
+  replies?: CommentResponse[];
+};
+
+export type PaginatedCommentsResponse = {
+  page: number;
+  limit: number;
+  total: number;
+  results: CommentResponse[];
 };
 
 export type CategoryType = {

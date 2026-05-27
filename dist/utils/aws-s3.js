@@ -22,7 +22,7 @@ class AWS_S3 {
         this.secretAccessKey = env_1.AWS_SECRET_ACCESS_KEY;
         this.region = env_1.AWS_REGION;
         this.expires = 60;
-        this.s3 = new client_s3_1.S3({
+        this.s3 = new client_s3_1.S3Client({
             region: this.region,
             credentials: {
                 accessKeyId: this.accessKeyId,
