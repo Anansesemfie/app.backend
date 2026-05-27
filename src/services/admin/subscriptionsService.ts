@@ -5,6 +5,7 @@ import { ErrorEnum } from "../../utils/error";
 import { UsersTypes } from "../../db/models/utils";
 import type { AdminSubscriberRecord, SubscriptionsType } from "../../dto";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatSubscriberRecord(s: any, plan: any): AdminSubscriberRecord {
   const activatedAt = s.activatedAt ? new Date(s.activatedAt) : null;
   const expiresAt =
@@ -16,7 +17,7 @@ function formatSubscriberRecord(s: any, plan: any): AdminSubscriberRecord {
     : null;
 
   return {
-    id: s._id,
+    id: String(s._id),
     user: {
       username: s.user?.username ?? "—",
       email: s.user?.email ?? "—",
@@ -24,7 +25,7 @@ function formatSubscriberRecord(s: any, plan: any): AdminSubscriberRecord {
     },
     plan: plan?.name ?? "—",
     autorenew: plan?.autorenew ?? false,
-    activatedAt: s.activatedAt ?? null,
+    activatedAt,
     expiresAt,
     daysRemaining,
   };
@@ -41,33 +42,39 @@ class AdminSubscriptionsService {
   async getStats(token: string) {
     await this.assertAdmin(token);
 
-    const active = await Subscriber.countDocuments({ active: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mongoose model registered without typed schema
+    const Sub = Subscriber as any;
 
-    const grouped: { _id: string; count: number }[] = await (Subscriber as any).aggregate([
-      { $match: { active: true } },
-      { $group: { _id: "$parent", count: { $sum: 1 } } },
+    const [active, grouped, recent] = await Promise.all([
+      Subscriber.countDocuments({ active: true }),
+      Sub.aggregate([
+        { $match: { active: true } },
+        { $group: { _id: "$parent", count: { $sum: 1 } } },
+      ]) as Promise<{ _id: string; count: number }[]>,
+      Sub.find({ active: true })
+        .sort({ activatedAt: -1 })
+        .limit(20)
+        .populate({ path: "user", select: "username email dp", model: "users" })
+        .populate({ path: "parent", select: "name duration autorenew", model: "subscription" }),
     ]);
 
-    const planIds = grouped.map((g) => g._id);
+    const planIds = (grouped as { _id: string; count: number }[]).map((g) => g._id);
     const plans = await Subscription.find({ _id: { $in: planIds } }, "name amount duration");
 
-    const byPlan = grouped.map((g) => {
+    const byPlan = (grouped as { _id: string; count: number }[]).map((g) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped Mongoose document fields
       const plan = plans.find((p: any) => p._id.toString() === g._id?.toString());
       return {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         name: plan ? (plan as any).name : "Unknown",
         count: g.count,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         amount: plan ? (plan as any).amount : 0,
       };
     });
 
-    const recent = await (Subscriber as any)
-      .find({ active: true })
-      .sort({ activatedAt: -1 })
-      .limit(20)
-      .populate("user", "username email dp")
-      .populate("parent", "name duration autorenew");
-
-    const recentFormatted: AdminSubscriberRecord[] = recent.map((s: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- populated Mongoose docs are untyped
+    const recentFormatted: AdminSubscriberRecord[] = (recent as any[]).map((s: any) =>
       formatSubscriberRecord(s, s.parent)
     );
 
