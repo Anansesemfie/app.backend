@@ -18,6 +18,10 @@ app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
 
 app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);
