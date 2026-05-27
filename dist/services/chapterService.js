@@ -109,7 +109,7 @@ class ChapterService {
     }
     formatChapter(chapter) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             const Book = yield booksService_1.default.fetchBook(chapter.book);
             const type = chapter.mimetype == 'pdf' ? 'ebook' : 'audio';
             return {
@@ -119,7 +119,8 @@ class ChapterService {
                 description: chapter.description,
                 password: chapter.password,
                 book: Book,
-                createdAt: (_b = chapter.createdAt) !== null && _b !== void 0 ? _b : "",
+                order: (_b = chapter.order) !== null && _b !== void 0 ? _b : 0,
+                createdAt: (_c = chapter.createdAt) !== null && _c !== void 0 ? _c : "",
                 type
             };
         });

@@ -11,6 +11,12 @@ const UserRoute_1 = __importDefault(require("./UserRoute"));
 const BookRoute_1 = __importDefault(require("./BookRoute"));
 const PeriodRoute_1 = __importDefault(require("./PeriodRoute"));
 const OrgRoute_1 = __importDefault(require("./OrgRoute"));
+// import Dashboard from "./DashboardRoute";
+// import Subscriptions from "./SubscriptionsRoute";
+// import Conversation from "./ConversationRoute";
+// import Revenue from "./RevenueRoute";
+const AppConfigRoute_1 = __importDefault(require("./AppConfigRoute"));
+const OriginsRoute_1 = __importDefault(require("./OriginsRoute"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     return res.status(200).json({
@@ -22,9 +28,16 @@ router.get("/", (req, res) => {
         version: "1.0",
     });
 });
-router.use("/language", CheckApp_1.CHECKAPPTOKEN, LanguageRoute_1.default);
+router.use("/language", CheckApp_1.REQUIREAUTH, LanguageRoute_1.default);
 router.use("/user", UserRoute_1.default);
-router.use("/book", CheckApp_1.CHECKAPPTOKEN, BookRoute_1.default);
-router.use("/period", CheckApp_1.CHECKAPPTOKEN, PeriodRoute_1.default);
-router.use("/organization", CheckApp_1.CHECKAPPTOKEN, OrgRoute_1.default);
+router.use("/book", CheckApp_1.REQUIREAUTH, BookRoute_1.default);
+router.use("/period", CheckApp_1.REQUIREAUTH, PeriodRoute_1.default);
+router.use("/organization", CheckApp_1.REQUIREAUTH, OrgRoute_1.default);
+// router.use("/dashboard", REQUIREAUTH, Dashboard);
+// router.use("/subscription", REQUIREAUTH, Subscriptions);
+// router.use("/subscriptions", REQUIREAUTH, Subscriptions);
+// router.use("/conversation", REQUIREAUTH, Conversation);
+// router.use("/revenue", REQUIREAUTH, Revenue);
+router.use("/settings", CheckApp_1.REQUIREAUTH, AppConfigRoute_1.default);
+router.use("/origin", CheckApp_1.REQUIREAUTH, OriginsRoute_1.default);
 exports.default = router;

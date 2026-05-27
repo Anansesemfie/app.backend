@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Organization = exports.Periods = exports.Subscription = exports.PaymentsAccount = exports.Session = exports.External = exports.Origin = exports.Seen = exports.Comment = exports.Reaction = exports.Subscriber = exports.User = exports.Language = exports.Category = exports.Chapter = exports.Book = void 0;
+exports.AppConfig = exports.Organization = exports.Periods = exports.Subscription = exports.PaymentsAccount = exports.Session = exports.External = exports.Origin = exports.Seen = exports.Comment = exports.Reaction = exports.Subscriber = exports.User = exports.Language = exports.Category = exports.Chapter = exports.Book = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const env_1 = require("../../utils/env");
 const Books_1 = __importDefault(require("./Books"));
@@ -22,6 +22,7 @@ const Externals_1 = __importDefault(require("./Externals"));
 const Session_1 = __importDefault(require("./Session"));
 const Period_1 = __importDefault(require("./Period"));
 const Organization_1 = __importDefault(require("./Organization"));
+const AppConfig_1 = __importDefault(require("./AppConfig"));
 mongoose_1.default.connect(env_1.MONGODB_URI, {
     autoIndex: true,
     dbName: env_1.MONGODB_DBNAME
@@ -42,4 +43,5 @@ exports.PaymentsAccount = mongoose_1.default.model("paymentsAccount", (0, Paymen
 exports.Subscription = mongoose_1.default.model("subscription", (0, Subscriptions_1.default)(mongoose_1.default));
 exports.Periods = mongoose_1.default.model("period", (0, Period_1.default)(mongoose_1.default));
 exports.Organization = mongoose_1.default.model("organization", (0, Organization_1.default)(mongoose_1.default));
+exports.AppConfig = mongoose_1.default.model("appConfig", (0, AppConfig_1.default)(mongoose_1.default));
 exports.default = mongoose_1.default;

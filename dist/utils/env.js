@@ -1,7 +1,7 @@
 "use strict";
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STARTUP_SUBSCRIPTION = exports.PAYSTACK_SECRET_KEY = exports.PAYSTACK_PUBLIC_KEY = exports.AWS_S3_BUCKET_AUDIO = exports.AWS_S3_BUCKET_IMAGES = exports.AWS_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.CAN_LOG = exports.APP_BASE_URL = exports.BASE_URL = exports.SENDGRID_KEY = exports.EMAIL_PASSWORD = exports.EMAIL_OPERAND = exports.SECRET_JWT = exports.APP_LOGO = exports.SERVER_LOG_FILE = exports.PORT = exports.HOST_URI = exports.MONGODB_DBNAME = exports.MONGODB_URI = void 0;
+exports.ALLOWED_ORIGINS = exports.STARTUP_SUBSCRIPTION = exports.PAYSTACK_SECRET_KEY = exports.PAYSTACK_PUBLIC_KEY = exports.AWS_S3_BUCKET_AUDIO = exports.AWS_S3_BUCKET_IMAGES = exports.AWS_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.CAN_LOG = exports.APP_BASE_URL = exports.BASE_URL = exports.SENDGRID_KEY = exports.EMAIL_PASSWORD = exports.EMAIL_OPERAND = exports.SECRET_JWT = exports.APP_LOGO = exports.SERVER_LOG_FILE = exports.PORT = exports.HOST_URI = exports.MONGODB_DBNAME = exports.MONGODB_URI = void 0;
 require("dotenv/config");
 const isProduction = process.env.NODE_ENV === "production";
 exports.MONGODB_URI = (_a = process.env.MONGODB_URI) !== null && _a !== void 0 ? _a : "";
@@ -25,3 +25,6 @@ exports.AWS_S3_BUCKET_AUDIO = (_s = process.env.AWS_S3_BUCKET_AUDIO) !== null &&
 exports.PAYSTACK_PUBLIC_KEY = (_t = process.env.PAYSTACK_PUBLIC_KEY) !== null && _t !== void 0 ? _t : "";
 exports.PAYSTACK_SECRET_KEY = (_u = process.env.PAYSTACK_SECRET_KEY) !== null && _u !== void 0 ? _u : "";
 exports.STARTUP_SUBSCRIPTION = (_v = process.env.STARTUP_SUBSCRIPTION) !== null && _v !== void 0 ? _v : "";
+exports.ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+    : ["http://localhost:3000"];

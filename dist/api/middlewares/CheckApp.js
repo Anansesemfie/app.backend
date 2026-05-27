@@ -46,6 +46,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CHECKAPPTOKEN = CHECKAPPTOKEN;
+exports.REQUIREAUTH = REQUIREAUTH;
 const error_1 = require("../../utils/error");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
@@ -57,7 +58,27 @@ function CHECKAPPTOKEN(req, res, next) {
                 res.locals.sessionId = null;
                 return next();
             }
-            // Extract the token from the Authorization header
+            const tokenParts = authorizationHeader.split(" ");
+            if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Authorization header format", CustomError_1.ErrorCodes.FORBIDDEN);
+            }
+            let bearerToken = tokenParts[1];
+            bearerToken = yield helpers_1.default.DECODE_TOKEN(bearerToken);
+            res.locals.sessionId = bearerToken;
+            next();
+        }
+        catch (error) {
+            CustomError_1.CustomErrorHandler.handle(error, res);
+        }
+    });
+}
+function REQUIREAUTH(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const authorizationHeader = req.headers["authorization"];
+            if (!authorizationHeader) {
+                throw new CustomError_1.default(error_1.ErrorEnum[401], "Authentication required", CustomError_1.ErrorCodes.UNAUTHORIZED);
+            }
             const tokenParts = authorizationHeader.split(" ");
             if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid Authorization header format", CustomError_1.ErrorCodes.FORBIDDEN);
