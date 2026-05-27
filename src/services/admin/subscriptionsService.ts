@@ -65,18 +65,11 @@ class AdminSubscriptionsService {
       .sort({ activatedAt: -1 })
       .limit(20)
       .populate("user", "username email dp")
-      .populate("parent", "name");
+      .populate("parent", "name duration autorenew");
 
-    const recentFormatted = recent.map((s: any) => ({
-      id: s._id,
-      user: {
-        username: s.user?.username ?? "—",
-        email: s.user?.email ?? "—",
-        dp: s.user?.dp ?? "",
-      },
-      plan: s.parent?.name ?? "—",
-      activatedAt: s.activatedAt,
-    }));
+    const recentFormatted: AdminSubscriberRecord[] = recent.map((s: any) =>
+      formatSubscriberRecord(s, s.parent)
+    );
 
     return { active, byPlan, recent: recentFormatted };
   }
