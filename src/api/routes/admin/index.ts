@@ -12,6 +12,7 @@ import Subscriptions from "./SubscriptionsRoute";
 import Conversation from "./ConversationRoute";
 import Revenue from "./RevenueRoute";
 import AppConfigRoute from "./AppConfigRoute";
+import Origins from "./OriginsRoute";
 
 const router = Router();
 
@@ -32,9 +33,11 @@ router.use("/book", REQUIREAUTH, Book);
 router.use("/period", REQUIREAUTH, Period);
 router.use("/organization", REQUIREAUTH, Org);
 router.use("/dashboard", REQUIREAUTH, Dashboard);
+router.use("/subscription", REQUIREAUTH, Subscriptions);
 router.use("/subscriptions", REQUIREAUTH, Subscriptions);
 router.use("/conversation", REQUIREAUTH, Conversation);
 router.use("/revenue", REQUIREAUTH, Revenue);
 router.use("/settings", REQUIREAUTH, AppConfigRoute);
+router.use("/origin", REQUIREAUTH, Origins);
 
 export default router;
