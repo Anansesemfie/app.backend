@@ -5,7 +5,7 @@ import CustomError, { ErrorCodes } from "../utils/CustomError";
 import HELPERS from "../utils/helpers";
 
 class PeriodService {
-  public async create(period: PeriodType): Promise<PeriodResponseType> {
+  public async create(period?: PeriodType): Promise<PeriodResponseType> {
     if (!period) {
       period = await this.newPeriod();
     }
