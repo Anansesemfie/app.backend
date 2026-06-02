@@ -1,5 +1,6 @@
 import { Response } from "express";
 import mongoose from "mongoose";
+import * as Sentry from "@sentry/node";
 
 const ErrorCodes = {
   BAD_REQUEST: 400,
@@ -42,18 +43,21 @@ class CustomErrorHandler {
 
     // If the error is an instance of CustomError, return its properties
     if (error instanceof CustomError) {
+      Sentry.captureException(error);
       return res.status(error.status).json({
         code: error.code,
         message: error.message,
         status: error.status,
       });
     } else if (error instanceof SyntaxError) {
+      Sentry.captureException(error);
       return res.status(ErrorCodes.BAD_REQUEST).json({
         code: "BAD_REQUEST",
         message: error.message,
         status: ErrorCodes.BAD_REQUEST,
       });
     } else if (error instanceof TypeError) {
+      Sentry.captureException(error);
       return res.status(ErrorCodes.BAD_REQUEST).json({
         code: "TYPE_ERROR",
         message: error.message,
@@ -62,20 +66,21 @@ class CustomErrorHandler {
     }
     //mongoose validation error
     else if (error instanceof mongoose.Error.ValidationError) {
+      Sentry.captureException(error);
       return res.status(ErrorCodes.BAD_REQUEST).json({
         code: "VALIDATION_ERROR",
         message: error.message,
         status: ErrorCodes.BAD_REQUEST,
       });
     } else if (error instanceof Error) {
-      // If it's a standard Error, return a generic error response
+      Sentry.captureException(error);
       return res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({
         code: "INTERNAL_SERVER_ERROR",
         message: error.message,
         status: ErrorCodes.INTERNAL_SERVER_ERROR,
       });
     } else {
-      // If it's an unknown type, return a generic error response
+      Sentry.captureException(error);
       return res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({
         code: "UNKNOWN_ERROR",
         message: "An unknown error occurred",
