@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const emailService_1 = __importDefault(require("./emailService"));
 const whatsAppService_1 = __importDefault(require("./whatsAppService"));
+const env_1 = require("../utils/env");
 /**
  * NotificationService
  *
@@ -42,14 +43,17 @@ class NotificationService {
     notify(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user, whatsapp, email } = options;
-            if (user.whatsappNumber) {
+            if (user.whatsappNumber && env_1.BREVO_ACTIVE_WHATSAPP_SENDER) {
                 return yield whatsAppService_1.default.send(Object.assign({ contactNumbers: [user.whatsappNumber] }, whatsapp));
             }
-            return yield emailService_1.default.sendEmail({
-                to: user.email,
-                subject: email.subject,
-                html: email.html,
-            }, email.template);
+            else {
+                yield emailService_1.default.sendEmail({
+                    to: user.email,
+                    subject: email.subject,
+                    html: email.html,
+                }, email.template);
+                return "email";
+            }
         });
     }
 }

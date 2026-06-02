@@ -1,3 +1,5 @@
+import "./instrument";
+import * as Sentry from "@sentry/node";
 import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -27,6 +29,7 @@ app.use(ConsumerRouter);
 app.use("/admin", AdminRouter);
 app.use(express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "public")));
+Sentry.setupExpressErrorHandler(app);
 Mongoose.connection
   .once("open", () => {
     console.log("Connected to DB");

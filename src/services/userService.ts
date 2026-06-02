@@ -8,7 +8,7 @@ import HELPERS from "../utils/helpers";
 import bcrypt from "bcrypt";
 
 import Session from "./sessionService";
-import EmailService from "./emailService";
+import notificationService from "./notificationService";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 
 export class UserService {
@@ -35,27 +35,29 @@ export class UserService {
         newUser._id as string
       );
 
-      const HTML = `Hello <b>${newUser.username}</b>, <br/>verify your account <br/>
-      <b>code:${verificationCode}</b> <br/>
-      and <a href="${APP_BASE_URL}">goto app </a> or
-      `;
-      await EmailService.sendEmail(
-        {
-          to: newUser.email,
-          subject: "Verify Account",
-          html: HTML,
+      await notificationService.notify({
+        user: {
+          email: newUser.email,
+          whatsappNumber: newUser.whatsappNumber,
         },
-        {
-          actions: [
-            {
-              link: `${APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
-              title: "Verify Account",
-            },
-          ],
-          header: "New Account Verification",
-          body: "Verify your account to start using our services",
-        }
-      );
+        whatsapp: {
+          text: `Hello ${newUser.username}, verify your Anansesemfie account: ${APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+        },
+        email: {
+          subject: "Verify Account",
+          html: `Hello <b>${newUser.username}</b>, verify your account: ${APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+          template: {
+            header: "New Account Verification",
+            body: "Verify your account to start using our services",
+            actions: [
+              {
+                link: `${APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+                title: "Verify Account",
+              },
+            ],
+          },
+        },
+      });
       return newUser;
   }
 
@@ -154,23 +156,29 @@ export class UserService {
       }
       const token = await this.generatePasswordResetToken(user);
       const encryptedToken = await HELPERS.ENCODE_Token(token);
-      await EmailService.sendEmail(
-        {
-          to: user.email,
-          subject: "Password Reset",
-          html: `Hello ${user.username}, reset your password <a href="${APP_BASE_URL}/reset-password?token=${token}">here</a>`,
+      await notificationService.notify({
+        user: {
+          email: user.email,
+          whatsappNumber: user.whatsappNumber,
         },
-        {
-          header: "Password Reset",
-          body: "Reset your password",
-          actions: [
-            {
-              title: "Reset Password",
-              link: `${APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
-            },
-          ],
-        }
-      );
+        whatsapp: {
+          text: `Hello ${user.username}, reset your Anansesemfie password: ${APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+        },
+        email: {
+          subject: "Password Reset",
+          html: `Hello ${user.username}, reset your password <a href="${APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}">here</a>`,
+          template: {
+            header: "Password Reset",
+            body: "Reset your password to regain access to your account.",
+            actions: [
+              {
+                title: "Reset Password",
+                link: `${APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+              },
+            ],
+          },
+        },
+      });
   
   }
 

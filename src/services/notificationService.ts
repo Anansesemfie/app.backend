@@ -1,7 +1,7 @@
 import type { NotifyOptions } from "./utils/interfaces";
 import emailService from "./emailService";
 import whatsAppService from "./whatsAppService";
-
+import { BREVO_ACTIVE_WHATSAPP_SENDER } from "../utils/env";
 /**
  * NotificationService
  *
@@ -30,21 +30,22 @@ class NotificationService {
   public async notify(options: NotifyOptions): Promise<string> {
     const { user, whatsapp, email } = options;
 
-    if (user.whatsappNumber) {
+    if (user.whatsappNumber && BREVO_ACTIVE_WHATSAPP_SENDER) {
       return await whatsAppService.send({
         contactNumbers: [user.whatsappNumber],
         ...whatsapp,
       });
+    } else {
+      await emailService.sendEmail(
+        {
+          to: user.email,
+          subject: email.subject,
+          html: email.html,
+        },
+        email.template,
+      );
+      return "email";
     }
-
-    return await emailService.sendEmail(
-      {
-        to: user.email,
-        subject: email.subject,
-        html: email.html,
-      },
-      email.template
-    );
   }
 }
 

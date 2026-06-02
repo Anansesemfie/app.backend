@@ -18,6 +18,7 @@ export const SENDGRID_KEY = process.env.SENDGRID_KEY ?? "";
 export const BREVO_KEY = process.env.BREVO_KEY ?? "";
 /** Sender phone number registered in the Brevo WhatsApp dashboard (E.164 format, e.g. "+233241234567") */
 export const BREVO_WHATSAPP_SENDER = process.env.BREVO_WHATSAPP_SENDER ?? "";
+export const BREVO_ACTIVE_WHATSAPP_SENDER = Number(process.env.BREVO_ACTIVE_WHATSAPP_SENDER) > 1 ? true : false;
 export const BASE_URL = process.env.BASE_URL ?? "";
 export const APP_BASE_URL = process.env.APP_BASE_URL ?? "";
 export const CAN_LOG = process.env.CAN_LOG === "YES";
@@ -35,3 +36,5 @@ export const STARTUP_SUBSCRIPTION = process.env.STARTUP_SUBSCRIPTION ?? "";
 export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
+
+export const SENTRY_DSN = process.env.SENTRY_DSN ?? "";

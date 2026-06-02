@@ -357,57 +357,45 @@ a, a:hover {
                 subject: (_b = options.subject) !== null && _b !== void 0 ? _b : this.defaultOptions.subject,
                 html: this.generateEmailTemplate(email),
             };
-            // Primary: Brevo
-            const sentByBrevo = yield this.sendEmailWithBrevo(msg);
-            if (sentByBrevo) {
-                this.logSuccess(options.subject);
-                return "Email sent successfully via Brevo";
-            }
-            // Secondary: SendGrid
-            const sentBySendGrid = yield this.sendEmailWithSendGrid(msg);
-            if (sentBySendGrid) {
-                this.logSuccess(options.subject);
-                return "Email sent successfully via SendGrid";
-            }
-            // Tertiary: NodeMailer (Gmail)
-            const sentByNodeMailer = yield this.sendEmailWithNodeMailer(msg);
-            if (sentByNodeMailer) {
-                this.logSuccess(options.subject);
-                return "Email sent successfully via NodeMailer";
-            }
-            throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to send email through all available providers", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+            // Primary: Brevo. Fallback: SendGrid, then NodeMailer. Log success or failure of each provider.
+            this.sendEmailWithBrevo(msg).catch((err) => this.sendEmailWithSendGrid(msg).catch((err) => this.sendEmailWithNodeMailer(msg).catch((err) => {
+                console.error("All email providers failed:", err);
+                throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to send email through all available providers", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
+            })));
+            this.logSuccess(msg.subject);
         });
     }
     logSuccess(subject) {
         this.logInfo = `${helpers_1.default.loggerInfo.success} sending email: ${subject} @ ${helpers_1.default.currentTime()}`;
+        console.log("from email service:", this.logInfo);
     }
     sendEmailWithBrevo(options) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.brevo.init();
+                this.brevo.init();
                 return yield this.brevo.send(options);
             }
             catch (error) {
                 console.error("Brevo failed, falling back...");
-                return false;
+                throw error; // rethrow to trigger fallback
             }
         });
     }
     sendEmailWithNodeMailer(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.node_mailer.init();
+            this.node_mailer.init();
             return yield this.node_mailer.send(options);
         });
     }
     sendEmailWithSendGrid(options) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.sgEmail.init();
+                this.sgEmail.init();
                 return yield this.sgEmail.send(options);
             }
             catch (error) {
                 console.error("SendGrid failed, falling back...");
-                return false;
+                throw error; // rethrow to trigger fallback
             }
         });
     }
@@ -415,9 +403,6 @@ a, a:hover {
         return __awaiter(this, void 0, void 0, function* () {
             if (!options.to) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Email recipient is required", CustomError_1.ErrorCodes.BAD_REQUEST);
-            }
-            if (!options.html) {
-                throw new CustomError_1.default(error_1.ErrorEnum[400], "Email content is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
         });
     }

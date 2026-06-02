@@ -53,7 +53,7 @@ const env_1 = require("../utils/env");
 const helpers_1 = __importDefault(require("../utils/helpers"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const sessionService_1 = __importDefault(require("./sessionService"));
-const emailService_1 = __importDefault(require("./emailService"));
+const notificationService_1 = __importDefault(require("./notificationService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 class UserService {
     constructor() {
@@ -70,23 +70,28 @@ class UserService {
             const verificationCode = yield this.generateVerification(newUser._id);
             const { subscription } = yield subscribersService_1.default.create(env_1.STARTUP_SUBSCRIPTION, newUser);
             yield this.updateUser({ subscription: subscription._id }, newUser._id);
-            const HTML = `Hello <b>${newUser.username}</b>, <br/>verify your account <br/>
-      <b>code:${verificationCode}</b> <br/>
-      and <a href="${env_1.APP_BASE_URL}">goto app </a> or
-      `;
-            yield emailService_1.default.sendEmail({
-                to: newUser.email,
-                subject: "Verify Account",
-                html: HTML,
-            }, {
-                actions: [
-                    {
-                        link: `${env_1.APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
-                        title: "Verify Account",
+            yield notificationService_1.default.notify({
+                user: {
+                    email: newUser.email,
+                    whatsappNumber: newUser.whatsappNumber,
+                },
+                whatsapp: {
+                    text: `Hello ${newUser.username}, verify your Anansesemfie account: ${env_1.APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+                },
+                email: {
+                    subject: "Verify Account",
+                    html: `Hello <b>${newUser.username}</b>, verify your account: ${env_1.APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+                    template: {
+                        header: "New Account Verification",
+                        body: "Verify your account to start using our services",
+                        actions: [
+                            {
+                                link: `${env_1.APP_BASE_URL}/callback/verify?verificationCode=${verificationCode}`,
+                                title: "Verify Account",
+                            },
+                        ],
                     },
-                ],
-                header: "New Account Verification",
-                body: "Verify your account to start using our services",
+                },
             });
             return newUser;
         });
@@ -161,19 +166,28 @@ class UserService {
             }
             const token = yield this.generatePasswordResetToken(user);
             const encryptedToken = yield helpers_1.default.ENCODE_Token(token);
-            yield emailService_1.default.sendEmail({
-                to: user.email,
-                subject: "Password Reset",
-                html: `Hello ${user.username}, reset your password <a href="${env_1.APP_BASE_URL}/reset-password?token=${token}">here</a>`,
-            }, {
-                header: "Password Reset",
-                body: "Reset your password",
-                actions: [
-                    {
-                        title: "Reset Password",
-                        link: `${env_1.APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+            yield notificationService_1.default.notify({
+                user: {
+                    email: user.email,
+                    whatsappNumber: user.whatsappNumber,
+                },
+                whatsapp: {
+                    text: `Hello ${user.username}, reset your Anansesemfie password: ${env_1.APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+                },
+                email: {
+                    subject: "Password Reset",
+                    html: `Hello ${user.username}, reset your password <a href="${env_1.APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}">here</a>`,
+                    template: {
+                        header: "Password Reset",
+                        body: "Reset your password to regain access to your account.",
+                        actions: [
+                            {
+                                title: "Reset Password",
+                                link: `${env_1.APP_BASE_URL}/callback/resetPassword?token=${encryptedToken}&email=${user.email}`,
+                            },
+                        ],
                     },
-                ],
+                },
             });
         });
     }

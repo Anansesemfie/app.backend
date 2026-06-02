@@ -22,7 +22,7 @@ class EmailService {
   private logInfo = "";
   public _constructor() {}
   private generateEmailTemplate = (
-    email: EmailTemplate
+    email: EmailTemplate,
   ) => `<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -150,7 +150,7 @@ a, a:hover {
 	<tr>
 		${email.actions?.map(
       (
-        act
+        act,
       ) => `<td align="center" valign="top" style="border-collapse: collapse; border-spacing: 0; margin: 0; padding: 0; padding-left: 6.25%; padding-right: 6.25%; width: 87.5%;
 			padding-top: 25px;
 			padding-bottom: 5px;" class="button"><a href="${act.link}" target="_blank" style="text-decoration: underline;">
@@ -162,7 +162,7 @@ a, a:hover {
 					</a>
 			</td></tr></table></a>
 		</td>
-		`
+		`,
     )}
 	</tr>
 
@@ -206,7 +206,7 @@ a, a:hover {
 						${itm.description}
 				</td>
 
-			</tr>`
+			</tr>`,
             )
           : ""
       }
@@ -315,70 +315,61 @@ a, a:hover {
 </html>`;
 
   public async sendEmail(options: EmailOptions, email: EmailTemplate) {
-      await this.checkEmailOptions(options);
-      const msg = {
-        to: options.to!,
-        from: options.from ?? this.defaultOptions.from,
-        subject: options.subject ?? this.defaultOptions.subject,
-        html: this.generateEmailTemplate(email),
-      };
+    await this.checkEmailOptions(options);
+    const msg = {
+      to: options.to!,
+      from: options.from ?? this.defaultOptions.from,
+      subject: options.subject ?? this.defaultOptions.subject,
+      html: this.generateEmailTemplate(email),
+    };
 
-      // Primary: Brevo
-      const sentByBrevo = await this.sendEmailWithBrevo(msg);
-      if (sentByBrevo) {
-        this.logSuccess(options.subject);
-        return "Email sent successfully via Brevo";
-      }
+    // Primary: Brevo. Fallback: SendGrid, then NodeMailer. Log success or failure of each provider.
+    this.sendEmailWithBrevo(msg).catch((err) =>
+      this.sendEmailWithSendGrid(msg).catch((err) =>
+		
+        this.sendEmailWithNodeMailer(msg).catch((err) => {
+          console.error("All email providers failed:", err);
+          throw new CustomError(
+            ErrorEnum[500],
+            "Failed to send email through all available providers",
+            ErrorCodes.INTERNAL_SERVER_ERROR,
+          );
+        }),
+      ),
+    );
 
-      // Secondary: SendGrid
-      const sentBySendGrid = await this.sendEmailWithSendGrid(msg);
-      if (sentBySendGrid) {
-        this.logSuccess(options.subject);
-        return "Email sent successfully via SendGrid";
-      }
-
-      // Tertiary: NodeMailer (Gmail)
-      const sentByNodeMailer = await this.sendEmailWithNodeMailer(msg);
-      if (sentByNodeMailer) {
-        this.logSuccess(options.subject);
-        return "Email sent successfully via NodeMailer";
-      }
-
-      throw new CustomError(
-        ErrorEnum[500],
-        "Failed to send email through all available providers",
-        ErrorCodes.INTERNAL_SERVER_ERROR
-      );
+    this.logSuccess(msg.subject);
   }
 
   private logSuccess(subject: string) {
     this.logInfo = `${HELPERS.loggerInfo.success} sending email: ${
       subject
     } @ ${HELPERS.currentTime()}`;
+    console.log("from email service:", this.logInfo);
   }
 
   private async sendEmailWithBrevo(options: EmailOptions) {
     try {
-      await this.brevo.init();
+      this.brevo.init();
       return await this.brevo.send(options);
     } catch (error) {
       console.error("Brevo failed, falling back...");
-      return false;
+	  throw error; // rethrow to trigger fallback
     }
   }
 
   private async sendEmailWithNodeMailer(options: EmailOptions) {
-      await this.node_mailer.init();
-      return await this.node_mailer.send(options);
+    this.node_mailer.init();
+    return await this.node_mailer.send(options);
   }
 
   private async sendEmailWithSendGrid(options: EmailOptions) {
     try {
-      await this.sgEmail.init();
+      this.sgEmail.init();
       return await this.sgEmail.send(options);
     } catch (error) {
       console.error("SendGrid failed, falling back...");
-      return false;
+	  throw error; // rethrow to trigger fallback
     }
   }
 
@@ -387,14 +378,7 @@ a, a:hover {
       throw new CustomError(
         ErrorEnum[400],
         "Email recipient is required",
-        ErrorCodes.BAD_REQUEST
-      );
-    }
-    if (!options.html) {
-      throw new CustomError(
-        ErrorEnum[400],
-        "Email content is required",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
   }
