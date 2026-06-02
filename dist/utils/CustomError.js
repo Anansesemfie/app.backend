@@ -69,6 +69,7 @@ class CustomErrorHandler {
     static handle(error, res) {
         // If the error is an instance of CustomError, return its properties
         if (error instanceof CustomError) {
+            Sentry.captureException(error);
             return res.status(error.status).json({
                 code: error.code,
                 message: error.message,
@@ -76,6 +77,7 @@ class CustomErrorHandler {
             });
         }
         else if (error instanceof SyntaxError) {
+            Sentry.captureException(error);
             return res.status(ErrorCodes.BAD_REQUEST).json({
                 code: "BAD_REQUEST",
                 message: error.message,
@@ -83,6 +85,7 @@ class CustomErrorHandler {
             });
         }
         else if (error instanceof TypeError) {
+            Sentry.captureException(error);
             return res.status(ErrorCodes.BAD_REQUEST).json({
                 code: "TYPE_ERROR",
                 message: error.message,
@@ -91,6 +94,7 @@ class CustomErrorHandler {
         }
         //mongoose validation error
         else if (error instanceof mongoose_1.default.Error.ValidationError) {
+            Sentry.captureException(error);
             return res.status(ErrorCodes.BAD_REQUEST).json({
                 code: "VALIDATION_ERROR",
                 message: error.message,
