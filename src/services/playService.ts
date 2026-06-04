@@ -57,6 +57,11 @@ class PlayService {
       user?.subscription
     );
 
+    await booksService.updateBookMeta(chapter?.book?.id || "", {
+      meta: "played",
+      action: "Plus",
+    });
+
     return {
       chapter,
       playTime: 1,

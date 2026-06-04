@@ -11,6 +11,7 @@ const BookRoute_1 = __importDefault(require("./BookRoute"));
 const userPlayRoute_1 = __importDefault(require("./userPlayRoute"));
 const SubscriptionRoute_1 = __importDefault(require("./SubscriptionRoute"));
 const webHookCallBacks_1 = __importDefault(require("./webHookCallBacks"));
+const QuoteRoute_1 = __importDefault(require("./QuoteRoute"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     return res.status(200).json({
@@ -27,4 +28,5 @@ router.use("/whcb", webHookCallBacks_1.default);
 router.use("/book/", CheckApp_1.CHECKAPPTOKEN, BookRoute_1.default);
 router.use("/chapter/play", CheckApp_1.CHECKAPPTOKEN, userPlayRoute_1.default);
 router.use("/subscription", SubscriptionRoute_1.default);
+router.use("/quotes", QuoteRoute_1.default);
 exports.default = router;

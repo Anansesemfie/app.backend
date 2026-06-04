@@ -86,7 +86,7 @@ class PlayService {
     }
     authorizedUserPlay(chapterId, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             const { user } = yield sessionService_1.default.getSession(sessionId);
             if (!user.subscription) {
                 return yield this.unAuthorizedUserPlay(chapterId, user._id); // If user has no subscription, return unauthorized play
@@ -97,6 +97,10 @@ class PlayService {
             }
             const chapter = yield chapterService_1.default.fetchChapter(chapterId);
             yield seenService_1.default.recordPlay(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a.id) || "", user._id, helpers_1.default.currentTime(), user === null || user === void 0 ? void 0 : user.subscription);
+            yield booksService_1.default.updateBookMeta(((_b = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _b === void 0 ? void 0 : _b.id) || "", {
+                meta: "played",
+                action: "Plus",
+            });
             return {
                 chapter,
                 playTime: 1,

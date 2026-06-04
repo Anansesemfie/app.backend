@@ -7,6 +7,7 @@ import Book from "./BookRoute";
 import Play from "./userPlayRoute";
 import Subscriptions from "./SubscriptionRoute";
 import WHCB from "./webHookCallBacks";
+import Quote from "./QuoteRoute";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/whcb", WHCB);
 router.use("/book/", CHECKAPPTOKEN, Book);
 router.use("/chapter/play", CHECKAPPTOKEN, Play);
 router.use("/subscription", Subscriptions);
+router.use("/quotes", Quote);
 
 export default router;

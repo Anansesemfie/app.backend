@@ -313,3 +313,20 @@ export type OriginType = {
   active?: boolean;
   createdAt?: string;
 };
+
+export type QuoteType = {
+  _id?: string;
+  quote: string;
+  author: string;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type QuoteResponseType = {
+  id: string;
+  quote: string;
+  author: string;
+  active: boolean;
+  createdAt: string;
+};

@@ -31,5 +31,5 @@ exports.PAYSTACK_SECRET_KEY = (_w = process.env.PAYSTACK_SECRET_KEY) !== null &&
 exports.STARTUP_SUBSCRIPTION = (_x = process.env.STARTUP_SUBSCRIPTION) !== null && _x !== void 0 ? _x : "";
 exports.ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-    : ["http://localhost:3000"];
+    : ["http://localhost:3080"];
 exports.SENTRY_DSN = (_y = process.env.SENTRY_DSN) !== null && _y !== void 0 ? _y : "";

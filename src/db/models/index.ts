@@ -18,6 +18,7 @@ import Sessions from "./Session";
 import Period from "./Period";
 import organization from "./Organization";
 import AppConfigSchema from "./AppConfig";
+import QuoteSchema from "./Quote";
 
 import { SessionType, UserType } from "../../dto/index";
 
@@ -58,5 +59,6 @@ export const AppConfig = Mongoose.model(
   "appConfig",
   AppConfigSchema(Mongoose)
 );
+export const Quote = Mongoose.model("Quote", QuoteSchema(Mongoose));
 
 export default Mongoose;

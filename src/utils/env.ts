@@ -35,6 +35,6 @@ export const STARTUP_SUBSCRIPTION = process.env.STARTUP_SUBSCRIPTION ?? "";
 
 export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-  : ["http://localhost:3000"];
+  : ["http://localhost:3080"];
 
 export const SENTRY_DSN = process.env.SENTRY_DSN ?? "";

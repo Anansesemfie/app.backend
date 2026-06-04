@@ -28,6 +28,8 @@ These endpoints are required to support standard features in the consumer and ad
 | `/admin/category/:id` | `PUT/DELETE` | Yes | Update or delete existing categories. |
 | `/admin/user/:id/subscription` | `PUT` | Yes | Manually adjust, activate, or extend a user's subscription (for support cases). |
 | `/admin/book/:id/chapters/sort` | `PUT` | Yes | Update the display order of chapters for a book. |
+| `/admin/quote` | `GET/POST` | Yes | List and create "Quotes of the Day". |
+| `/admin/quote/:id` | `GET/PATCH/DELETE` | Yes | Manage individual quotes. |
 
 ---
 

@@ -13,6 +13,7 @@ import Conversation from "./ConversationRoute";
 import Revenue from "./RevenueRoute";
 import AppConfigRoute from "./AppConfigRoute";
 import Origins from "./OriginsRoute";
+import Quote from "./QuoteRoute";
 
 const router = Router();
 
@@ -39,5 +40,6 @@ router.use("/conversation", REQUIREAUTH, Conversation);
 router.use("/revenue", REQUIREAUTH, Revenue);
 router.use("/settings", REQUIREAUTH, AppConfigRoute);
 router.use("/origin", REQUIREAUTH, Origins);
+router.use("/quotes", REQUIREAUTH, Quote);
 
 export default router;

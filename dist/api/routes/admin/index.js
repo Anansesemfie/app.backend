@@ -17,6 +17,7 @@ const ConversationRoute_1 = __importDefault(require("./ConversationRoute"));
 const RevenueRoute_1 = __importDefault(require("./RevenueRoute"));
 const AppConfigRoute_1 = __importDefault(require("./AppConfigRoute"));
 const OriginsRoute_1 = __importDefault(require("./OriginsRoute"));
+const QuoteRoute_1 = __importDefault(require("./QuoteRoute"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     return res.status(200).json({
@@ -40,4 +41,5 @@ router.use("/conversation", CheckApp_1.REQUIREAUTH, ConversationRoute_1.default)
 router.use("/revenue", CheckApp_1.REQUIREAUTH, RevenueRoute_1.default);
 router.use("/settings", CheckApp_1.REQUIREAUTH, AppConfigRoute_1.default);
 router.use("/origin", CheckApp_1.REQUIREAUTH, OriginsRoute_1.default);
+router.use("/quotes", CheckApp_1.REQUIREAUTH, QuoteRoute_1.default);
 exports.default = router;

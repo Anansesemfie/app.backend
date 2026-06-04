@@ -101,6 +101,14 @@ class CustomErrorHandler {
                 status: ErrorCodes.BAD_REQUEST,
             });
         }
+        else if (error instanceof mongoose_1.default.Error.CastError) {
+            Sentry.captureException(error);
+            return res.status(ErrorCodes.BAD_REQUEST).json({
+                code: "CAST_ERROR",
+                message: `Invalid ${error.path}: ${error.value}`,
+                status: ErrorCodes.BAD_REQUEST,
+            });
+        }
         else if (error instanceof Error) {
             Sentry.captureException(error);
             return res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({
