@@ -128,10 +128,14 @@ class AdminSubscriptionsService {
     create(token, data) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.assertAdmin(token);
-            if (!data.name || !data.amount || !data.origin) {
-                throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription name, amount, and origin are required", CustomError_1.ErrorCodes.BAD_REQUEST);
+            if (!data.name) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription name is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            if (!data.duration || data.duration < 1) {
+            if (data.amount === undefined || data.amount === null) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription amount is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            // Only validate duration if it's provided, otherwise let the model use its default
+            if (data.duration !== undefined && data.duration !== null && data.duration < 1) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid subscription duration", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             return yield models_1.Subscription.create(data);

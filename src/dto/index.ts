@@ -13,7 +13,8 @@ export type BookType = {
   description: string;
   status: number;
   snippet?: string;
-  authors?: string[];
+  authors: string[];
+  narrators: string[];
   category: string[];
   languages: string[];
   folder: string;
@@ -36,7 +37,8 @@ export type BookResponseType = {
   title: string;
   description: string;
   snippet?: string;
-  authors?: string[];
+  authors: AuthorResponseType[];
+  narrators: NarratorResponseType[];
   category: string[];
   languages: string[];
   cover: string;
@@ -57,6 +59,8 @@ export type BookUpdateType = BookType & {
   status?: number;
   category?: string[];
   languages?: string[];
+  authors?: string[];
+  narrators?: string[];
   folder?: string;
   cover?: string;
   meta?: {
@@ -123,7 +127,8 @@ export type SubscriptionsType = {
   users: number;
   autorenew: boolean;
   amount: number;
-  origin: string;
+  books?: string[];
+  origin?: string;
   accent: string;
   createdAt?: string;
 };
@@ -136,7 +141,8 @@ export type SubscriptionsResponse = {
   users: number;
   autorenew: boolean;
   amount: number;
-  origin: string;
+  books?: string[];
+  origin?: string;
   accent: string;
   createdAt: string;
 };
@@ -330,3 +336,34 @@ export type QuoteResponseType = {
   active: boolean;
   createdAt: string;
 };
+
+export type AuthorType = {
+  _id?: string;
+  name: string;
+  bio?: string;
+  active?: boolean;
+  createdAt?: string;
+};
+
+export type AuthorResponseType = {
+  id: string;
+  name: string;
+  bio?: string;
+  active: boolean;
+};
+
+export type NarratorType = {
+  _id?: string;
+  name: string;
+  bio?: string;
+  active?: boolean;
+  createdAt?: string;
+};
+
+export type NarratorResponseType = {
+  id: string;
+  name: string;
+  bio?: string;
+  active: boolean;
+};
+

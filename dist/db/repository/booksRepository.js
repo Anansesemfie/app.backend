@@ -64,7 +64,11 @@ class BookRepository {
             try {
                 const fetchedBook = yield models_1.Book.findOne({
                     _id: bookId,
-                });
+                })
+                    .populate("authors")
+                    .populate("narrators")
+                    .populate("category")
+                    .populate("languages");
                 return fetchedBook;
             }
             catch (error) {
@@ -80,7 +84,9 @@ class BookRepository {
                 // Strip top-level empty-string values to avoid ObjectId cast errors
                 // (e.g. when the client sends organization: "" instead of omitting the field)
                 const cleanBook = Object.fromEntries(Object.entries(book).filter(([, v]) => v !== ""));
-                const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, cleanBook, { new: true });
+                const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, cleanBook, { new: true })
+                    .populate("authors")
+                    .populate("narrators");
                 return updatedBook;
             }
             catch (error) {
@@ -107,7 +113,9 @@ class BookRepository {
                 const fetchedBooks = yield models_1.Book.find(Object.assign({}, sanitizedParams))
                     .skip(numberOfRecords * (page - 1))
                     .limit(numberOfRecords)
-                    .sort({ createdAt: -1 });
+                    .sort({ createdAt: -1 })
+                    .populate("authors")
+                    .populate("narrators");
                 return fetchedBooks;
             }
             catch (error) {

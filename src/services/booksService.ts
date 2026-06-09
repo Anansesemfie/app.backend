@@ -5,11 +5,12 @@ import subscribersService from "./subscribersService";
 import chapterService from "./chapterService";
 import ReactionService from "./reactionService";
 
-import { BookResponseType, BookType, BookUpdateType } from "../dto";
+import { BookResponseType, BookType, BookUpdateType, AuthorResponseType, NarratorResponseType } from "../dto";
 import HELPERS from "../utils/helpers";
 import { ErrorEnum } from "../utils/error";
 import { BookStatus, UsersTypes } from "../db/models/utils";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { sanitizeHtml } from "../utils/richText";
 
 class BookService {
   private logInfo = "";
@@ -27,6 +28,7 @@ class BookService {
     }
     book.uploader = user?._id as string;
     book.folder = await HELPERS.generateFolderName(book.title);
+    book.description = sanitizeHtml(book.description);
     const valid = await this.validateBookData(book);
     if (!valid) {
       throw new CustomError(
@@ -131,6 +133,7 @@ class BookService {
         ErrorCodes.BAD_REQUEST
       );
     }
+    if (book.description) book.description = sanitizeHtml(book.description);
     const updatedBook = await Repo.update(bookID, book);
     return this.formatBookData(updatedBook);
   }
@@ -245,12 +248,16 @@ class BookService {
     search,
     language,
     category,
+    author,
+    narrator,
   }: {
     page: number;
     limit: number;
     search?: string;
     language?: string;
     category?: string;
+    author?: string;
+    narrator?: string;
   }): Promise<BookResponseType[]> {
     const books: BookResponseType[] = [];
     try {
@@ -259,6 +266,8 @@ class BookService {
         title?: {};
         category?: {};
         languages?: {};
+        authors?: {};
+        narrators?: {};
       } = { status: BookStatus.Active };
       if (search) {
         params["title"] = { $regex: search, $options: "i" };
@@ -268,6 +277,12 @@ class BookService {
       }
       if (category) {
         params["category"] = { $in: [category] };
+      }
+      if (author) {
+        params["authors"] = { $in: [author] };
+      }
+      if (narrator) {
+        params["narrators"] = { $in: [narrator] };
       }
       const fetchByBooks = await Repo.fetchAll(limit, page, params);
       const uniqueBooks = this.getUniqueBooks(fetchByBooks);
@@ -328,6 +343,12 @@ class BookService {
           "Language is required",
           ErrorCodes.BAD_REQUEST
         );
+      case !book.authors.length:
+        throw new CustomError(
+          ErrorEnum[400],
+          "Author is required",
+          ErrorCodes.BAD_REQUEST
+        );
       // case !book.folder:
       //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
       case !book.cover:
@@ -347,14 +368,40 @@ class BookService {
     }
   }
 
-  private async formatBookData(book: BookType): Promise<BookResponseType> {
+  private async formatBookData(book: any): Promise<BookResponseType> {
+    const toAuthorResponse = (a: any): AuthorResponseType => {
+      if (typeof a === "object" && a !== null) {
+        return {
+          id: a._id?.toString() || "",
+          name: a.name || "",
+          bio: a.bio,
+          active: a.active ?? true,
+        };
+      }
+      return { id: a?.toString() || "", name: a?.toString() || "", bio: undefined, active: true };
+    };
+
+    const toNarratorResponse = (n: any): NarratorResponseType => {
+      if (typeof n === "object" && n !== null) {
+        return {
+          id: n._id?.toString() || "",
+          name: n.name || "",
+          bio: n.bio,
+          active: n.active ?? true,
+        };
+      }
+      return { id: n?.toString() || "", name: n?.toString() || "", bio: undefined, active: true };
+    };
+
     const formattedBook: BookResponseType = {
       id: book._id?.toString() || "",
       title: book.title.trim(),
       description: book.description?.trim() || "",
-      category: book.category,
-      authors: book.authors,
-      languages: book.languages,
+      snippet: book.snippet,
+      category: book.category?.map((c: any) => c.title || c.toString()) || [],
+      authors: (book.authors || []).map(toAuthorResponse),
+      narrators: (book.narrators || []).map(toNarratorResponse),
+      languages: book.languages?.map((l: any) => l.title || l.toString()) || [],
       cover: book.cover.trim(),
       meta: {
         played: book.meta?.played || 0,

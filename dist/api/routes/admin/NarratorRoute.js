@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const narratorController_1 = require("../../../controllers/admin/narratorController");
+const router = (0, express_1.Router)();
+router.post("/create", narratorController_1.createNarrator);
+router.get("/all", narratorController_1.getAllNarrators);
+router.get("/:id", narratorController_1.getNarrator);
+router.put("/:id", narratorController_1.updateNarrator);
+router.delete("/:id", narratorController_1.deleteNarrator);
+exports.default = router;

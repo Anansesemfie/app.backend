@@ -50,11 +50,16 @@ const sessionService_1 = __importDefault(require("../sessionService"));
 const utils_1 = require("../../db/models/utils");
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
 const error_1 = require("../../utils/error");
+const richText_1 = require("../../utils/richText");
 class QuoteAdminService {
     CreateQuote(quote, token) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = yield sessionService_1.default.getSession(token);
             this.checkForAdmin(user);
+            if (quote.quote)
+                quote.quote = (0, richText_1.sanitizeHtml)(quote.quote);
+            if (quote.author)
+                quote.author = (0, richText_1.sanitizeHtml)(quote.author);
             return yield quoteRepository_1.default.create(quote);
         });
     }
@@ -65,6 +70,10 @@ class QuoteAdminService {
             if (!id) {
                 throw new CustomError_1.default(error_1.ErrorEnum[401], "Quote ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            if (quote.quote)
+                quote.quote = (0, richText_1.sanitizeHtml)(quote.quote);
+            if (quote.author)
+                quote.author = (0, richText_1.sanitizeHtml)(quote.author);
             return yield quoteRepository_1.default.update(id, quote);
         });
     }

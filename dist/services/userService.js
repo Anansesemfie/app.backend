@@ -55,6 +55,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const sessionService_1 = __importDefault(require("./sessionService"));
 const notificationService_1 = __importDefault(require("./notificationService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const richText_1 = require("../utils/richText");
 class UserService {
     constructor() {
         this.logInfo = null;
@@ -267,7 +268,7 @@ class UserService {
             if (payload.username !== undefined)
                 allowedFields.username = payload.username;
             if (payload.bio !== undefined)
-                allowedFields.bio = payload.bio;
+                allowedFields.bio = (0, richText_1.sanitizeHtml)(payload.bio);
             if (payload.dp !== undefined)
                 allowedFields.dp = payload.dp;
             if (payload.whatsappNumber !== undefined)

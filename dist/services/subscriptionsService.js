@@ -108,6 +108,7 @@ class SubscriptionService {
                 users: subscription.users,
                 autorenew: subscription.autorenew,
                 amount: subscription.amount,
+                books: subscription.books,
                 origin: subscription.origin,
                 accent: subscription.accent,
                 createdAt: subscription.createdAt,

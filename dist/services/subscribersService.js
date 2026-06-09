@@ -69,7 +69,7 @@ class SubscriberService {
             const subscription = {
                 parent,
                 active: false,
-                books,
+                books: books.length > 0 ? books : (parentSubscription.books || []),
                 ref: `temp(${helpers_1.default.genRandCode()})`,
                 user: user._id,
             };

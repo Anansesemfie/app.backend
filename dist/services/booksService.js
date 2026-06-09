@@ -55,6 +55,7 @@ const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = require("../utils/error");
 const utils_1 = require("../db/models/utils");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const richText_1 = require("../utils/richText");
 class BookService {
     constructor() {
         this.logInfo = "";
@@ -67,6 +68,7 @@ class BookService {
             }
             book.uploader = user === null || user === void 0 ? void 0 : user._id;
             book.folder = yield helpers_1.default.generateFolderName(book.title);
+            book.description = (0, richText_1.sanitizeHtml)(book.description);
             const valid = yield this.validateBookData(book);
             if (!valid) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid book data", CustomError_1.ErrorCodes.BAD_REQUEST);
@@ -132,6 +134,8 @@ class BookService {
             if (!bookID) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            if (book.description)
+                book.description = (0, richText_1.sanitizeHtml)(book.description);
             const updatedBook = yield booksRepository_1.default.update(bookID, book);
             return this.formatBookData(updatedBook);
         });
@@ -205,7 +209,7 @@ class BookService {
         });
     }
     filterBooks(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, search, language, category, }) {
+        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, search, language, category, author, narrator, }) {
             const books = [];
             try {
                 const params = { status: utils_1.BookStatus.Active };
@@ -217,6 +221,12 @@ class BookService {
                 }
                 if (category) {
                     params["category"] = { $in: [category] };
+                }
+                if (author) {
+                    params["authors"] = { $in: [author] };
+                }
+                if (narrator) {
+                    params["narrators"] = { $in: [narrator] };
                 }
                 const fetchByBooks = yield booksRepository_1.default.fetchAll(limit, page, params);
                 const uniqueBooks = this.getUniqueBooks(fetchByBooks);
@@ -262,6 +272,8 @@ class BookService {
                     throw new CustomError_1.default(error_1.ErrorEnum[400], "Category is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 case !book.languages.length:
                     throw new CustomError_1.default(error_1.ErrorEnum[400], "Language is required", CustomError_1.ErrorCodes.BAD_REQUEST);
+                case !book.authors.length:
+                    throw new CustomError_1.default(error_1.ErrorEnum[400], "Author is required", CustomError_1.ErrorCodes.BAD_REQUEST);
                 // case !book.folder:
                 //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
                 case !book.cover:
@@ -275,21 +287,47 @@ class BookService {
     }
     formatBookData(book) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+            const toAuthorResponse = (a) => {
+                var _a, _b;
+                if (typeof a === "object" && a !== null) {
+                    return {
+                        id: ((_a = a._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",
+                        name: a.name || "",
+                        bio: a.bio,
+                        active: (_b = a.active) !== null && _b !== void 0 ? _b : true,
+                    };
+                }
+                return { id: (a === null || a === void 0 ? void 0 : a.toString()) || "", name: (a === null || a === void 0 ? void 0 : a.toString()) || "", bio: undefined, active: true };
+            };
+            const toNarratorResponse = (n) => {
+                var _a, _b;
+                if (typeof n === "object" && n !== null) {
+                    return {
+                        id: ((_a = n._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",
+                        name: n.name || "",
+                        bio: n.bio,
+                        active: (_b = n.active) !== null && _b !== void 0 ? _b : true,
+                    };
+                }
+                return { id: (n === null || n === void 0 ? void 0 : n.toString()) || "", name: (n === null || n === void 0 ? void 0 : n.toString()) || "", bio: undefined, active: true };
+            };
             const formattedBook = {
                 id: ((_a = book._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",
                 title: book.title.trim(),
                 description: ((_b = book.description) === null || _b === void 0 ? void 0 : _b.trim()) || "",
-                category: book.category,
-                authors: book.authors,
-                languages: book.languages,
+                snippet: book.snippet,
+                category: ((_c = book.category) === null || _c === void 0 ? void 0 : _c.map((c) => c.title || c.toString())) || [],
+                authors: (book.authors || []).map(toAuthorResponse),
+                narrators: (book.narrators || []).map(toNarratorResponse),
+                languages: ((_d = book.languages) === null || _d === void 0 ? void 0 : _d.map((l) => l.title || l.toString())) || [],
                 cover: book.cover.trim(),
                 meta: {
-                    played: ((_c = book.meta) === null || _c === void 0 ? void 0 : _c.played) || 0,
-                    views: ((_d = book.meta) === null || _d === void 0 ? void 0 : _d.views) || 0,
-                    likes: ((_e = book.meta) === null || _e === void 0 ? void 0 : _e.likes) || 0,
-                    dislikes: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.dislikes) || 0,
-                    comments: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.comments) || 0,
+                    played: ((_e = book.meta) === null || _e === void 0 ? void 0 : _e.played) || 0,
+                    views: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.views) || 0,
+                    likes: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.likes) || 0,
+                    dislikes: ((_h = book.meta) === null || _h === void 0 ? void 0 : _h.dislikes) || 0,
+                    comments: ((_j = book.meta) === null || _j === void 0 ? void 0 : _j.comments) || 0,
                 },
             };
             return formattedBook;

@@ -22,7 +22,11 @@ class BookRepository {
     try {
       const fetchedBook = await Book.findOne({
         _id: bookId,
-      });
+      })
+        .populate("authors")
+        .populate("narrators")
+        .populate("category")
+        .populate("languages");
       return fetchedBook;
     } catch (error) {
       // console.error("Error in fetchOne:", error);
@@ -46,7 +50,9 @@ class BookRepository {
         { _id: bookId },
         cleanBook,
         { new: true }
-      );
+      )
+        .populate("authors")
+        .populate("narrators");
       return updatedBook;
     } catch (error) {
       throw new CustomError(
@@ -79,7 +85,9 @@ class BookRepository {
       const fetchedBooks = await Book.find({ ...sanitizedParams })
         .skip(numberOfRecords * (page - 1))
         .limit(numberOfRecords)
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .populate("authors")
+        .populate("narrators");
       return fetchedBooks;
     } catch (error) {
       throw new CustomError(

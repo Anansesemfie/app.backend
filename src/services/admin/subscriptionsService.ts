@@ -89,14 +89,14 @@ class AdminSubscriptionsService {
 
   async create(token: string, data: SubscriptionsType) {
     await this.assertAdmin(token);
-    if (!data.name || !data.amount || !data.origin) {
-      throw new CustomError(
-        ErrorEnum[400],
-        "Subscription name, amount, and origin are required",
-        ErrorCodes.BAD_REQUEST
-      );
+    if (!data.name) {
+      throw new CustomError(ErrorEnum[400], "Subscription name is required", ErrorCodes.BAD_REQUEST);
     }
-    if (!data.duration || data.duration < 1) {
+    if (data.amount === undefined || data.amount === null) {
+      throw new CustomError(ErrorEnum[400], "Subscription amount is required", ErrorCodes.BAD_REQUEST);
+    }
+    // Only validate duration if it's provided, otherwise let the model use its default
+    if (data.duration !== undefined && data.duration !== null && data.duration < 1) {
       throw new CustomError(
         ErrorEnum[400],
         "Invalid subscription duration",

@@ -35,9 +35,16 @@ const Subscriptions = (Mongoose: any) => {
         min: 0,
         required: [true, "Subscription amount is missing"],
       },
+      books: [
+        {
+          type: ObjectId,
+          ref: "books",
+        },
+      ],
       origin: {
         type: ObjectId,
-        required: [true, "Subscription origin is missing"],
+        required: false,
+        set: (v: any) => (v === "" ? undefined : v),
       },
       accent: {
         type: String,

@@ -44,6 +44,8 @@ export const filterBooks = async (req: Request, res: Response) => {
     const search = req.query.search as string;
     const language = req.query.language as string;
     const category = req.query.category as string;
+    const author = req.query.author as string;
+    const narrator = req.query.narrator as string;
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
 
@@ -53,6 +55,8 @@ export const filterBooks = async (req: Request, res: Response) => {
       search,
       language,
       category,
+      author,
+      narrator,
     });
     res.status(200).json({ data: books });
   } catch (error) {

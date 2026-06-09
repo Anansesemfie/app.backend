@@ -3,13 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Quote = exports.AppConfig = exports.Organization = exports.Periods = exports.Subscription = exports.PaymentsAccount = exports.Session = exports.External = exports.Origin = exports.Seen = exports.Comment = exports.Reaction = exports.Subscriber = exports.User = exports.Language = exports.Category = exports.Chapter = exports.Book = void 0;
+exports.Quote = exports.AppConfig = exports.Organization = exports.Periods = exports.Subscription = exports.PaymentsAccount = exports.Session = exports.External = exports.Origin = exports.Seen = exports.Comment = exports.Reaction = exports.Subscriber = exports.User = exports.Narrator = exports.Author = exports.Language = exports.Category = exports.Chapter = exports.Book = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const env_1 = require("../../utils/env");
 const Books_1 = __importDefault(require("./Books"));
 const Chapter_1 = __importDefault(require("./Chapter"));
 const Category_1 = __importDefault(require("./Category"));
 const Languages_1 = __importDefault(require("./Languages"));
+const Author_1 = __importDefault(require("./Author"));
+const Narrator_1 = __importDefault(require("./Narrator"));
 const Users_1 = __importDefault(require("./Users"));
 const PaymentAccounts_1 = __importDefault(require("./PaymentAccounts"));
 const Subscribers_1 = __importDefault(require("./Subscribers"));
@@ -32,6 +34,8 @@ exports.Book = mongoose_1.default.model("Books", (0, Books_1.default)(mongoose_1
 exports.Chapter = mongoose_1.default.model("chapters", (0, Chapter_1.default)(mongoose_1.default));
 exports.Category = mongoose_1.default.model("categories", (0, Category_1.default)(mongoose_1.default));
 exports.Language = mongoose_1.default.model("languages", (0, Languages_1.default)(mongoose_1.default));
+exports.Author = mongoose_1.default.model("authors", (0, Author_1.default)(mongoose_1.default));
+exports.Narrator = mongoose_1.default.model("narrators", (0, Narrator_1.default)(mongoose_1.default));
 exports.User = mongoose_1.default.model("users", (0, Users_1.default)(mongoose_1.default));
 exports.Subscriber = mongoose_1.default.model("subscribers", (0, Subscribers_1.default)(mongoose_1.default));
 exports.Reaction = mongoose_1.default.model("BookReacts", (0, Reaction_1.default)(mongoose_1.default));

@@ -17,7 +17,7 @@ const Books = (Mongoose) => {
             type: String,
             required: [true, "Say something to tease your audience"],
             minlength: [10, "Express yourself much more than this"],
-            maxlength: [1500, "Do not narrate the whole thing here"],
+            maxlength: [5000, "Do not narrate the whole thing here"],
         },
         status: {
             type: Number,
@@ -29,14 +29,20 @@ const Books = (Mongoose) => {
         },
         authors: [
             {
-                type: String,
-                default: "unknown",
+                type: bson_1.ObjectId,
+                ref: "authors",
+            },
+        ],
+        narrators: [
+            {
+                type: bson_1.ObjectId,
+                ref: "narrators",
             },
         ],
         category: [
             {
                 type: bson_1.ObjectId,
-                ref: "category",
+                ref: "categories",
             },
         ],
         languages: [

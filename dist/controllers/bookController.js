@@ -54,6 +54,8 @@ const filterBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const search = req.query.search;
         const language = req.query.language;
         const category = req.query.category;
+        const author = req.query.author;
+        const narrator = req.query.narrator;
         const page = Number(req.query.page);
         const limit = Number(req.query.limit);
         const books = yield booksService_1.default.filterBooks({
@@ -62,6 +64,8 @@ const filterBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             search,
             language,
             category,
+            author,
+            narrator,
         });
         res.status(200).json({ data: books });
     }

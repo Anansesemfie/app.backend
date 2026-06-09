@@ -30,7 +30,7 @@ class SubscriberService {
       const subscription: subscriberDTO = {
         parent,
         active: false,
-        books,
+        books: books.length > 0 ? books : (parentSubscription.books || []),
         ref: `temp(${HELPERS.genRandCode()})`,
         user: user._id as string,
       };

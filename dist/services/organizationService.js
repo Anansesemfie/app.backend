@@ -48,10 +48,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const organizationRepository_1 = __importDefault(require("../db/repository/organizationRepository"));
 const error_1 = require("../utils/error");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const richText_1 = require("../utils/richText");
 class OrganizationService {
     create(organization) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.checkPayload(organization);
+            if (organization.description)
+                organization.description = (0, richText_1.sanitizeHtml)(organization.description);
             const createdOrganization = yield organizationRepository_1.default.create(organization);
             return this.formatOrganization(createdOrganization);
         });
@@ -71,6 +74,8 @@ class OrganizationService {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Organization ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             yield this.checkPayload(organization);
+            if (organization.description)
+                organization.description = (0, richText_1.sanitizeHtml)(organization.description);
             const updatedOrganization = yield organizationRepository_1.default.update(orgId, organization);
             return this.formatOrganization(updatedOrganization);
         });

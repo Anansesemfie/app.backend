@@ -4,6 +4,7 @@ import sessionService from "../sessionService";
 import { UsersTypes } from "../../db/models/utils";
 import CustomError, { ErrorCodes } from "../../utils/CustomError";
 import { ErrorEnum } from "../../utils/error";
+import { sanitizeHtml } from "../../utils/richText";
 
 class QuoteAdminService {
   public async CreateQuote(
@@ -12,6 +13,8 @@ class QuoteAdminService {
   ): Promise<QuoteType> {
     const { user } = await sessionService.getSession(token);
     this.checkForAdmin(user);
+    if (quote.quote) quote.quote = sanitizeHtml(quote.quote);
+    if (quote.author) quote.author = sanitizeHtml(quote.author);
     return await quoteRepository.create(quote);
   }
 
@@ -29,6 +32,8 @@ class QuoteAdminService {
         ErrorCodes.BAD_REQUEST,
       );
     }
+    if (quote.quote) quote.quote = sanitizeHtml(quote.quote);
+    if (quote.author) quote.author = sanitizeHtml(quote.author);
     return await quoteRepository.update(id, quote);
   }
 

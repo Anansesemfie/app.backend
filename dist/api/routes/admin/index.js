@@ -7,6 +7,8 @@ const express_1 = require("express");
 const env_1 = require("../../../utils/env");
 const CheckApp_1 = require("../../middlewares/CheckApp");
 const LanguageRoute_1 = __importDefault(require("./LanguageRoute"));
+const AuthorRoute_1 = __importDefault(require("./AuthorRoute"));
+const NarratorRoute_1 = __importDefault(require("./NarratorRoute"));
 const UserRoute_1 = __importDefault(require("./UserRoute"));
 const BookRoute_1 = __importDefault(require("./BookRoute"));
 const PeriodRoute_1 = __importDefault(require("./PeriodRoute"));
@@ -30,6 +32,8 @@ router.get("/", (req, res) => {
     });
 });
 router.use("/language", CheckApp_1.REQUIREAUTH, LanguageRoute_1.default);
+router.use("/author", CheckApp_1.REQUIREAUTH, AuthorRoute_1.default);
+router.use("/narrator", CheckApp_1.REQUIREAUTH, NarratorRoute_1.default);
 router.use("/user", UserRoute_1.default);
 router.use("/book", CheckApp_1.REQUIREAUTH, BookRoute_1.default);
 router.use("/period", CheckApp_1.REQUIREAUTH, PeriodRoute_1.default);

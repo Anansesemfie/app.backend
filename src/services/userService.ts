@@ -10,6 +10,7 @@ import bcrypt from "bcrypt";
 import Session from "./sessionService";
 import notificationService from "./notificationService";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { sanitizeHtml } from "../utils/richText";
 
 export class UserService {
   private logInfo: string | null = null;
@@ -295,7 +296,7 @@ export class UserService {
     // Only permit safe, user-editable fields
     const allowedFields: Partial<UserType> = {};
     if (payload.username !== undefined) allowedFields.username = payload.username;
-    if (payload.bio !== undefined) allowedFields.bio = payload.bio;
+    if (payload.bio !== undefined) allowedFields.bio = sanitizeHtml(payload.bio);
     if (payload.dp !== undefined) allowedFields.dp = payload.dp;
     if (payload.whatsappNumber !== undefined) allowedFields.whatsappNumber = payload.whatsappNumber;
 

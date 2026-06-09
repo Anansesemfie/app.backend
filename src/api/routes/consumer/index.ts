@@ -4,6 +4,8 @@ import { CHECKAPPTOKEN } from "../../middlewares/CheckApp";
 
 import User from "./UserRoute";
 import Book from "./BookRoute";
+import Author from "./AuthorRoute";
+import Narrator from "./NarratorRoute";
 import Play from "./userPlayRoute";
 import Subscriptions from "./SubscriptionRoute";
 import WHCB from "./webHookCallBacks";
@@ -25,6 +27,8 @@ router.get("/", (req: Request, res: Response) => {
 router.use("/user", User);
 router.use("/whcb", WHCB);
 router.use("/book/", CHECKAPPTOKEN, Book);
+router.use("/author", CHECKAPPTOKEN, Author);
+router.use("/narrator", CHECKAPPTOKEN, Narrator);
 router.use("/chapter/play", CHECKAPPTOKEN, Play);
 router.use("/subscription", Subscriptions);
 router.use("/quotes", Quote);

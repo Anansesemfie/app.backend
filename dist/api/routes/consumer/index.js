@@ -8,6 +8,8 @@ const env_1 = require("../../../utils/env");
 const CheckApp_1 = require("../../middlewares/CheckApp");
 const UserRoute_1 = __importDefault(require("./UserRoute"));
 const BookRoute_1 = __importDefault(require("./BookRoute"));
+const AuthorRoute_1 = __importDefault(require("./AuthorRoute"));
+const NarratorRoute_1 = __importDefault(require("./NarratorRoute"));
 const userPlayRoute_1 = __importDefault(require("./userPlayRoute"));
 const SubscriptionRoute_1 = __importDefault(require("./SubscriptionRoute"));
 const webHookCallBacks_1 = __importDefault(require("./webHookCallBacks"));
@@ -26,6 +28,8 @@ router.get("/", (req, res) => {
 router.use("/user", UserRoute_1.default);
 router.use("/whcb", webHookCallBacks_1.default);
 router.use("/book/", CheckApp_1.CHECKAPPTOKEN, BookRoute_1.default);
+router.use("/author", CheckApp_1.CHECKAPPTOKEN, AuthorRoute_1.default);
+router.use("/narrator", CheckApp_1.CHECKAPPTOKEN, NarratorRoute_1.default);
 router.use("/chapter/play", CheckApp_1.CHECKAPPTOKEN, userPlayRoute_1.default);
 router.use("/subscription", SubscriptionRoute_1.default);
 router.use("/quotes", QuoteRoute_1.default);

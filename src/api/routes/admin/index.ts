@@ -3,6 +3,8 @@ import { PORT } from "../../../utils/env";
 import { REQUIREAUTH } from "../../middlewares/CheckApp";
 
 import Language from "./LanguageRoute";
+import Author from "./AuthorRoute";
+import Narrator from "./NarratorRoute";
 import User from "./UserRoute";
 import Book from "./BookRoute";
 import Period from "./PeriodRoute";
@@ -29,6 +31,8 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.use("/language", REQUIREAUTH, Language);
+router.use("/author", REQUIREAUTH, Author);
+router.use("/narrator", REQUIREAUTH, Narrator);
 router.use("/user", User);
 router.use("/book", REQUIREAUTH, Book);
 router.use("/period", REQUIREAUTH, Period);

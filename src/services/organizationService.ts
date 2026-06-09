@@ -2,10 +2,12 @@ import OrgRepo from '../db/repository/organizationRepository';
 import type { OrganizationType, OrganizationResponseType } from "../dto";
 import { ErrorEnum } from "../utils/error";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { sanitizeHtml } from "../utils/richText";
 
 class OrganizationService {
   public async create(organization: OrganizationType): Promise<OrganizationResponseType> {
       await this.checkPayload(organization);
+      if (organization.description) organization.description = sanitizeHtml(organization.description);
       const createdOrganization = await OrgRepo.create(organization);
       return this.formatOrganization(createdOrganization);
     
@@ -37,6 +39,7 @@ class OrganizationService {
         );
       }
       await this.checkPayload(organization as OrganizationType);
+      if (organization.description) organization.description = sanitizeHtml(organization.description);
       const updatedOrganization = await OrgRepo.update(orgId, organization);
       return this.formatOrganization(updatedOrganization);
   }
