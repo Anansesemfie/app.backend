@@ -86,18 +86,22 @@ class PlayService {
     }
     authorizedUserPlay(chapterId, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             const { user } = yield sessionService_1.default.getSession(sessionId);
             if (!user.subscription) {
                 return yield this.unAuthorizedUserPlay(chapterId, user._id); // If user has no subscription, return unauthorized play
             }
             const subscription = yield subscribersService_1.default.validateSubscription(user.subscription);
-            if (!subscription) {
+            if (!subscription.valid) {
                 return yield this.unAuthorizedUserPlay(chapterId, user._id); // If subscription is invalid, return unauthorized play
             }
             const chapter = yield chapterService_1.default.fetchChapter(chapterId);
-            yield seenService_1.default.recordPlay(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a.id) || "", user._id, helpers_1.default.currentTime(), user === null || user === void 0 ? void 0 : user.subscription);
-            yield booksService_1.default.updateBookMeta(((_b = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _b === void 0 ? void 0 : _b.id) || "", {
+            const allowwdBooksSet = new Set(subscription.books.map((id) => String(id)));
+            if (!allowwdBooksSet.has(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a.id) || "")) {
+                return yield this.unAuthorizedUserPlay(chapterId, user._id); // If subscription does not include the book, return unauthorized play
+            }
+            yield seenService_1.default.recordPlay(((_b = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _b === void 0 ? void 0 : _b.id) || "", user._id, helpers_1.default.currentTime(), user === null || user === void 0 ? void 0 : user.subscription);
+            yield booksService_1.default.updateBookMeta(((_c = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _c === void 0 ? void 0 : _c.id) || "", {
                 meta: "played",
                 action: "Plus",
             });

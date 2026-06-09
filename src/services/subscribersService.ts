@@ -152,12 +152,12 @@ class SubscriberService {
   
   }
 
-  public async validateSubscription(subscriptionId: string): Promise<boolean> {
+  public async validateSubscription(subscriptionId: string): Promise<{ valid: boolean; books: string[] }> {
 
       const child = await this.fetchOne({ _id: String(subscriptionId) });
 
       // An unactivated subscription is never valid regardless of duration
-      if (!child.activatedAt) return false;
+      if (!child.activatedAt) return { valid: false, books: [] };
 
       const parent = await subscriptionsService.fetchOne(child.parent);
 
@@ -169,7 +169,7 @@ class SubscriberService {
         HELPERS.currentTime() as string
       );
 
-      return daysGone <= duration;
+      return { valid: daysGone <= duration, books:parent.books || [] };
 
   }
 }

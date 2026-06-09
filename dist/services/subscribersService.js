@@ -145,12 +145,12 @@ class SubscriberService {
             const child = yield this.fetchOne({ _id: String(subscriptionId) });
             // An unactivated subscription is never valid regardless of duration
             if (!child.activatedAt)
-                return false;
+                return { valid: false, books: [] };
             const parent = yield subscriptionsService_1.default.fetchOne(child.parent);
             const duration = helpers_1.default.millisecondsToDays(parent.duration);
             // Measure from activatedAt (payment confirmed), not createdAt (payment initiated)
             const daysGone = helpers_1.default.countDaysBetweenDates(child.activatedAt, helpers_1.default.currentTime());
-            return daysGone <= duration;
+            return { valid: daysGone <= duration, books: parent.books || [] };
         });
     }
 }

@@ -3,6 +3,7 @@ import booksService from "./booksService";
 import seenService from "./seenService";
 import sessionService from "./sessionService";
 import subscribersService from "./subscribersService";
+import subscriptionsService from "./subscriptionsService";
 
 import HELPERS from "../utils/helpers";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
@@ -15,7 +16,7 @@ class PlayService {
       throw new CustomError(
         ErrorEnum[400],
         "Chapter required are required",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     if (!sessionId) {
@@ -43,18 +44,22 @@ class PlayService {
       return await this.unAuthorizedUserPlay(chapterId, user._id); // If user has no subscription, return unauthorized play
     }
     const subscription = await subscribersService.validateSubscription(
-      user.subscription
+      user.subscription,
     );
 
-    if (!subscription) {
+    if (!subscription.valid) {
       return await this.unAuthorizedUserPlay(chapterId, user._id); // If subscription is invalid, return unauthorized play
     }
     const chapter = await chapterService.fetchChapter(chapterId);
+    const allowwdBooksSet = new Set(subscription.books.map((id) => String(id)));
+    if (!allowwdBooksSet.has(chapter?.book?.id || "")) {
+      return await this.unAuthorizedUserPlay(chapterId, user._id); // If subscription does not include the book, return unauthorized play
+    }
     await seenService.recordPlay(
       chapter?.book?.id || "",
       user._id as string,
       HELPERS.currentTime(),
-      user?.subscription
+      user?.subscription,
     );
 
     await booksService.updateBookMeta(chapter?.book?.id || "", {
