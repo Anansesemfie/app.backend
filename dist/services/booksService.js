@@ -49,6 +49,7 @@ const booksRepository_1 = __importDefault(require("../db/repository/booksReposit
 const seenService_1 = __importDefault(require("./seenService"));
 const sessionService_1 = __importDefault(require("./sessionService"));
 const subscribersService_1 = __importDefault(require("./subscribersService"));
+const subscriptionsService_1 = __importDefault(require("./subscriptionsService"));
 const chapterService_1 = __importDefault(require("./chapterService"));
 const reactionService_1 = __importDefault(require("./reactionService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
@@ -163,7 +164,8 @@ class BookService {
             if (!subscription) {
                 return [];
             }
-            return subscription.books;
+            const parentSubscription = yield subscriptionsService_1.default.fetchOne(subscription.parent);
+            return parentSubscription.books;
         });
     }
     analyzeBook(bookId) {
@@ -298,7 +300,12 @@ class BookService {
                         active: (_b = a.active) !== null && _b !== void 0 ? _b : true,
                     };
                 }
-                return { id: (a === null || a === void 0 ? void 0 : a.toString()) || "", name: (a === null || a === void 0 ? void 0 : a.toString()) || "", bio: undefined, active: true };
+                return {
+                    id: (a === null || a === void 0 ? void 0 : a.toString()) || "",
+                    name: (a === null || a === void 0 ? void 0 : a.toString()) || "",
+                    bio: undefined,
+                    active: true,
+                };
             };
             const toNarratorResponse = (n) => {
                 var _a, _b;
@@ -310,7 +317,12 @@ class BookService {
                         active: (_b = n.active) !== null && _b !== void 0 ? _b : true,
                     };
                 }
-                return { id: (n === null || n === void 0 ? void 0 : n.toString()) || "", name: (n === null || n === void 0 ? void 0 : n.toString()) || "", bio: undefined, active: true };
+                return {
+                    id: (n === null || n === void 0 ? void 0 : n.toString()) || "",
+                    name: (n === null || n === void 0 ? void 0 : n.toString()) || "",
+                    bio: undefined,
+                    active: true,
+                };
             };
             const formattedBook = {
                 id: ((_a = book._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",

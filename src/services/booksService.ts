@@ -2,10 +2,17 @@ import Repo from "../db/repository/booksRepository";
 import seenService from "./seenService";
 import sessionService from "./sessionService";
 import subscribersService from "./subscribersService";
+import subscriptionsService from "./subscriptionsService";
 import chapterService from "./chapterService";
 import ReactionService from "./reactionService";
 
-import { BookResponseType, BookType, BookUpdateType, AuthorResponseType, NarratorResponseType } from "../dto";
+import {
+  BookResponseType,
+  BookType,
+  BookUpdateType,
+  AuthorResponseType,
+  NarratorResponseType,
+} from "../dto";
 import HELPERS from "../utils/helpers";
 import { ErrorEnum } from "../utils/error";
 import { BookStatus, UsersTypes } from "../db/models/utils";
@@ -16,14 +23,14 @@ class BookService {
   private logInfo = "";
   public async createBook(
     book: BookType,
-    session: string
+    session: string,
   ): Promise<BookResponseType> {
     const { user } = await sessionService.getSession(session);
     if (user.account !== UsersTypes.admin) {
       throw new CustomError(
         ErrorEnum[403],
         "You are not authorized to create a book",
-        ErrorCodes.FORBIDDEN
+        ErrorCodes.FORBIDDEN,
       );
     }
     book.uploader = user?._id as string;
@@ -34,7 +41,7 @@ class BookService {
       throw new CustomError(
         ErrorEnum[400],
         "Invalid book data",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     const newBook = await Repo.create(book);
@@ -46,7 +53,7 @@ class BookService {
       throw new CustomError(
         ErrorEnum[401],
         "Unable to delete book",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     //delete all chapters
@@ -81,7 +88,7 @@ class BookService {
       books = await Repo.fetchAll(limit, page, params);
     }
     const formattedBooks = await Promise.all(
-      books.map((book) => this.formatBookData(book))
+      books.map((book) => this.formatBookData(book)),
     );
 
     return { books: formattedBooks, page, limit };
@@ -89,13 +96,13 @@ class BookService {
 
   public async fetchBook(
     bookId: string,
-    sessionId: string = ""
+    sessionId: string = "",
   ): Promise<BookResponseType> {
     if (!bookId) {
       throw new CustomError(
         ErrorEnum[403],
         "Invalid book ID",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     if (sessionId) {
@@ -104,7 +111,7 @@ class BookService {
         throw new CustomError(
           ErrorEnum[403],
           "Unauthorized access",
-          ErrorCodes.FORBIDDEN
+          ErrorCodes.FORBIDDEN,
         );
       }
     }
@@ -117,20 +124,20 @@ class BookService {
       throw new CustomError(
         ErrorEnum[404],
         "Book not found",
-        ErrorCodes.NOT_FOUND
+        ErrorCodes.NOT_FOUND,
       );
     }
     return this.formatBookData(book);
   }
   public async updateBook(
     bookID: string,
-    book: BookUpdateType
+    book: BookUpdateType,
   ): Promise<BookResponseType> {
     if (!bookID) {
       throw new CustomError(
         ErrorEnum[403],
         "Invalid book ID",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     if (book.description) book.description = sanitizeHtml(book.description);
@@ -140,7 +147,7 @@ class BookService {
 
   public async updateBookMeta(
     bookId: string,
-    metaAction: { meta: string; action: "Plus" | "Minus" }
+    metaAction: { meta: string; action: "Plus" | "Minus" },
   ) {
     const book = await Repo.fetchOne(bookId);
     const newMeta = await this.mutateBookMeta(
@@ -151,13 +158,13 @@ class BookService {
         dislikes: number;
         comments: number;
       },
-      metaAction
+      metaAction,
     );
     if (!newMeta) {
       throw new CustomError(
         ErrorEnum[400],
         "Invalid meta action",
-        ErrorCodes.BAD_REQUEST
+        ErrorCodes.BAD_REQUEST,
       );
     }
     book.meta = newMeta;
@@ -176,7 +183,10 @@ class BookService {
     if (!subscription) {
       return [];
     }
-    return subscription.books as string[];
+    const parentSubscription = await subscriptionsService.fetchOne(
+      subscription.parent,
+    );
+    return parentSubscription.books as string[];
   }
 
   public async analyzeBook(bookId: string): Promise<{
@@ -198,7 +208,7 @@ class BookService {
       dislikes: number;
       comments: number;
     },
-    { meta, action }: { meta: string; action: "Plus" | "Minus" }
+    { meta, action }: { meta: string; action: "Plus" | "Minus" },
   ) {
     try {
       const newBookMeta = {
@@ -222,7 +232,7 @@ class BookService {
         throw new CustomError(
           ErrorEnum[500],
           "Invalid action",
-          ErrorCodes.INTERNAL_SERVER_ERROR
+          ErrorCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -237,7 +247,7 @@ class BookService {
       throw new CustomError(
         ErrorEnum[500],
         (error as Error).message ?? "Error mutating book meta",
-        ErrorCodes.INTERNAL_SERVER_ERROR
+        ErrorCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -287,7 +297,7 @@ class BookService {
       const fetchByBooks = await Repo.fetchAll(limit, page, params);
       const uniqueBooks = this.getUniqueBooks(fetchByBooks);
       const formatBooks = await Promise.all(
-        uniqueBooks.map((book) => this.formatBookData(book))
+        uniqueBooks.map((book) => this.formatBookData(book)),
       );
       books.push(...formatBooks);
       return books;
@@ -297,7 +307,7 @@ class BookService {
   }
 
   public async getLikedBooksByUser(
-    sessionId: string
+    sessionId: string,
   ): Promise<BookResponseType[]> {
     const { user } = await sessionService.getSession(sessionId);
     const userId = user._id as string;
@@ -329,25 +339,25 @@ class BookService {
         throw new CustomError(
           ErrorEnum[400],
           "Title is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       case !book.category.length:
         throw new CustomError(
           ErrorEnum[400],
           "Category is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       case !book.languages.length:
         throw new CustomError(
           ErrorEnum[400],
           "Language is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       case !book.authors.length:
         throw new CustomError(
           ErrorEnum[400],
           "Author is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       // case !book.folder:
       //   throw await errorHandler.CustomError(ErrorEnum[400], "Folder is required");
@@ -355,13 +365,13 @@ class BookService {
         throw new CustomError(
           ErrorEnum[400],
           "Cover is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       case !book.uploader:
         throw new CustomError(
           ErrorEnum[400],
           "Uploader is required",
-          ErrorCodes.BAD_REQUEST
+          ErrorCodes.BAD_REQUEST,
         );
       default:
         return true;
@@ -378,7 +388,12 @@ class BookService {
           active: a.active ?? true,
         };
       }
-      return { id: a?.toString() || "", name: a?.toString() || "", bio: undefined, active: true };
+      return {
+        id: a?.toString() || "",
+        name: a?.toString() || "",
+        bio: undefined,
+        active: true,
+      };
     };
 
     const toNarratorResponse = (n: any): NarratorResponseType => {
@@ -390,7 +405,12 @@ class BookService {
           active: n.active ?? true,
         };
       }
-      return { id: n?.toString() || "", name: n?.toString() || "", bio: undefined, active: true };
+      return {
+        id: n?.toString() || "",
+        name: n?.toString() || "",
+        bio: undefined,
+        active: true,
+      };
     };
 
     const formattedBook: BookResponseType = {
