@@ -1,14 +1,13 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const Seen = (Mongoose: any) => {
   return new Mongoose.Schema({
     bookID: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "Book is required"],
     },
     user: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "User required"],
     },
     seenAt: {
@@ -20,12 +19,12 @@ const Seen = (Mongoose: any) => {
       default: [],
     },
     period: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: "period",
       required: [true, "Period is required"],
     },
     subscription: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: false,
     },
     createdAt: {

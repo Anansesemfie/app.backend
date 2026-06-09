@@ -1,10 +1,9 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const Session = (Mongoose: any) => {
   const sessions = new Mongoose.Schema({
     user: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "User is required"],
     },
     duration: {

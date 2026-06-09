@@ -1,14 +1,13 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const Reaction = (Mongoose: any) => {
   return new Mongoose.Schema({
     bookID: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "Missing book to react"],
     },
     user: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "Missing to react to book"],
     },
     action: {
@@ -16,7 +15,7 @@ const Reaction = (Mongoose: any) => {
       default: "Like",
     },
     period: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: "period",
       required: [true, "Period is required"],
     },

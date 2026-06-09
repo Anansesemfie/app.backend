@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const Subscribers = (Mongoose: any) => {
@@ -6,11 +5,11 @@ const Subscribers = (Mongoose: any) => {
     {
       //active and inactive subscriptions
       parent: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         required: [true, "missing subscription key"],
       },
       user: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         required: [true, "missing user ID"],
       },
       status: {
@@ -23,7 +22,7 @@ const Subscribers = (Mongoose: any) => {
       },
       books: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "books",
         },
       ],

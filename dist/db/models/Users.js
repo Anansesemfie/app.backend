@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bson_1 = require("bson");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
 const validator_1 = require("validator");
 const utils_1 = require("./utils");
@@ -59,11 +58,11 @@ const Users = (Mongoose) => {
             require: false,
         },
         subscription: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             required: false,
         },
         organization: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             ref: "organization",
         },
         createdAt: {

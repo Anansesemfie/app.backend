@@ -40,15 +40,19 @@ class BookRepository {
 
   public async update(bookId: string, book: BookUpdateType): Promise<BookType> {
     try {
+      // If 'book' is a Mongoose document, convert to a plain object first
+      const bookData = (book as any).toObject ? (book as any).toObject() : book;
+
       // Strip top-level empty-string values to avoid ObjectId cast errors
       // (e.g. when the client sends organization: "" instead of omitting the field)
+      // Also remove _id and internal Mongoose fields to avoid update errors
       const cleanBook = Object.fromEntries(
-        Object.entries(book).filter(([, v]) => v !== "")
+        Object.entries(bookData).filter(([k, v]) => v !== "" && !k.startsWith("$") && k !== "_id")
       ) as BookUpdateType;
 
       const updatedBook = await Book.findOneAndUpdate(
         { _id: bookId },
-        cleanBook,
+        { $set: cleanBook },
         { new: true }
       )
         .populate("authors")
@@ -102,6 +106,11 @@ class BookRepository {
     if (Array.isArray(obj)) {
       return obj.map((item) => this.sanitizeRegex(item));
     } else if (obj && typeof obj === "object") {
+      // Only recurse into plain objects. Preserve ObjectId, Date, etc.
+      if (obj.constructor && obj.constructor.name !== "Object") {
+        return obj;
+      }
+
       const sanitized: any = {};
       for (const key in obj) {
         if (key === "$regex" && typeof obj[key] !== "string") {

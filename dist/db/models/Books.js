@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bson_1 = require("bson");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
 const utils_1 = require("./utils");
 const Books = (Mongoose) => {
@@ -29,25 +28,25 @@ const Books = (Mongoose) => {
         },
         authors: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "authors",
             },
         ],
         narrators: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "narrators",
             },
         ],
         category: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "categories",
             },
         ],
         languages: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "languages",
             },
         ],
@@ -60,15 +59,15 @@ const Books = (Mongoose) => {
             default: "/images/user_fire.jpg",
         },
         associates: [{
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: 'users'
             }],
         uploader: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             required: [true, "Missing uploader"],
         },
         organization: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             ref: "organization",
         },
         createdAt: {

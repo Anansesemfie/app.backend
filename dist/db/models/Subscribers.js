@@ -3,17 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bson_1 = require("bson");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
 const Subscribers = (Mongoose) => {
     return new Mongoose.Schema({
         //active and inactive subscriptions
         parent: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             required: [true, "missing subscription key"],
         },
         user: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             required: [true, "missing user ID"],
         },
         status: {
@@ -26,7 +25,7 @@ const Subscribers = (Mongoose) => {
         },
         books: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "books",
             },
         ],

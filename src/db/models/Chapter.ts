@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const chapters = (Mongoose: any) => {
@@ -21,7 +20,7 @@ const chapters = (Mongoose: any) => {
         type:String
       },
       book: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         required: [true, "Missing Book"],
       },
       order: {

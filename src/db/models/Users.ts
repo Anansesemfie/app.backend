@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 import { isEmail, isMobilePhone, isStrongPassword } from "validator";
 import { UsersTypes } from "./utils";
@@ -55,11 +54,11 @@ const Users = (Mongoose: any) => {
       require: false,
     },
     subscription: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: false,
     },
     organization: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: "organization",
     },
     createdAt: {

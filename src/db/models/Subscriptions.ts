@@ -1,5 +1,4 @@
 import HELPERS from "../../utils/helpers";
-import { ObjectId } from "bson";
 
 const Subscriptions = (Mongoose: any) => {
   return new Mongoose.Schema(
@@ -37,12 +36,12 @@ const Subscriptions = (Mongoose: any) => {
       },
       books: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "books",
         },
       ],
       origin: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         required: false,
         set: (v: any) => (v === "" ? undefined : v),
       },

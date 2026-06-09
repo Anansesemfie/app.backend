@@ -1,4 +1,3 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 import { BookStatus } from "./utils";
 const Books = (Mongoose: any) => {
@@ -25,25 +24,25 @@ const Books = (Mongoose: any) => {
       },
       authors: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "authors",
         },
       ],
       narrators: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "narrators",
         },
       ],
       category: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "categories",
         },
       ],
       languages: [
         {
-          type: ObjectId,
+          type: Mongoose.Schema.Types.ObjectId,
           ref: "languages",
         },
       ],
@@ -56,15 +55,15 @@ const Books = (Mongoose: any) => {
         default: "/images/user_fire.jpg",
       },
       associates: [{
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         ref:'users'
       }],
       uploader: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         required: [true, "Missing uploader"],
       },
       organization: {
-        type: ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         ref: "organization",
       },
       createdAt: {

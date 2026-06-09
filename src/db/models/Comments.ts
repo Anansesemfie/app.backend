@@ -1,14 +1,13 @@
-import { ObjectId } from "bson";
 import HELPERS from "../../utils/helpers";
 
 const Comments = (Mongoose: any) => {
   return new Mongoose.Schema({
     bookID: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "Missing book to comment on"],
     },
     user: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       required: [true, "Missing user to comment on book"],
     },
     comment: {
@@ -17,12 +16,12 @@ const Comments = (Mongoose: any) => {
       maxlength: [100, "Comment too long"],
     },
     period: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: "period",
       required: [true, "Period is required"],
     },
     parentId: {
-      type: ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: "BookComments",
       required: false,
       default: null,

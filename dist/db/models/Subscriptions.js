@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const helpers_1 = __importDefault(require("../../utils/helpers"));
-const bson_1 = require("bson");
 const Subscriptions = (Mongoose) => {
     return new Mongoose.Schema({
         name: {
@@ -40,12 +39,12 @@ const Subscriptions = (Mongoose) => {
         },
         books: [
             {
-                type: bson_1.ObjectId,
+                type: Mongoose.Schema.Types.ObjectId,
                 ref: "books",
             },
         ],
         origin: {
-            type: bson_1.ObjectId,
+            type: Mongoose.Schema.Types.ObjectId,
             required: false,
             set: (v) => (v === "" ? undefined : v),
         },
