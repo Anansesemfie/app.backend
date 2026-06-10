@@ -97,7 +97,7 @@ class PlayService {
             }
             const chapter = yield chapterService_1.default.fetchChapter(chapterId);
             const allowwdBooksSet = new Set(subscription.books.map((id) => String(id)));
-            if (!allowwdBooksSet.has(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a.id) || "")) {
+            if (subscription.books.length > 0 && !allowwdBooksSet.has(((_a = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _a === void 0 ? void 0 : _a.id) || "")) {
                 return yield this.unAuthorizedUserPlay(chapterId, user._id); // If subscription does not include the book, return unauthorized play
             }
             yield seenService_1.default.recordPlay(((_b = chapter === null || chapter === void 0 ? void 0 : chapter.book) === null || _b === void 0 ? void 0 : _b.id) || "", user._id, helpers_1.default.currentTime(), user === null || user === void 0 ? void 0 : user.subscription);
