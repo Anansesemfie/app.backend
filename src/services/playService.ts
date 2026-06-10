@@ -52,7 +52,7 @@ class PlayService {
     }
     const chapter = await chapterService.fetchChapter(chapterId);
     const allowwdBooksSet = new Set(subscription.books.map((id) => String(id)));
-    if (!allowwdBooksSet.has(chapter?.book?.id || "")) {
+    if (subscription.books.length > 0 && !allowwdBooksSet.has(chapter?.book?.id || "")) {
       return await this.unAuthorizedUserPlay(chapterId, user._id); // If subscription does not include the book, return unauthorized play
     }
     await seenService.recordPlay(
