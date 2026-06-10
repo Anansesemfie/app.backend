@@ -156,17 +156,18 @@ class HELPERS {
         return days;
     }
     static countDaysBetweenDates(dateString1, dateString2) {
-        // Convert date strings to Date objects
-        const date1 = new Date(dateString1);
-        const date2 = new Date(dateString2);
-        // Convert both dates to UTC to ensure consistent calculation
-        const utcDate1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
-        const utcDate2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
-        // Calculate the difference in milliseconds
-        const millisecondsDifference = Math.abs(utcDate2 - utcDate1);
-        // Convert milliseconds to days
-        const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
-        return Math.floor(daysDifference);
+        return Math.abs((0, dayjs_1.default)(dateString2).diff((0, dayjs_1.default)(dateString1), "day"));
+    }
+    /**
+     * Robustly get duration in milliseconds.
+     * If value is small (< 10000), assume it's in days and convert.
+     * Otherwise assume it's already in milliseconds.
+     */
+    static getDurationMs(duration) {
+        if (duration < 10000) {
+            return duration * 24 * 60 * 60 * 1000;
+        }
+        return duration;
     }
     static hasSpecialCharacters(text) {
         // Define a regular expression pattern to match special characters

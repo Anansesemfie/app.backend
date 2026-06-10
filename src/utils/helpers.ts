@@ -170,30 +170,19 @@ class HELPERS {
     dateString1: string,
     dateString2: string
   ): number {
-    // Convert date strings to Date objects
-    const date1: Date = new Date(dateString1);
-    const date2: Date = new Date(dateString2);
+    return Math.abs(dayjs(dateString2).diff(dayjs(dateString1), "day"));
+  }
 
-    // Convert both dates to UTC to ensure consistent calculation
-    const utcDate1: number = Date.UTC(
-      date1.getFullYear(),
-      date1.getMonth(),
-      date1.getDate()
-    );
-    const utcDate2: number = Date.UTC(
-      date2.getFullYear(),
-      date2.getMonth(),
-      date2.getDate()
-    );
-
-    // Calculate the difference in milliseconds
-    const millisecondsDifference: number = Math.abs(utcDate2 - utcDate1);
-
-    // Convert milliseconds to days
-    const daysDifference: number =
-      millisecondsDifference / (1000 * 60 * 60 * 24);
-
-    return Math.floor(daysDifference);
+  /**
+   * Robustly get duration in milliseconds.
+   * If value is small (< 10000), assume it's in days and convert.
+   * Otherwise assume it's already in milliseconds.
+   */
+  public static getDurationMs(duration: number): number {
+    if (duration < 10000) {
+      return duration * 24 * 60 * 60 * 1000;
+    }
+    return duration;
   }
   public static hasSpecialCharacters(text: string): boolean {
     // Define a regular expression pattern to match special characters

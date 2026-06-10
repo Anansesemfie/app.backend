@@ -147,10 +147,10 @@ class SubscriberService {
             if (!child.activatedAt)
                 return { valid: false, books: [] };
             const parent = yield subscriptionsService_1.default.fetchOne(child.parent);
-            const duration = helpers_1.default.millisecondsToDays(parent.duration);
-            // Measure from activatedAt (payment confirmed), not createdAt (payment initiated)
-            const daysGone = helpers_1.default.countDaysBetweenDates(child.activatedAt, helpers_1.default.currentTime());
-            return { valid: daysGone <= duration, books: parent.books || [] };
+            const durationMs = helpers_1.default.getDurationMs(parent.duration);
+            const expirationDate = (0, dayjs_1.default)(child.activatedAt).add(durationMs, "millisecond");
+            const isValid = (0, dayjs_1.default)().isBefore(expirationDate);
+            return { valid: isValid, books: parent.books || [] };
         });
     }
 }
