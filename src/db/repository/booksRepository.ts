@@ -91,7 +91,9 @@ class BookRepository {
         .limit(numberOfRecords)
         .sort({ createdAt: -1 })
         .populate("authors")
-        .populate("narrators");
+        .populate("narrators")
+        .populate("category")
+        .populate("languages");
       return fetchedBooks;
     } catch (error) {
       throw new CustomError(

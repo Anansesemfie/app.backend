@@ -1,79 +1,98 @@
 
-const getCategory = async ()=>{//get all categories..................................................................
-try{
-        let result = await fetch("/category/");
-        let data = await result.json();
-        
-        if(!data.categories){
-                throw 'Troublr getting categories';
-        }
-        return data.categories;
-}
-catch(err){
-        throw err;
-}
-}
+const getCategory = async () => {
+  //get all categories..................................................................
+  try {
+    let result = await fetch("/book/category/");
+    let data = await result.json();
 
-const getLanguages = async ()=>{//get all categories................................................................................
-        try{
-                let result = await fetch("/langs/");
-                let data = await result.json();
-                
-                if(!data.languages){
-                        throw 'Troublr getting categories';
-                }
-                return data.languages;
-        }
-        catch(err){
-                throw err;
-        }
-        }
+    if (!data.data) {
+      throw "Troublr getting categories";
+    }
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
+const getLanguages = async () => {
+  //get all categories................................................................................
+  try {
+    let result = await fetch("/book/languages/");
+    let data = await result.json();
 
-const getBookdetails = async(book)=>{// a single book details.......................................................................
-        try{
-                
-        let result = await fetch(`/book/${book}`);
-        if(result.status >= 400){
-                let err = await result.json();
-                        // console.log(err);
-                throw err.error;
-        }
-        let data = await result.json();
-        
+    if (!data.data) {
+      throw "Troublr getting categories";
+    }
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
-        return data;
+const getAuthors = async () => {
+  try {
+    let result = await fetch("/author/");
+    let data = await result.json();
 
-        }
-        catch(err){
-                throw err;
-        }  
-}
+    if (!data.data) {
+      throw "Trouble getting authors";
+    }
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
-const getBooks = async ()=>{//all available books.......................................................................................
-        try{
-        let result = await fetch(`/book/`,{
-                method: 'POST',
-                redirect: 'follow',
-                data:{
-                        "active": false
-                }}
-              );
-        if(result.status>=400){
-                let err = await result.json();
-                        // console.log(err);
-                        throw err.error;
-        }
-        let data = await result.json();
-       
-        
-        return data.books;
+const getNarrators = async () => {
+  try {
+    let result = await fetch("/narrator/");
+    let data = await result.json();
 
-        }
-        catch(err){
-                throw err;
-        }
-}
+    if (!data.data) {
+      throw "Trouble getting narrators";
+    }
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getBookdetails = async (book) => {
+  // a single book details.......................................................................
+  try {
+    let result = await fetch(`/book/${book}`);
+    if (result.status >= 400) {
+      let err = await result.json();
+      // console.log(err);
+      throw err.error;
+    }
+    let data = await result.json();
+
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getBooks = async () => {
+  //all available books.......................................................................................
+  try {
+    let result = await fetch(`/book/`, {
+      method: "GET",
+      redirect: "follow",
+    });
+    if (result.status >= 400) {
+      let err = await result.json();
+      // console.log(err);
+      throw err.error;
+    }
+    let data = await result.json();
+
+    return data.data.results;
+  } catch (err) {
+    throw err;
+  }
+};
 
 const getOwners = async ()=>{//all available owners................................................................
         try{
@@ -353,52 +372,53 @@ const getFile = async (chapter)=>{
 
 
 //search
-const search =async(keyword)=>{
-        try{
-                let response = await fetch(`/filter/find?keyword=${keyword}`, {method:'GET'}); 
-                // console.log(response.status);
-                if(response.status===404){
-                        let err = await respond.json();
-                        throw err.error;
-                      
-
-                }
-                else if(response.status===403){
-                        let error =await response.json();
-                        if(error.error==''){
-                                error.error='Unknown Issues';
-                        }
-                        throw error.error;
-                }
-                else{
-                        return response.json();
-                }
-
-
-        }
-        catch(error){
-                throw error;
-        }
-}
+const search = async (keyword) => {
+  try {
+    let response = await fetch(`/book/filter/all?search=${keyword}`, {
+      method: "GET",
+    });
+    // console.log(response.status);
+    if (response.status === 404) {
+      let err = await response.json();
+      throw err.error;
+    } else if (response.status === 403) {
+      let error = await response.json();
+      if (error.error == "") {
+        error.error = "Unknown Issues";
+      }
+      throw error.error;
+    } else {
+      let data = await response.json();
+      return { books: data.data };
+    }
+  } catch (error) {
+    throw error;
+  }
+};
 //filter
-const Filter = async (query)=>{
-        try{
-                query.played = parseInt(query.played);
-                // console.log(query);
+const Filter = async (query) => {
+  try {
+    // query = { search, language, category, author, narrator }
+    const params = new URLSearchParams();
+    if (query.search) params.append("search", query.search);
+    if (query.language) params.append("language", query.language);
+    if (query.category) params.append("category", query.category);
+    if (query.author) params.append("author", query.author);
+    if (query.narrator) params.append("narrator", query.narrator);
 
+    let respond = await fetch(`/book/filter/all?${params.toString()}`, {
+      method: "GET",
+    });
 
-        let respond = await fetch(`/filter/speci?played=${query.played}&category=${query.category}&language=${query.language}`,{method:"GET"});
-
-        if(respond.status==404||respond.status==403){
-                throw 'Something unexpected happened, check your connection'
-        }
-        return respond.json();
-
-        }
-        catch(error){           
-                throw error;
-        }
-}
+    if (respond.status == 404 || respond.status == 403) {
+      throw "Something unexpected happened, check your connection";
+    }
+    let data = await respond.json();
+    return { filtered: data.data };
+  } catch (error) {
+    throw error;
+  }
+};
 
 const expandFilter = async(fstParam,lstParam)=>{//Expand Filtering
         try{

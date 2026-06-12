@@ -215,20 +215,34 @@ class BookService {
             const books = [];
             try {
                 const params = { status: utils_1.BookStatus.Active };
+                const normalize = (val) => {
+                    if (!val)
+                        return [];
+                    if (Array.isArray(val))
+                        return val;
+                    return String(val)
+                        .split(",")
+                        .map((v) => v.trim())
+                        .filter(Boolean);
+                };
                 if (search) {
                     params["title"] = { $regex: search, $options: "i" };
                 }
-                if (language) {
-                    params["languages"] = { $in: [language] };
+                const languages = normalize(language);
+                if (languages.length > 0) {
+                    params["languages"] = { $in: languages };
                 }
-                if (category) {
-                    params["category"] = { $in: [category] };
+                const categories = normalize(category);
+                if (categories.length > 0) {
+                    params["category"] = { $in: categories };
                 }
-                if (author) {
-                    params["authors"] = { $in: [author] };
+                const authors = normalize(author);
+                if (authors.length > 0) {
+                    params["authors"] = { $in: authors };
                 }
-                if (narrator) {
-                    params["narrators"] = { $in: [narrator] };
+                const narrators = normalize(narrator);
+                if (narrators.length > 0) {
+                    params["narrators"] = { $in: narrators };
                 }
                 const fetchByBooks = yield booksRepository_1.default.fetchAll(limit, page, params);
                 const uniqueBooks = this.getUniqueBooks(fetchByBooks);

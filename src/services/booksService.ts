@@ -264,10 +264,10 @@ class BookService {
     page: number;
     limit: number;
     search?: string;
-    language?: string;
-    category?: string;
-    author?: string;
-    narrator?: string;
+    language?: string | string[];
+    category?: string | string[];
+    author?: string | string[];
+    narrator?: string | string[];
   }): Promise<BookResponseType[]> {
     const books: BookResponseType[] = [];
     try {
@@ -279,21 +279,40 @@ class BookService {
         authors?: {};
         narrators?: {};
       } = { status: BookStatus.Active };
+
+      const normalize = (val: string | string[] | undefined): string[] => {
+        if (!val) return [];
+        if (Array.isArray(val)) return val;
+        return String(val)
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+      };
+
       if (search) {
         params["title"] = { $regex: search, $options: "i" };
       }
-      if (language) {
-        params["languages"] = { $in: [language] };
+
+      const languages = normalize(language);
+      if (languages.length > 0) {
+        params["languages"] = { $in: languages };
       }
-      if (category) {
-        params["category"] = { $in: [category] };
+
+      const categories = normalize(category);
+      if (categories.length > 0) {
+        params["category"] = { $in: categories };
       }
-      if (author) {
-        params["authors"] = { $in: [author] };
+
+      const authors = normalize(author);
+      if (authors.length > 0) {
+        params["authors"] = { $in: authors };
       }
-      if (narrator) {
-        params["narrators"] = { $in: [narrator] };
+
+      const narrators = normalize(narrator);
+      if (narrators.length > 0) {
+        params["narrators"] = { $in: narrators };
       }
+
       const fetchByBooks = await Repo.fetchAll(limit, page, params);
       const uniqueBooks = this.getUniqueBooks(fetchByBooks);
       const formatBooks = await Promise.all(
