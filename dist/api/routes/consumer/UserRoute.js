@@ -1,16 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const CheckApp_1 = require("../../middlewares/CheckApp");
-const authLimiter = (0, express_rate_limit_1.default)({
+const rateLimiter_1 = require("../../middlewares/rateLimiter");
+const authLimiter = (0, rateLimiter_1.createLimiter)({
     windowMs: 15 * 60 * 1000,
     max: 10,
-    standardHeaders: true,
-    legacyHeaders: false,
     message: { code: "TOO_MANY_REQUESTS", message: "Too many attempts, please try again later", status: 429 },
 });
 const userController_1 = require("../../../controllers/userController");

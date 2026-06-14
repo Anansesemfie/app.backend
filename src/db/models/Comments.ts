@@ -13,7 +13,7 @@ const Comments = (Mongoose: any) => {
     comment: {
       type: String,
       required: [true, "Comment is empty"],
-      maxlength: [100, "Comment too long"],
+      maxlength: [1000, "Comment too long"],
     },
     period: {
       type: Mongoose.Schema.Types.ObjectId,
@@ -28,10 +28,10 @@ const Comments = (Mongoose: any) => {
     },
     createdAt: {
       type: Date,
-      default: HELPERS.currentTime(),
+      default: Date.now,
     },
     deletedAt: {
-      type: String,
+      type: Date,
     },
   });
 };

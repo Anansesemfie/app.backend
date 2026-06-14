@@ -49,72 +49,92 @@ const chapterRepository_1 = __importDefault(require("../db/repository/chapterRep
 const booksService_1 = __importDefault(require("./booksService"));
 const error_1 = require("../utils/error");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const cacheService_1 = require("./utils/cacheService");
 class ChapterService {
     constructor() {
         this.logInfo = "";
     }
-    createChapter(chapter) {
-        return __awaiter(this, void 0, void 0, function* () {
+    createChapter(chapter_1) {
+        return __awaiter(this, arguments, void 0, function* (chapter, isAdmin = false) {
             const createdChapter = yield chapterRepository_1.default.createChapter(chapter);
             if (!createdChapter) {
                 throw new CustomError_1.default("Unknown error", "Could not create chapter", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            return yield this.formatChapter(createdChapter);
+            yield cacheService_1.CacheService.clearPattern("chapters:*");
+            return yield this.formatChapter(createdChapter, isAdmin);
         });
     }
     fetchChapters(book_1) {
-        return __awaiter(this, arguments, void 0, function* (book, token = "") {
+        return __awaiter(this, arguments, void 0, function* (book, token = "", isAdmin = false) {
+            const cacheKey = `chapters:list:b:${book}:t:${token}:admin:${isAdmin}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             if (token) {
-                const booksToFetch = yield booksService_1.default.fetchBooksInSubscription(token);
+                const booksToFetch = (yield booksService_1.default.fetchBooksInSubscription(token)) || [];
                 if (booksToFetch.length && !booksToFetch.includes(book)) {
                     throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorised access", CustomError_1.ErrorCodes.FORBIDDEN);
                 }
             }
             const chapters = yield chapterRepository_1.default.getChapters(book);
-            return Promise.all(chapters.map((chapter) => this.formatChapter(chapter)));
+            const result = yield Promise.all(chapters.map((chapter) => this.formatChapter(chapter, isAdmin)));
+            yield cacheService_1.CacheService.set(cacheKey, result, 1800);
+            return result;
         });
     }
     fetchChapter(chapterId_1) {
-        return __awaiter(this, arguments, void 0, function* (chapterId, substring = "") {
+        return __awaiter(this, arguments, void 0, function* (chapterId, substring = "", isAdmin = false) {
+            const cacheKey = `chapters:one:id:${chapterId}:sub:${substring}:admin:${isAdmin}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const chapter = chapterId
                 ? yield chapterRepository_1.default.getChapterById(chapterId)
                 : yield chapterRepository_1.default.getChapterByTitle(substring);
             if (!chapter) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Chapter not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            return yield this.formatChapter(chapter);
+            const result = yield this.formatChapter(chapter, isAdmin);
+            yield cacheService_1.CacheService.set(cacheKey, result, 1800);
+            return result;
         });
     }
-    updateChapter(chapterId, chapter) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield chapterRepository_1.default.updateChapter(chapterId, chapter);
+    updateChapter(chapterId_1, chapter_1) {
+        return __awaiter(this, arguments, void 0, function* (chapterId, chapter, isAdmin = false) {
+            const updated = yield chapterRepository_1.default.updateChapter(chapterId, chapter);
+            if (!updated)
+                return null;
+            yield cacheService_1.CacheService.clearPattern("chapters:*");
+            return yield this.formatChapter(updated, isAdmin);
         });
     }
     deleteChapter(chapterId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield chapterRepository_1.default.dropChapter(chapterId);
+            yield cacheService_1.CacheService.clearPattern("chapters:*");
         });
     }
     deleteManyChapters(bookId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield chapterRepository_1.default.bulkDelete(bookId);
+            yield cacheService_1.CacheService.clearPattern("chapters:*");
         });
     }
-    searchByKeyword(keyword) {
-        return __awaiter(this, void 0, void 0, function* () {
+    searchByKeyword(keyword_1) {
+        return __awaiter(this, arguments, void 0, function* (keyword, isAdmin = false) {
             const chapters = yield chapterRepository_1.default.searchByKeyword(keyword);
             const books = yield Promise.all(chapters.map((chapter) => __awaiter(this, void 0, void 0, function* () {
-                const book = yield booksService_1.default.fetchBook(String(chapter.book));
+                const book = yield booksService_1.default.fetchBook(String(chapter.book), "", isAdmin);
                 return book;
             })));
             return books;
         });
     }
-    formatChapter(chapter) {
-        return __awaiter(this, void 0, void 0, function* () {
+    formatChapter(chapter_1) {
+        return __awaiter(this, arguments, void 0, function* (chapter, isAdmin = false) {
             var _a, _b, _c;
-            const Book = yield booksService_1.default.fetchBook(chapter.book);
-            const type = chapter.mimetype == 'pdf' ? 'ebook' : 'audio';
+            const Book = yield booksService_1.default.fetchBook(chapter.book, "", isAdmin);
+            const type = chapter.mimetype == "pdf" ? "ebook" : "audio";
             return {
                 id: (_a = chapter._id) !== null && _a !== void 0 ? _a : "",
                 title: chapter.title,
@@ -124,7 +144,7 @@ class ChapterService {
                 order: (_b = chapter.order) !== null && _b !== void 0 ? _b : 0,
                 book: Book,
                 createdAt: (_c = chapter.createdAt) !== null && _c !== void 0 ? _c : "",
-                type
+                type,
             };
         });
     }

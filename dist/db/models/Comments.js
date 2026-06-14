@@ -1,9 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const helpers_1 = __importDefault(require("../../utils/helpers"));
 const Comments = (Mongoose) => {
     return new Mongoose.Schema({
         bookID: {
@@ -17,7 +13,7 @@ const Comments = (Mongoose) => {
         comment: {
             type: String,
             required: [true, "Comment is empty"],
-            maxlength: [100, "Comment too long"],
+            maxlength: [1000, "Comment too long"],
         },
         period: {
             type: Mongoose.Schema.Types.ObjectId,
@@ -32,10 +28,10 @@ const Comments = (Mongoose) => {
         },
         createdAt: {
             type: Date,
-            default: helpers_1.default.currentTime(),
+            default: Date.now,
         },
         deletedAt: {
-            type: String,
+            type: Date,
         },
     });
 };

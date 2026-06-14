@@ -29,7 +29,7 @@ const getChapters = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getChapters = getChapters;
 const getChapter = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const chapter = yield chapterService_1.default.fetchChapter(req.params.chapterId);
+        const chapter = yield chapterService_1.default.fetchChapter(req.params.chapterId, "", false);
         res.status(200).json({ data: chapter });
     }
     catch (error) {

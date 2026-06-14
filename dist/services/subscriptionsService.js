@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const error_1 = require("../utils/error");
 const subscriptionRepository_1 = __importDefault(require("../db/repository/subscriptionRepository"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const cacheService_1 = require("./utils/cacheService");
 class SubscriptionService {
     constructor() {
         this.logInfo = "";
@@ -55,22 +56,35 @@ class SubscriptionService {
     create(subscription) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.checkPayload(subscription);
-            return yield subscriptionRepository_1.default.create(subscription);
+            const result = yield subscriptionRepository_1.default.create(subscription);
+            yield cacheService_1.CacheService.clearPattern("subscriptions:*");
+            return result;
         });
     }
     fetchOne(subscriptionId) {
         return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = `subscriptions:one:id:${subscriptionId}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const fetchedSubscription = yield subscriptionRepository_1.default.getOne(subscriptionId);
-            return this.reformatSubscription(fetchedSubscription);
+            const result = yield this.reformatSubscription(fetchedSubscription);
+            yield cacheService_1.CacheService.set(cacheKey, result, 3600);
+            return result;
         });
     }
     fetchAllSubscriptions() {
         return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = "subscriptions:all";
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const fetchedSubscriptions = yield subscriptionRepository_1.default.getList({
                 visible: true,
                 active: true,
             });
             const formatedSubscriptions = yield Promise.all(fetchedSubscriptions.map((subscription) => this.reformatSubscription(subscription)));
+            yield cacheService_1.CacheService.set(cacheKey, formatedSubscriptions, 3600);
             return formatedSubscriptions;
         });
     }
@@ -81,6 +95,7 @@ class SubscriptionService {
             }
             yield this.checkPayload(subscription);
             const updatedSubscription = yield subscriptionRepository_1.default.update(subscription, subscriptionId);
+            yield cacheService_1.CacheService.clearPattern("subscriptions:*");
             return updatedSubscription;
         });
     }
@@ -99,6 +114,8 @@ class SubscriptionService {
     }
     reformatSubscription(subscription) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!subscription)
+                return null;
             const formatedSubscription = {
                 id: subscription._id,
                 name: subscription.name,

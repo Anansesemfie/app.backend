@@ -7,6 +7,7 @@ import Author from "./AuthorRoute";
 import Narrator from "./NarratorRoute";
 import User from "./UserRoute";
 import Book from "./BookRoute";
+import Genre from "./GenreRoute";
 import Period from "./PeriodRoute";
 import Org from "./OrgRoute";
 import Dashboard from "./DashboardRoute";
@@ -33,6 +34,7 @@ router.get("/", (req: Request, res: Response) => {
 router.use("/language", REQUIREAUTH, Language);
 router.use("/author", REQUIREAUTH, Author);
 router.use("/narrator", REQUIREAUTH, Narrator);
+router.use("/genre", REQUIREAUTH, Genre);
 router.use("/user", User);
 router.use("/book", REQUIREAUTH, Book);
 router.use("/period", REQUIREAUTH, Period);

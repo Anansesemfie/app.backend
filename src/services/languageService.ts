@@ -2,6 +2,7 @@ import repo from "../db/repository/languageRepository";
 import { LanguageType } from "../dto";
 import { ErrorEnum } from "../utils/error";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { CacheService } from "./utils/cacheService";
 
 class LanguageService {
   public async createLanguage(language: LanguageType, sessionID: string) {
@@ -13,10 +14,15 @@ class LanguageService {
       );
     }
     const lang = await repo.create(language);
+    await CacheService.clearPattern("languages:*");
     return lang;
   }
 
   public async getAllLanguages() {
+    const cacheKey = "languages:all";
+    const cached = await CacheService.get<any[]>(cacheKey);
+    if (cached) return cached;
+
     try {
       const langs = await repo.getAll();
       if (!langs) {
@@ -26,7 +32,9 @@ class LanguageService {
           ErrorCodes.NOT_FOUND
         );
       }
-      return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
+      const result = await Promise.all(langs.map((lang) => this.formatLanguage(lang)));
+      await CacheService.set(cacheKey, result, 3600);
+      return result;
     } catch (error) {
       throw new CustomError(
         ErrorEnum[500],
@@ -37,6 +45,10 @@ class LanguageService {
   }
 
   public async getLanguageById(language: string) {
+    const cacheKey = `languages:one:id:${language}`;
+    const cached = await CacheService.get<string>(cacheKey);
+    if (cached) return cached;
+
     try {
       const lang = await repo.getById(language);
       if (!lang) {
@@ -46,7 +58,9 @@ class LanguageService {
           ErrorCodes.NOT_FOUND
         );
       }
-      return lang._id;
+      const result = lang._id;
+      await CacheService.set(cacheKey, result, 3600);
+      return result;
     } catch (error) {
       throw new CustomError(
         ErrorEnum[500],

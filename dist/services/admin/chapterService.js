@@ -73,7 +73,7 @@ class ChapterService {
                 description: "",
                 mimetype: chapter.content.split(".").pop(),
             };
-            const createdChapter = yield chapterService_1.default.createChapter(newChapter);
+            const createdChapter = yield chapterService_1.default.createChapter(newChapter, true);
             return createdChapter;
         });
     }
@@ -95,7 +95,7 @@ class ChapterService {
                 mimetype: (_b = chapter.content) === null || _b === void 0 ? void 0 : _b.split(".").pop(),
                 book: chapter.book.id,
             };
-            const updated = yield chapterService_1.default.updateChapter(id, newChapter);
+            const updated = yield chapterService_1.default.updateChapter(id, newChapter, true);
             return updated;
         });
     }
@@ -107,7 +107,7 @@ class ChapterService {
             }
             const { user } = yield sessionService_1.default.getSession(token);
             this.checkForAdmin(user);
-            const chapter = yield chapterService_1.default.fetchChapter(id);
+            const chapter = yield chapterService_1.default.fetchChapter(id, "", true);
             if ((_a = chapter.content) === null || _a === void 0 ? void 0 : _a.includes("aws")) {
                 const urlParts = (_b = chapter.content) === null || _b === void 0 ? void 0 : _b.split("/");
                 const fileKey = urlParts === null || urlParts === void 0 ? void 0 : urlParts.slice(3).join("/");

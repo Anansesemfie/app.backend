@@ -25,10 +25,10 @@ class PlayService {
     return await this.authorizedUserPlay(chapterId, sessionId);
   }
   async unAuthorizedUserPlay(chapterId: string, userId = "") {
-    const chapter = await chapterService.fetchChapter(chapterId);
+    const chapter = await chapterService.fetchChapter(chapterId, "", false);
     if (chapter?.title?.toLowerCase() === "sample") return chapter;
-    const book = await booksService.fetchBook(chapter?.book?.id ?? "");
-    const chapters = await chapterService.fetchChapters(book?.id as string);
+    const book = await booksService.fetchBook(chapter?.book?.id ?? "", "", false);
+    const chapters = await chapterService.fetchChapters(book?.id as string, "", false);
     const chapterToReturn =
       chapters.find((chapter) => chapter.title?.toLowerCase() === "sample") ??
       chapters[0];
@@ -50,9 +50,16 @@ class PlayService {
     if (!subscription.valid) {
       return await this.unAuthorizedUserPlay(chapterId, user._id); // If subscription is invalid, return unauthorized play
     }
-    const chapter = await chapterService.fetchChapter(chapterId);
+    const chapter = await chapterService.fetchChapter(
+      chapterId,
+      "",
+      false
+    );
     const allowwdBooksSet = new Set(subscription.books.map((id) => String(id)));
-    if (subscription.books.length > 0 && !allowwdBooksSet.has(chapter?.book?.id || "")) {
+    if (
+      subscription.books.length > 0 &&
+      !allowwdBooksSet.has(chapter?.book?.id || "")
+    ) {
       return await this.unAuthorizedUserPlay(chapterId, user._id); // If subscription does not include the book, return unauthorized play
     }
     await seenService.recordPlay(

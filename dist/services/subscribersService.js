@@ -53,6 +53,7 @@ const paystack_1 = __importDefault(require("../utils/paystack"));
 const env_1 = require("../utils/env");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const dayjs_1 = __importDefault(require("dayjs"));
+const cacheService_1 = require("./utils/cacheService");
 class SubscriberService {
     constructor() {
         this.logInfo = "";
@@ -77,6 +78,7 @@ class SubscriberService {
             if (!newSubscription) {
                 throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to create subscription", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
+            yield cacheService_1.CacheService.clearPattern("subscribers:*");
             const callback_url = `${env_1.APP_BASE_URL}/api/v1/subscribers/callback`;
             if (parentSubscription.amount === 0) {
                 yield this.update({ active: true, activatedAt: helpers_1.default.currentTime() }, newSubscription._id);
@@ -121,22 +123,29 @@ class SubscriberService {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription is already active", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             const updatedSubscription = yield this.update({ active: true, activatedAt: today, updatedAt: today }, subscription._id);
+            yield cacheService_1.CacheService.clearPattern("subscribers:*");
             this.logInfo = `${helpers_1.default.loggerInfo.success} verifying subscription @ ${helpers_1.default.currentTime()}`;
             return updatedSubscription;
         });
     }
     fetchOne(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = `subscribers:one:p:${JSON.stringify(params)}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const fetchedSubscription = yield subscribersRepository_1.default.fetchOne(Object.assign({}, params));
             if (!fetchedSubscription) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Subscription not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
+            yield cacheService_1.CacheService.set(cacheKey, fetchedSubscription, 3600);
             return fetchedSubscription !== null && fetchedSubscription !== void 0 ? fetchedSubscription : {};
         });
     }
     update(subscription, subscriptionID) {
         return __awaiter(this, void 0, void 0, function* () {
             const updatedSubscription = yield subscribersRepository_1.default.update(Object.assign({}, subscription), subscriptionID);
+            yield cacheService_1.CacheService.clearPattern("subscribers:*");
             return updatedSubscription;
         });
     }

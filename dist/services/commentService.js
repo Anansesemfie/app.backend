@@ -60,19 +60,19 @@ const commentRepository_1 = __importDefault(require("../db/repository/commentRep
 const booksService_1 = __importDefault(require("./booksService"));
 const periodService_1 = __importDefault(require("./periodService"));
 const sessionService_1 = __importDefault(require("./sessionService"));
-const userService_1 = __importDefault(require("./userService"));
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const error_1 = require("../utils/error");
-const helpers_1 = __importDefault(require("../utils/helpers"));
 const utils_1 = require("../db/models/utils");
+const richText_1 = require("../utils/richText");
 class CommentService {
     createComment(_a) {
         return __awaiter(this, arguments, void 0, function* ({ bookID, sessionID, comment, parentId = null, }) {
-            if (helpers_1.default.hasSpecialCharacters(comment)) {
-                throw new CustomError_1.default(error_1.ErrorEnum[403], "Comment contains special characters", CustomError_1.ErrorCodes.FORBIDDEN);
-            }
             if (!bookID || !sessionID || !comment) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book, user or comment", CustomError_1.ErrorCodes.FORBIDDEN);
+            }
+            const sanitizedComment = (0, richText_1.sanitizeHtml)(comment);
+            if (!sanitizedComment) {
+                throw new CustomError_1.default(error_1.ErrorEnum[400], "Comment cannot be empty or contain only invalid HTML", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             if (parentId) {
                 const parent = yield commentRepository_1.default.findById(parentId);
@@ -91,7 +91,7 @@ class CommentService {
             const newComment = yield commentRepository_1.default.create({
                 bookID,
                 user: session === null || session === void 0 ? void 0 : session.user,
-                comment,
+                comment: sanitizedComment,
                 period: period._id,
                 parentId,
             });
@@ -126,12 +126,14 @@ class CommentService {
                     replyMap[key] = [];
                 replyMap[key].push(reply);
             }
-            const results = yield Promise.all(topLevel.map((comment) => __awaiter(this, void 0, void 0, function* () {
+            const results = topLevel.map((comment) => {
                 var _a;
                 const replyTypes = (_a = replyMap[String(comment._id)]) !== null && _a !== void 0 ? _a : [];
-                const formattedReplies = (yield Promise.all(replyTypes.map((r) => this.formatComment(r)))).filter(Boolean);
+                const formattedReplies = replyTypes
+                    .map((r) => this.formatComment(r))
+                    .filter(Boolean);
                 return this.formatComment(comment, formattedReplies);
-            })));
+            });
             return {
                 page,
                 limit,
@@ -155,7 +157,7 @@ class CommentService {
             if (!isOwner && !isAdmin) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "You can only delete your own comments", CustomError_1.ErrorCodes.FORBIDDEN);
             }
-            const deletedAt = helpers_1.default.currentTime();
+            const deletedAt = new Date();
             yield commentRepository_1.default.softDelete(commentId, deletedAt);
             // Cascade soft-delete replies and decrement counter only for top-level
             if (!comment.parentId) {
@@ -167,30 +169,36 @@ class CommentService {
             }
         });
     }
-    formatComment(comment_1) {
-        return __awaiter(this, arguments, void 0, function* (comment, replies = []) {
-            try {
-                const user = yield userService_1.default.fetchUser(comment.user);
-                if (user) {
-                    const formatted = {
-                        id: String(comment._id),
-                        user: {
-                            id: String(user._id),
-                            name: user.username,
-                            picture: user.dp,
-                            email: user.email,
-                        },
-                        comment: comment.comment,
-                        createdAt: String(comment.createdAt),
-                        replies,
-                    };
-                    return formatted;
-                }
-            }
-            catch (_a) {
-                // user lookup failure should not surface to the caller
-            }
-        });
+    formatComment(comment, replies = []) {
+        const user = comment.user;
+        if (user && typeof user !== "string") {
+            const formatted = {
+                id: String(comment._id),
+                user: {
+                    id: String(user._id),
+                    name: user.username,
+                    picture: user.dp,
+                    email: user.email,
+                },
+                comment: comment.comment,
+                createdAt: String(comment.createdAt),
+                replies,
+            };
+            return formatted;
+        }
+        // Fallback if user is not populated or user is deleted
+        return {
+            id: String(comment._id),
+            user: {
+                id: typeof user === "string" ? user : "deleted",
+                name: "Anonymous",
+                picture: "",
+                email: "",
+            },
+            comment: comment.comment,
+            createdAt: String(comment.createdAt),
+            replies,
+        };
     }
 }
 exports.default = new CommentService();

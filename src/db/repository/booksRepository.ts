@@ -26,6 +26,7 @@ class BookRepository {
         .populate("authors")
         .populate("narrators")
         .populate("category")
+        .populate("genres")
         .populate("languages");
       return fetchedBook;
     } catch (error) {
@@ -56,7 +57,10 @@ class BookRepository {
         { new: true }
       )
         .populate("authors")
-        .populate("narrators");
+        .populate("narrators")
+        .populate("category")
+        .populate("genres")
+        .populate("languages");
       return updatedBook;
     } catch (error) {
       throw new CustomError(
@@ -93,6 +97,7 @@ class BookRepository {
         .populate("authors")
         .populate("narrators")
         .populate("category")
+        .populate("genres")
         .populate("languages");
       return fetchedBooks;
     } catch (error) {

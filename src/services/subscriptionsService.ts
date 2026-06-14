@@ -3,6 +3,7 @@ import repo from "../db/repository/subscriptionRepository";
 import { SubscriptionsType, SubscriptionsResponse } from "../dto";
 
 import CustomError, { ErrorCodes } from "../utils/CustomError";
+import { CacheService } from "./utils/cacheService";
 
 class SubscriptionService {
   private logInfo = "";
@@ -12,15 +13,27 @@ class SubscriptionService {
   ): Promise<SubscriptionsType> {
   
       await this.checkPayload(subscription);
-      return await repo.create(subscription);
+      const result = await repo.create(subscription);
+      await CacheService.clearPattern("subscriptions:*");
+      return result;
    
   }
   public async fetchOne(subscriptionId: string): Promise<SubscriptionsType> {
+      const cacheKey = `subscriptions:one:id:${subscriptionId}`;
+      const cached = await CacheService.get<SubscriptionsType>(cacheKey);
+      if (cached) return cached;
+
       const fetchedSubscription = await repo.getOne(subscriptionId);
-      return this.reformatSubscription(fetchedSubscription);
+      const result = await this.reformatSubscription(fetchedSubscription);
+      await CacheService.set(cacheKey, result, 3600);
+      return result;
     
   }
   public async fetchAllSubscriptions(): Promise<SubscriptionsType[]> {
+      const cacheKey = "subscriptions:all";
+      const cached = await CacheService.get<SubscriptionsType[]>(cacheKey);
+      if (cached) return cached;
+
       const fetchedSubscriptions = await repo.getList({
         visible: true,
         active: true,
@@ -30,6 +43,7 @@ class SubscriptionService {
           this.reformatSubscription(subscription)
         )
       );
+      await CacheService.set(cacheKey, formatedSubscriptions, 3600);
       return formatedSubscriptions;
   
   }
@@ -49,6 +63,7 @@ class SubscriptionService {
         subscription,
         subscriptionId
       );
+      await CacheService.clearPattern("subscriptions:*");
       return updatedSubscription;
    
   }
@@ -82,6 +97,7 @@ class SubscriptionService {
   private async reformatSubscription(
     subscription: SubscriptionsType
   ): Promise<SubscriptionsResponse> {
+    if (!subscription) return null as any;
     const formatedSubscription: SubscriptionsResponse = {
       id: subscription._id as string,
       name: subscription.name,

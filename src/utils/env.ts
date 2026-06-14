@@ -38,3 +38,4 @@ export const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   : ["http://localhost:3080"];
 
 export const SENTRY_DSN = process.env.SENTRY_DSN ?? "";
+export const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";

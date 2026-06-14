@@ -48,23 +48,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const categoryRepository_1 = __importDefault(require("../db/repository/categoryRepository"));
 const error_1 = require("../utils/error");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const cacheService_1 = require("./utils/cacheService");
 class CategoryService {
     fetchCategory(term) {
         return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = `categories:one:id:${term}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const categories = yield categoryRepository_1.default.getById(term);
             if (!categories) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Category not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            return yield this.formatCategory(categories);
+            const result = yield this.formatCategory(categories);
+            yield cacheService_1.CacheService.set(cacheKey, result, 3600);
+            return result;
         });
     }
     fetchAllCategories() {
         return __awaiter(this, void 0, void 0, function* () {
+            const cacheKey = "categories:all";
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const categories = yield categoryRepository_1.default.getAll();
             if (!categories) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Category not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            return Promise.all(categories.map((category) => this.formatCategory(category)));
+            const result = yield Promise.all(categories.map((category) => this.formatCategory(category)));
+            yield cacheService_1.CacheService.set(cacheKey, result, 3600);
+            return result;
         });
     }
     formatCategory(category) {

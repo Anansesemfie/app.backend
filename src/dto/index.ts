@@ -16,6 +16,7 @@ export type BookType = {
   authors: string[];
   narrators: string[];
   category: string[];
+  genres: string[];
   languages: string[];
   folder: string;
   cover: string;
@@ -40,6 +41,7 @@ export type BookResponseType = {
   authors: AuthorResponseType[];
   narrators: NarratorResponseType[];
   category: string[];
+  genres: string[];
   languages: string[];
   cover: string;
   meta: {
@@ -58,6 +60,7 @@ export type BookUpdateType = BookType & {
   description?: string;
   status?: number;
   category?: string[];
+  genres?: string[];
   languages?: string[];
   authors?: string[];
   narrators?: string[];
@@ -205,12 +208,12 @@ export type ReactionType = {
 export type CommentType = {
   _id?: string;
   bookID: string;
-  user: string;
+  user: string | UserType;
   comment: string;
   period: string;
   parentId?: string | null;
-  createdAt?: string;
-  deletedAt?: string;
+  createdAt?: Date | string;
+  deletedAt?: Date | string | null;
 };
 export type CommentResponse = {
   id: string;
@@ -223,6 +226,30 @@ export type CommentResponse = {
   comment: string;
   createdAt?: string;
   replies?: CommentResponse[];
+};
+
+export type ReportType = {
+  _id?: string;
+  commentID: string;
+  reporter: string;
+  reason: string;
+  status: "pending" | "reviewed" | "resolved";
+  createdAt?: Date;
+};
+
+export type ReportResponseType = {
+  id: string;
+  comment: {
+    id: string;
+    text: string;
+  };
+  reporter: {
+    id: string;
+    username: string;
+  };
+  reason: string;
+  status: string;
+  createdAt: string;
 };
 
 export type PaginatedCommentsResponse = {
@@ -241,6 +268,19 @@ export type CategoryType = {
 export type CategoryResponseType = {
   id: string;
   name: string;
+};
+
+export type GenreType = {
+  _id?: string;
+  title: string;
+  active?: boolean;
+  createdAt?: string;
+};
+
+export type GenreResponseType = {
+  id: string;
+  name: string;
+  active: boolean;
 };
 
 export type LanguageType = {

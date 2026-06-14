@@ -5,6 +5,7 @@ import subscribersService from "./subscribersService";
 import subscriptionsService from "./subscriptionsService";
 import chapterService from "./chapterService";
 import ReactionService from "./reactionService";
+import { CacheService } from "./utils/cacheService";
 
 import {
   BookResponseType,
@@ -45,7 +46,8 @@ class BookService {
       );
     }
     const newBook = await Repo.create(book);
-    return this.formatBookData(newBook);
+    await CacheService.clearPattern("books:*");
+    return this.formatBookData(newBook, true);
   }
 
   public async deleteBook(id: string) {
@@ -59,6 +61,7 @@ class BookService {
     //delete all chapters
     await chapterService.deleteManyChapters(id);
     await Repo.delete(id);
+    await CacheService.clearPattern("books:*");
   }
 
   //write a function that validates book data
@@ -67,15 +70,22 @@ class BookService {
     limit = 10,
     token = "",
     params = {},
+    isAdmin = false,
   }: {
     page: number;
     limit: number;
     params?: {};
     token?: string;
+    isAdmin?: boolean;
   }): Promise<{ books: BookResponseType[]; page: number; limit: number }> {
+    const cacheKey = `books:list:p:${page}:l:${limit}:t:${token}:admin:${isAdmin}:params:${JSON.stringify(params)}`;
+    const cached = await CacheService.get<{ books: BookResponseType[]; page: number; limit: number }>(cacheKey);
+    if (cached) return cached;
+
     let books: BookType[] = [];
+
     if (token) {
-      const booksToFetch = await this.fetchBooksInSubscription(token);
+      const booksToFetch = (await this.fetchBooksInSubscription(token)) || [];
       if (!booksToFetch.length) {
         books = await Repo.fetchAll(limit, page, params);
       } else {
@@ -88,15 +98,18 @@ class BookService {
       books = await Repo.fetchAll(limit, page, params);
     }
     const formattedBooks = await Promise.all(
-      books.map((book) => this.formatBookData(book)),
+      books.map((book) => this.formatBookData(book, isAdmin)),
     );
 
-    return { books: formattedBooks, page, limit };
+    const result = { books: formattedBooks, page, limit };
+    await CacheService.set(cacheKey, result, 1800); // 30 mins
+    return result;
   }
 
   public async fetchBook(
     bookId: string,
     sessionId: string = "",
+    isAdmin: boolean = false,
   ): Promise<BookResponseType> {
     if (!bookId) {
       throw new CustomError(
@@ -105,8 +118,20 @@ class BookService {
         ErrorCodes.BAD_REQUEST,
       );
     }
+    
+    const cacheKey = `books:one:id:${bookId}:s:${sessionId}:admin:${isAdmin}`;
+    const cached = await CacheService.get<BookResponseType>(cacheKey);
+    if (cached) {
+      if (sessionId) {
+        const { user } = await sessionService.getSession(sessionId);
+        await seenService.createNewSeen(bookId, user._id as string);
+      }
+      return cached;
+    }
+
     if (sessionId) {
-      const booksToFetch = await this.fetchBooksInSubscription(sessionId);
+      const { user } = await sessionService.getSession(sessionId);
+      const booksToFetch = (await this.fetchBooksInSubscription(sessionId)) || [];
       if (booksToFetch.length && !booksToFetch.includes(bookId)) {
         throw new CustomError(
           ErrorEnum[403],
@@ -114,12 +139,10 @@ class BookService {
           ErrorCodes.FORBIDDEN,
         );
       }
+
+      await seenService.createNewSeen(bookId, user._id as string);
     }
     const book = await Repo.fetchOne(bookId);
-    if (sessionId) {
-      const { user } = await sessionService.getSession(sessionId);
-      await seenService.createNewSeen(book?._id as string, user._id as string);
-    }
     if (!book) {
       throw new CustomError(
         ErrorEnum[404],
@@ -127,11 +150,14 @@ class BookService {
         ErrorCodes.NOT_FOUND,
       );
     }
-    return this.formatBookData(book);
+    const formattedBook = await this.formatBookData(book, isAdmin);
+    await CacheService.set(cacheKey, formattedBook, 1800);
+    return formattedBook;
   }
   public async updateBook(
     bookID: string,
     book: BookUpdateType,
+    isAdmin: boolean = false,
   ): Promise<BookResponseType> {
     if (!bookID) {
       throw new CustomError(
@@ -140,9 +166,11 @@ class BookService {
         ErrorCodes.BAD_REQUEST,
       );
     }
+
     if (book.description) book.description = sanitizeHtml(book.description);
     const updatedBook = await Repo.update(bookID, book);
-    return this.formatBookData(updatedBook);
+    await CacheService.clearPattern("books:*");
+    return this.formatBookData(updatedBook, isAdmin);
   }
 
   public async updateBookMeta(
@@ -169,24 +197,25 @@ class BookService {
     }
     book.meta = newMeta;
 
-    await this.updateBook(bookId, book);
+    await this.updateBook(bookId, book, false);
+    // updateBook calls clearPattern("books:*")
   }
 
   async fetchBooksInSubscription(token: string): Promise<string[]> {
     const { user } = await sessionService.getSession(token);
-    if (!user.subscription) {
+    if (!user || !user.subscription) {
       return [];
     }
     const subscription = await subscribersService.fetchOne({
       _id: user.subscription,
     });
-    if (!subscription) {
+    if (!subscription || !subscription.parent) {
       return [];
     }
     const parentSubscription = await subscriptionsService.fetchOne(
       subscription.parent,
     );
-    return parentSubscription.books as string[];
+    return (parentSubscription?.books as string[]) || [];
   }
 
   public async analyzeBook(bookId: string): Promise<{
@@ -258,23 +287,34 @@ class BookService {
     search,
     language,
     category,
+    genre,
     author,
     narrator,
+    token = "",
+    isAdmin = false,
   }: {
     page: number;
     limit: number;
     search?: string;
     language?: string | string[];
     category?: string | string[];
+    genre?: string | string[];
     author?: string | string[];
     narrator?: string | string[];
+    token?: string;
+    isAdmin?: boolean;
   }): Promise<BookResponseType[]> {
+    const cacheKey = `books:filter:s:${search}:l:${language}:c:${category}:g:${genre}:a:${author}:n:${narrator}:p:${page}:limit:${limit}:t:${token}:admin:${isAdmin}`;
+    const cached = await CacheService.get<BookResponseType[]>(cacheKey);
+    if (cached) return cached;
+
     const books: BookResponseType[] = [];
     try {
       const params: {
         status: BookStatus;
         title?: {};
         category?: {};
+        genres?: {};
         languages?: {};
         authors?: {};
         narrators?: {};
@@ -303,6 +343,11 @@ class BookService {
         params["category"] = { $in: categories };
       }
 
+      const genres = normalize(genre);
+      if (genres.length > 0) {
+        params["genres"] = { $in: genres };
+      }
+
       const authors = normalize(author);
       if (authors.length > 0) {
         params["authors"] = { $in: authors };
@@ -315,10 +360,12 @@ class BookService {
 
       const fetchByBooks = await Repo.fetchAll(limit, page, params);
       const uniqueBooks = this.getUniqueBooks(fetchByBooks);
+
       const formatBooks = await Promise.all(
-        uniqueBooks.map((book) => this.formatBookData(book)),
+        uniqueBooks.map((book) => this.formatBookData(book, isAdmin)),
       );
       books.push(...formatBooks);
+      await CacheService.set(cacheKey, books, 1800);
       return books;
     } catch (error: any) {
       throw error;
@@ -327,15 +374,23 @@ class BookService {
 
   public async getLikedBooksByUser(
     sessionId: string,
+    isAdmin: boolean = false,
   ): Promise<BookResponseType[]> {
+    const cacheKey = `books:liked:s:${sessionId}:admin:${isAdmin}`;
+    const cached = await CacheService.get<BookResponseType[]>(cacheKey);
+    if (cached) return cached;
+
     const { user } = await sessionService.getSession(sessionId);
     const userId = user._id as string;
     const likedBookIds = await ReactionService.getUserReaction(userId);
     const likedBooks: BookResponseType[] = [];
     for (const bookId of likedBookIds) {
-      const book = await this.fetchBook(bookId);
-      likedBooks.push(book);
+      const book = await Repo.fetchOne(bookId);
+      if (book) {
+        likedBooks.push(await this.formatBookData(book, isAdmin));
+      }
     }
+    await CacheService.set(cacheKey, likedBooks, 1800);
     return likedBooks;
   }
 
@@ -397,7 +452,10 @@ class BookService {
     }
   }
 
-  private async formatBookData(book: any): Promise<BookResponseType> {
+  private async formatBookData(
+    book: any,
+    isAdmin: boolean = false,
+  ): Promise<BookResponseType> {
     const toAuthorResponse = (a: any): AuthorResponseType => {
       if (typeof a === "object" && a !== null) {
         return {
@@ -432,15 +490,27 @@ class BookService {
       };
     };
 
+    const formatMetadata = (m: any) => {
+      if (!m) return "";
+      const isObject = typeof m === "object" && m !== null;
+      if (isAdmin) {
+        return isObject ? m._id?.toString() || m.toString() : m.toString();
+      }
+      return isObject
+        ? m.title || m.name || m._id?.toString() || m.toString()
+        : m.toString();
+    };
+
     const formattedBook: BookResponseType = {
       id: book._id?.toString() || "",
       title: book.title.trim(),
       description: book.description?.trim() || "",
       snippet: book.snippet,
-      category: book.category?.map((c: any) => c.title || c.toString()) || [],
+      category: book.category?.map(formatMetadata) || [],
+      genres: book.genres?.map(formatMetadata) || [],
       authors: (book.authors || []).map(toAuthorResponse),
       narrators: (book.narrators || []).map(toNarratorResponse),
-      languages: book.languages?.map((l: any) => l.title || l.toString()) || [],
+      languages: book.languages?.map(formatMetadata) || [],
       cover: book.cover.trim(),
       meta: {
         played: book.meta?.played || 0,

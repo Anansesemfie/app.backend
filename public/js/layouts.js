@@ -92,19 +92,35 @@ const bookForm = async (loc)=>{
                            </div>
 
                            <div class="col-6">
+                          <label for="genre">Genre</label>
+                           <select name="genre" id="bookgenre" multiple="multiple" style="width: 100%" class="form-control"  >
+                           
+                           </select>
+                           </div>
+                         </div>  
+
+                         <div class="row">
+                         <div class="col-6">
                           <label for="Languages">Languages</label>
                            <select name="language" id="bookLangs" multiple="multiple" style="width: 100%" class="form-control"  >
                            
                            </select>
                            </div>
 
-
-                         </div>  
-
-                         <div class="row">
                          <div class="col-6">
                            <label for="author">Author(s)</label>
-                           <input name="author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
+                           <select name="author" id="bookAuthor" multiple="multiple" style="width: 100%" class="form-control"  >
+                           
+                           </select>
+                           </div>
+                          </div>
+                          
+                          <div class="row">
+                          <div class="col-6">
+                           <label for="narrator">Narrator(s)</label>
+                           <select name="narrator" id="bookNarrator" multiple="multiple" style="width: 100%" class="form-control"  >
+                           
+                           </select>
                            </div>
                            <div class="col-6">
                            <label for="owner">Owner</label>
@@ -162,20 +178,37 @@ const UpdatebookForm = async (id,loc)=>{
                          </div>
 
                          <div class="col-6">
+                        <label for="genre">Genre</label>
+                         <select name="genre" id="edit_bookgenre" multiple="multiple" style="width: 100%" class="form-control"  >
+                         
+                         </select>
+                         </div>
+                       </div>  
+
+                       <div class="row">
+                         <div class="col-6">
                         <label for="Languages">Languages</label>
                          <select name="language" id="edit_bookLangs" multiple="multiple" style="width: 100%" class="form-control"  >
                          
                          </select>
                          </div>
 
-
-                       </div>  
-
-                       <div class="row">
-                         
+                         <div class="col-6">
                          <label for="author">Author(s)</label>
-                         <input name="author" id="edit_author" class="form-control" title="Note:Seperate authors with a '-' eg. Osei Tutu - Asabere" placeholder="eg. Osei Tutu - Asabere">
+                         <select name="author" id="edit_bookAuthor" multiple="multiple" style="width: 100%" class="form-control"  >
+                         
+                         </select>
                         </div>
+                        </div>
+
+                        <div class="row">
+                        <div class="col-6">
+                        <label for="narrator">Narrator(s)</label>
+                        <select name="narrator" id="edit_bookNarrator" multiple="multiple" style="width: 100%" class="form-control"  >
+                        
+                        </select>
+                        </div>
+                       </div>
                         
                    
                     <div class="row">
@@ -431,6 +464,26 @@ const addAuthor = (name,loc)=>{
         <h5 class=" badge bg-dark text-light">${name}</h5>
         </a> `
     )
+}
+
+const addNarrator = (name,loc)=>{
+  let position = $(`#${loc}`);
+
+  position.append(
+      `<a href="#">
+      <h5 class=" badge bg-info text-light">${name}</h5>
+      </a> `
+  )
+}
+
+const addGenre = (name,loc)=>{
+  let position = $(`#${loc}`);
+
+  position.append(
+      `<a href="#">
+      <h5 class=" badge bg-secondary text-light">${name}</h5>
+      </a> `
+  )
 }
 
 

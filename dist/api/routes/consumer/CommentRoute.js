@@ -7,5 +7,6 @@ const router = (0, express_1.Router)();
 router.post("/", CheckApp_1.REQUIREAUTH, commentController_1.postComment);
 router.get("/:bookId", commentController_1.getComments);
 router.post("/:commentId/reply", CheckApp_1.REQUIREAUTH, commentController_1.postReply);
+router.post("/:commentId/report", CheckApp_1.REQUIREAUTH, commentController_1.reportComment);
 router.delete("/:commentId", CheckApp_1.REQUIREAUTH, commentController_1.deleteComment);
 exports.default = router;

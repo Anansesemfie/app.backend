@@ -48,6 +48,8 @@ const loadBook = async () => {
         book_cate = details.bookBack.category;
         book_langs = details.bookBack.languages;
         book_authors = details.bookBack.authors;
+        const book_genres = details.bookBack.genres;
+        const book_narrators = details.bookBack.narrators;
 
 
         //fill the blanks
@@ -89,8 +91,20 @@ const loadBook = async () => {
         })
 
         details.bookBack.authors.forEach(author => {//print authors
-            addAuthor(author, 'Authors');
+            addAuthor(author.name, 'Authors');
         });
+
+        if (book_genres) {
+            book_genres.forEach(genre => {
+                addGenre(genre, 'Genres');
+            });
+        }
+
+        if (book_narrators) {
+            book_narrators.forEach(narrator => {
+                addNarrator(narrator.name, 'Narrators');
+            });
+        }
 
 
     }
@@ -595,6 +609,27 @@ const owner_book = async () => {//events on book by owner
             maximumSelectionLength: 4
         });
 
+        //multiselect genres
+        $('#edit_bookgenre').select2({
+            theme: 'classic',
+            placeholder: 'Select genres',
+            maximumSelectionLength: 4
+        });
+
+        //multiselect authors
+        $('#edit_bookAuthor').select2({
+            theme: 'classic',
+            placeholder: 'Select authors',
+            maximumSelectionLength: 4
+        });
+
+        //multiselect narrators
+        $('#edit_bookNarrator').select2({
+            theme: 'classic',
+            placeholder: 'Select narrators',
+            maximumSelectionLength: 4
+        });
+
         let cat = await getCategory();
         cat.forEach(cate => {
             let set = false;
@@ -617,6 +652,36 @@ const owner_book = async () => {//events on book by owner
             // console.log(set,cate.title[0]);
             var newOption = new Option(cate.title[0], cate.title[0], set, set);
             $('#edit_bookLangs').append(newOption).trigger('change');
+        });
+
+        let gen = await getGenres();
+        gen.genres.forEach(genre => {
+            let set = false;
+            if (book_genres) {
+                set = book_genres.includes(genre.name);
+            }
+            var newOption = new Option(genre.name, genre.id, set, set);
+            $('#edit_bookgenre').append(newOption).trigger('change');
+        });
+
+        let auths = await getAuthors();
+        auths.authors.forEach(author => {
+            let set = false;
+            if (book_authors) {
+                set = book_authors.some(a => a.id === author.id);
+            }
+            var newOption = new Option(author.name, author.id, set, set);
+            $('#edit_bookAuthor').append(newOption).trigger('change');
+        });
+
+        let narrs = await getNarrators();
+        narrs.narrators.forEach(narrator => {
+            let set = false;
+            if (book_narrators) {
+                set = book_narrators.some(n => n.id === narrator.id);
+            }
+            var newOption = new Option(narrator.name, narrator.id, set, set);
+            $('#edit_bookNarrator').append(newOption).trigger('change');
         });
 
 

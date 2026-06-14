@@ -5,4 +5,6 @@ const conversationController_1 = require("../../../controllers/admin/conversatio
 const router = (0, express_1.Router)();
 router.get("/comments", conversationController_1.GetComments);
 router.delete("/comments/:id", conversationController_1.DeleteComment);
+router.get("/reports", conversationController_1.GetReports);
+router.patch("/reports/:id", conversationController_1.UpdateReportStatus);
 exports.default = router;

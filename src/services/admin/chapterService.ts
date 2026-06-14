@@ -37,7 +37,7 @@ class ChapterService {
       description: "",
       mimetype: chapter.content.split(".").pop() as string,
     };
-    const createdChapter = await chapterService.createChapter(newChapter);
+    const createdChapter = await chapterService.createChapter(newChapter, true);
 
     return createdChapter;
   }
@@ -46,7 +46,7 @@ class ChapterService {
     id: string,
     chapter: ChapterResponseType,
     token: string
-  ): Promise<object> {
+  ): Promise<ChapterResponseType | null> {
     const { user } = await sessionService.getSession(token);
     this.checkForAdmin(user);
     let password = "";
@@ -62,7 +62,7 @@ class ChapterService {
       mimetype: chapter.content?.split(".").pop() as string,
       book: chapter.book.id,
     };
-    const updated = await chapterService.updateChapter(id, newChapter);
+    const updated = await chapterService.updateChapter(id, newChapter, true);
     return updated;
   }
 
@@ -78,7 +78,7 @@ class ChapterService {
     const { user } = await sessionService.getSession(token);
     this.checkForAdmin(user);
 
-    const chapter = await chapterService.fetchChapter(id);
+    const chapter = await chapterService.fetchChapter(id, "", true);
     if (chapter.content?.includes("aws")) {
       const urlParts = chapter.content?.split("/");
       const fileKey = urlParts?.slice(3).join("/");

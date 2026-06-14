@@ -49,7 +49,8 @@ class CommentRepository {
     })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate("user");
     return comments;
   }
 
@@ -58,11 +59,13 @@ class CommentRepository {
     const replies = await Comment.find({
       parentId: { $in: parentIds },
       deletedAt: null,
-    }).sort({ createdAt: 1 });
+    })
+      .sort({ createdAt: 1 })
+      .populate("user");
     return replies;
   }
 
-  public async softDelete(commentId: string, deletedAt: string): Promise<void> {
+  public async softDelete(commentId: string, deletedAt: Date): Promise<void> {
     if (!commentId) {
       throw new CustomError(
         ErrorEnum[403],
@@ -75,7 +78,7 @@ class CommentRepository {
 
   public async softDeleteReplies(
     parentId: string,
-    deletedAt: string
+    deletedAt: Date
   ): Promise<void> {
     if (!parentId) return;
     await Comment.updateMany({ parentId }, { deletedAt });

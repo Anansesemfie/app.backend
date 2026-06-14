@@ -29,6 +29,20 @@ const getLanguages = async () => {
   }
 };
 
+const getGenres = async () => {
+  try {
+    let result = await fetch("/book/genre/");
+    let data = await result.json();
+
+    if (!data.data) {
+      throw "Trouble getting genres";
+    }
+    return data.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const getAuthors = async () => {
   try {
     let result = await fetch("/author/");

@@ -12,6 +12,7 @@ import Chapter from "./chapterRoute";
 
 import Reaction from "./ReactionRoute";
 import Category from "./CategoryRoute";
+import Genre from "./GenreRoute";
 import Comment from "./CommentRoute";
 
 const router = Router();
@@ -20,6 +21,7 @@ router.use("/languages", Languages);
 router.use("/chapter", Chapter);
 router.use("/reaction", Reaction);
 router.use("/category", Category);
+router.use("/genre", Genre);
 router.use("/comment", Comment);
 
 router.get("/", getBooks);

@@ -15,7 +15,11 @@ export const getChapters = async (req: Request, res: Response) => {
 
 export const getChapter = async (req: Request, res: Response) => {
   try {
-    const chapter = await chapterService.fetchChapter(req.params.chapterId);
+    const chapter = await chapterService.fetchChapter(
+      req.params.chapterId,
+      "",
+      false
+    );
     res.status(200).json({ data: chapter });
   } catch (error: any) {
     CustomErrorHandler.handle(error, res);

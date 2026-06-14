@@ -44,6 +44,12 @@ const Books = (Mongoose) => {
                 ref: "categories",
             },
         ],
+        genres: [
+            {
+                type: Mongoose.Schema.Types.ObjectId,
+                ref: "genres",
+            },
+        ],
         languages: [
             {
                 type: Mongoose.Schema.Types.ObjectId,

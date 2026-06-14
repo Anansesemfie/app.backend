@@ -1,12 +1,10 @@
 import { Router } from "express";
-import rateLimit from "express-rate-limit";
 import { CHECKAPPTOKEN, REQUIREAUTH } from "../../middlewares/CheckApp";
+import { createLimiter } from "../../middlewares/rateLimiter";
 
-const authLimiter = rateLimit({
+const authLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
   message: { code: "TOO_MANY_REQUESTS", message: "Too many attempts, please try again later", status: 429 },
 });
 import {

@@ -46,7 +46,7 @@ class AudioService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    const updatedBook = await bookService.updateBook(id, book);
+    const updatedBook = await bookService.updateBook(id, book, true);
 
     return updatedBook;
   }

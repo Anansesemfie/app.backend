@@ -83,7 +83,8 @@ class CommentRepository {
             const comments = yield models_1.Comment.find(Object.assign({ bookID: bookId, parentId: null, deletedAt: null }, filters))
                 .sort({ createdAt: -1 })
                 .skip(skip)
-                .limit(limit);
+                .limit(limit)
+                .populate("user");
             return comments;
         });
     }
@@ -94,7 +95,9 @@ class CommentRepository {
             const replies = yield models_1.Comment.find({
                 parentId: { $in: parentIds },
                 deletedAt: null,
-            }).sort({ createdAt: 1 });
+            })
+                .sort({ createdAt: 1 })
+                .populate("user");
             return replies;
         });
     }

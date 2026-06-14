@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const languageRepository_1 = __importDefault(require("../db/repository/languageRepository"));
 const error_1 = require("../utils/error");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
+const cacheService_1 = require("./utils/cacheService");
 class LanguageService {
     createLanguage(language, sessionID) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -55,18 +56,25 @@ class LanguageService {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid session ID", CustomError_1.ErrorCodes.FORBIDDEN);
             }
             const lang = yield languageRepository_1.default.create(language);
+            yield cacheService_1.CacheService.clearPattern("languages:*");
             return lang;
         });
     }
     getAllLanguages() {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
+            const cacheKey = "languages:all";
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             try {
                 const langs = yield languageRepository_1.default.getAll();
                 if (!langs) {
                     throw new CustomError_1.default(error_1.ErrorEnum[404], "Languages not found", CustomError_1.ErrorCodes.NOT_FOUND);
                 }
-                return Promise.all(langs.map((lang) => this.formatLanguage(lang)));
+                const result = yield Promise.all(langs.map((lang) => this.formatLanguage(lang)));
+                yield cacheService_1.CacheService.set(cacheKey, result, 3600);
+                return result;
             }
             catch (error) {
                 throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get languages", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
@@ -76,12 +84,18 @@ class LanguageService {
     getLanguageById(language) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
+            const cacheKey = `languages:one:id:${language}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             try {
                 const lang = yield languageRepository_1.default.getById(language);
                 if (!lang) {
                     throw new CustomError_1.default(error_1.ErrorEnum[404], "Language not found", CustomError_1.ErrorCodes.NOT_FOUND);
                 }
-                return lang._id;
+                const result = lang._id;
+                yield cacheService_1.CacheService.set(cacheKey, result, 3600);
+                return result;
             }
             catch (error) {
                 throw new CustomError_1.default(error_1.ErrorEnum[500], (_a = error.message) !== null && _a !== void 0 ? _a : "Failed to get language", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);

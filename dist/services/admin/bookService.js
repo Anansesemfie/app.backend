@@ -80,7 +80,7 @@ class AudioService {
             if (!id) {
                 throw new CustomError_1.default(error_1.ErrorEnum[401], "Book ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            const updatedBook = yield booksService_1.default.updateBook(id, book);
+            const updatedBook = yield booksService_1.default.updateBook(id, book, true);
             return updatedBook;
         });
     }

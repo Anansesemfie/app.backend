@@ -7,6 +7,7 @@ import Paystack, { PAYSTACK_INIT_RESPONSE } from "../utils/paystack";
 import { APP_BASE_URL } from "../utils/env";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 import dayjs from "dayjs";
+import { CacheService } from "./utils/cacheService";
 
 class SubscriberService {
   private logInfo = "";
@@ -42,6 +43,7 @@ class SubscriberService {
           ErrorCodes.INTERNAL_SERVER_ERROR
         );
       }
+      await CacheService.clearPattern("subscribers:*");
       const callback_url = `${APP_BASE_URL}/api/v1/subscribers/callback`;
       if (parentSubscription.amount === 0) {
         await this.update(
@@ -116,6 +118,7 @@ class SubscriberService {
         { active: true, activatedAt: today, updatedAt: today },
         subscription._id as string
       );
+      await CacheService.clearPattern("subscribers:*");
       this.logInfo = `${
         HELPERS.loggerInfo.success
       } verifying subscription @ ${HELPERS.currentTime()}`;
@@ -126,6 +129,10 @@ class SubscriberService {
   public async fetchOne(
     params: Partial<{ _id: string; ref: string }>
   ): Promise<subscriberDTO> {
+      const cacheKey = `subscribers:one:p:${JSON.stringify(params)}`;
+      const cached = await CacheService.get<subscriberDTO>(cacheKey);
+      if (cached) return cached;
+
       const fetchedSubscription = await subscribersRepository.fetchOne({
         ...params,
       });
@@ -137,6 +144,7 @@ class SubscriberService {
         );
       }
        
+      await CacheService.set(cacheKey, fetchedSubscription, 3600);
       return fetchedSubscription ?? {};
   }
 
@@ -148,6 +156,7 @@ class SubscriberService {
         { ...subscription },
         subscriptionID
       );
+      await CacheService.clearPattern("subscribers:*");
       return updatedSubscription;
   
   }

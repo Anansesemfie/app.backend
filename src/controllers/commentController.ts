@@ -1,5 +1,6 @@
 import { CustomErrorHandler } from "../utils/CustomError";
 import commentService from "../services/commentService";
+import reportService from "../services/reportService";
 import { Request, Response } from "express";
 
 export const postComment = async (req: Request, res: Response) => {
@@ -52,6 +53,22 @@ export const deleteComment = async (req: Request, res: Response) => {
     const sessionID = res.locals.sessionId;
     await commentService.deleteComment(commentId, sessionID);
     res.status(200).json({ data: { message: "Comment deleted successfully" } });
+  } catch (error: any) {
+    CustomErrorHandler.handle(error, res);
+  }
+};
+
+export const reportComment = async (req: Request, res: Response) => {
+  try {
+    const commentId = req.params.commentId;
+    const { reason } = req.body;
+    const sessionID = res.locals.sessionId;
+    await reportService.reportComment({
+      commentID: commentId,
+      sessionID,
+      reason,
+    });
+    res.status(200).json({ data: { message: "Comment reported successfully" } });
   } catch (error: any) {
     CustomErrorHandler.handle(error, res);
   }

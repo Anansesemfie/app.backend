@@ -8,11 +8,13 @@ import type {
   CommentResponse,
   CommentType,
   PaginatedCommentsResponse,
+  UserType,
 } from "../dto";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
 import { ErrorEnum } from "../utils/error";
 import HELPERS from "../utils/helpers";
 import { UsersTypes } from "../db/models/utils";
+import { sanitizeHtml } from "../utils/richText";
 
 class CommentService {
   public async createComment({
@@ -26,18 +28,20 @@ class CommentService {
     comment: string;
     parentId?: string | null;
   }) {
-    if (HELPERS.hasSpecialCharacters(comment)) {
-      throw new CustomError(
-        ErrorEnum[403],
-        "Comment contains special characters",
-        ErrorCodes.FORBIDDEN
-      );
-    }
     if (!bookID || !sessionID || !comment) {
       throw new CustomError(
         ErrorEnum[403],
         "Invalid book, user or comment",
         ErrorCodes.FORBIDDEN
+      );
+    }
+
+    const sanitizedComment = sanitizeHtml(comment);
+    if (!sanitizedComment) {
+      throw new CustomError(
+        ErrorEnum[400],
+        "Comment cannot be empty or contain only invalid HTML",
+        ErrorCodes.BAD_REQUEST
       );
     }
 
@@ -71,7 +75,7 @@ class CommentService {
     const newComment = await commentRepository.create({
       bookID,
       user: session?.user as string,
-      comment,
+      comment: sanitizedComment,
       period: period._id as string,
       parentId,
     });
@@ -120,15 +124,13 @@ class CommentService {
       replyMap[key].push(reply);
     }
 
-    const results = await Promise.all(
-      topLevel.map(async (comment: CommentType) => {
-        const replyTypes = replyMap[String(comment._id)] ?? [];
-        const formattedReplies = (
-          await Promise.all(replyTypes.map((r) => this.formatComment(r)))
-        ).filter(Boolean) as CommentResponse[];
-        return this.formatComment(comment, formattedReplies);
-      })
-    );
+    const results = topLevel.map((comment: CommentType) => {
+      const replyTypes = replyMap[String(comment._id)] ?? [];
+      const formattedReplies = replyTypes
+        .map((r) => this.formatComment(r))
+        .filter(Boolean) as CommentResponse[];
+      return this.formatComment(comment, formattedReplies);
+    });
 
     return {
       page,
@@ -171,7 +173,7 @@ class CommentService {
       );
     }
 
-    const deletedAt = HELPERS.currentTime() as string;
+    const deletedAt = new Date();
     await commentRepository.softDelete(commentId, deletedAt);
 
     // Cascade soft-delete replies and decrement counter only for top-level
@@ -184,30 +186,39 @@ class CommentService {
     }
   }
 
-  private async formatComment(
+  private formatComment(
     comment: CommentType,
     replies: CommentResponse[] = []
-  ): Promise<CommentResponse | undefined> {
-    try {
-      const user = await userService.fetchUser(comment.user);
-      if (user) {
-        const formatted: CommentResponse = {
-          id: String(comment._id),
-          user: {
-            id: String(user._id),
-            name: user.username as string,
-            picture: user.dp as string,
-            email: user.email,
-          },
-          comment: comment.comment,
-          createdAt: String(comment.createdAt),
-          replies,
-        };
-        return formatted;
-      }
-    } catch {
-      // user lookup failure should not surface to the caller
+  ): CommentResponse | undefined {
+    const user = comment.user as UserType;
+    if (user && typeof user !== "string") {
+      const formatted: CommentResponse = {
+        id: String(comment._id),
+        user: {
+          id: String(user._id),
+          name: user.username as string,
+          picture: user.dp as string,
+          email: user.email,
+        },
+        comment: comment.comment,
+        createdAt: String(comment.createdAt),
+        replies,
+      };
+      return formatted;
     }
+    // Fallback if user is not populated or user is deleted
+    return {
+      id: String(comment._id),
+      user: {
+        id: typeof user === "string" ? user : "deleted",
+        name: "Anonymous",
+        picture: "",
+        email: "",
+      },
+      comment: comment.comment,
+      createdAt: String(comment.createdAt),
+      replies,
+    };
   }
 }
 

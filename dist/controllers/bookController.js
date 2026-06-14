@@ -66,6 +66,7 @@ const filterBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             category,
             author,
             narrator,
+            token: res.locals.sessionId,
         });
         res.status(200).json({ data: books });
     }

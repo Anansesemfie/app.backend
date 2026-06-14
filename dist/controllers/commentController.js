@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteComment = exports.postReply = exports.getComments = exports.postComment = void 0;
+exports.reportComment = exports.deleteComment = exports.postReply = exports.getComments = exports.postComment = void 0;
 const CustomError_1 = require("../utils/CustomError");
 const commentService_1 = __importDefault(require("../services/commentService"));
+const reportService_1 = __importDefault(require("../services/reportService"));
 const postComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { bookId, comment } = req.body;
@@ -74,3 +75,20 @@ const deleteComment = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteComment = deleteComment;
+const reportComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const commentId = req.params.commentId;
+        const { reason } = req.body;
+        const sessionID = res.locals.sessionId;
+        yield reportService_1.default.reportComment({
+            commentID: commentId,
+            sessionID,
+            reason,
+        });
+        res.status(200).json({ data: { message: "Comment reported successfully" } });
+    }
+    catch (error) {
+        CustomError_1.CustomErrorHandler.handle(error, res);
+    }
+});
+exports.reportComment = reportComment;

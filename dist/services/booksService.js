@@ -52,6 +52,7 @@ const subscribersService_1 = __importDefault(require("./subscribersService"));
 const subscriptionsService_1 = __importDefault(require("./subscriptionsService"));
 const chapterService_1 = __importDefault(require("./chapterService"));
 const reactionService_1 = __importDefault(require("./reactionService"));
+const cacheService_1 = require("./utils/cacheService");
 const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = require("../utils/error");
 const utils_1 = require("../db/models/utils");
@@ -75,7 +76,8 @@ class BookService {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid book data", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             const newBook = yield booksRepository_1.default.create(book);
-            return this.formatBookData(newBook);
+            yield cacheService_1.CacheService.clearPattern("books:*");
+            return this.formatBookData(newBook, true);
         });
     }
     deleteBook(id) {
@@ -86,14 +88,19 @@ class BookService {
             //delete all chapters
             yield chapterService_1.default.deleteManyChapters(id);
             yield booksRepository_1.default.delete(id);
+            yield cacheService_1.CacheService.clearPattern("books:*");
         });
     }
     //write a function that validates book data
     fetchBooks(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, }) {
+        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, isAdmin = false, }) {
+            const cacheKey = `books:list:p:${page}:l:${limit}:t:${token}:admin:${isAdmin}:params:${JSON.stringify(params)}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             let books = [];
             if (token) {
-                const booksToFetch = yield this.fetchBooksInSubscription(token);
+                const booksToFetch = (yield this.fetchBooksInSubscription(token)) || [];
                 if (!booksToFetch.length) {
                     books = yield booksRepository_1.default.fetchAll(limit, page, params);
                 }
@@ -104,41 +111,53 @@ class BookService {
             else {
                 books = yield booksRepository_1.default.fetchAll(limit, page, params);
             }
-            const formattedBooks = yield Promise.all(books.map((book) => this.formatBookData(book)));
-            return { books: formattedBooks, page, limit };
+            const formattedBooks = yield Promise.all(books.map((book) => this.formatBookData(book, isAdmin)));
+            const result = { books: formattedBooks, page, limit };
+            yield cacheService_1.CacheService.set(cacheKey, result, 1800); // 30 mins
+            return result;
         });
     }
     fetchBook(bookId_1) {
-        return __awaiter(this, arguments, void 0, function* (bookId, sessionId = "") {
+        return __awaiter(this, arguments, void 0, function* (bookId, sessionId = "", isAdmin = false) {
             if (!bookId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            const cacheKey = `books:one:id:${bookId}:s:${sessionId}:admin:${isAdmin}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached) {
+                if (sessionId) {
+                    const { user } = yield sessionService_1.default.getSession(sessionId);
+                    yield seenService_1.default.createNewSeen(bookId, user._id);
+                }
+                return cached;
+            }
             if (sessionId) {
-                const booksToFetch = yield this.fetchBooksInSubscription(sessionId);
+                const { user } = yield sessionService_1.default.getSession(sessionId);
+                const booksToFetch = (yield this.fetchBooksInSubscription(sessionId)) || [];
                 if (booksToFetch.length && !booksToFetch.includes(bookId)) {
                     throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized access", CustomError_1.ErrorCodes.FORBIDDEN);
                 }
+                yield seenService_1.default.createNewSeen(bookId, user._id);
             }
             const book = yield booksRepository_1.default.fetchOne(bookId);
-            if (sessionId) {
-                const { user } = yield sessionService_1.default.getSession(sessionId);
-                yield seenService_1.default.createNewSeen(book === null || book === void 0 ? void 0 : book._id, user._id);
-            }
             if (!book) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Book not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
-            return this.formatBookData(book);
+            const formattedBook = yield this.formatBookData(book, isAdmin);
+            yield cacheService_1.CacheService.set(cacheKey, formattedBook, 1800);
+            return formattedBook;
         });
     }
-    updateBook(bookID, book) {
-        return __awaiter(this, void 0, void 0, function* () {
+    updateBook(bookID_1, book_1) {
+        return __awaiter(this, arguments, void 0, function* (bookID, book, isAdmin = false) {
             if (!bookID) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             if (book.description)
                 book.description = (0, richText_1.sanitizeHtml)(book.description);
             const updatedBook = yield booksRepository_1.default.update(bookID, book);
-            return this.formatBookData(updatedBook);
+            yield cacheService_1.CacheService.clearPattern("books:*");
+            return this.formatBookData(updatedBook, isAdmin);
         });
     }
     updateBookMeta(bookId, metaAction) {
@@ -149,23 +168,24 @@ class BookService {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid meta action", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             book.meta = newMeta;
-            yield this.updateBook(bookId, book);
+            yield this.updateBook(bookId, book, false);
+            // updateBook calls clearPattern("books:*")
         });
     }
     fetchBooksInSubscription(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user } = yield sessionService_1.default.getSession(token);
-            if (!user.subscription) {
+            if (!user || !user.subscription) {
                 return [];
             }
             const subscription = yield subscribersService_1.default.fetchOne({
                 _id: user.subscription,
             });
-            if (!subscription) {
+            if (!subscription || !subscription.parent) {
                 return [];
             }
             const parentSubscription = yield subscriptionsService_1.default.fetchOne(subscription.parent);
-            return parentSubscription.books;
+            return (parentSubscription === null || parentSubscription === void 0 ? void 0 : parentSubscription.books) || [];
         });
     }
     analyzeBook(bookId) {
@@ -211,7 +231,11 @@ class BookService {
         });
     }
     filterBooks(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, search, language, category, author, narrator, }) {
+        return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, search, language, category, genre, author, narrator, token = "", isAdmin = false, }) {
+            const cacheKey = `books:filter:s:${search}:l:${language}:c:${category}:g:${genre}:a:${author}:n:${narrator}:p:${page}:limit:${limit}:t:${token}:admin:${isAdmin}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const books = [];
             try {
                 const params = { status: utils_1.BookStatus.Active };
@@ -236,6 +260,10 @@ class BookService {
                 if (categories.length > 0) {
                     params["category"] = { $in: categories };
                 }
+                const genres = normalize(genre);
+                if (genres.length > 0) {
+                    params["genres"] = { $in: genres };
+                }
                 const authors = normalize(author);
                 if (authors.length > 0) {
                     params["authors"] = { $in: authors };
@@ -246,8 +274,9 @@ class BookService {
                 }
                 const fetchByBooks = yield booksRepository_1.default.fetchAll(limit, page, params);
                 const uniqueBooks = this.getUniqueBooks(fetchByBooks);
-                const formatBooks = yield Promise.all(uniqueBooks.map((book) => this.formatBookData(book)));
+                const formatBooks = yield Promise.all(uniqueBooks.map((book) => this.formatBookData(book, isAdmin)));
                 books.push(...formatBooks);
+                yield cacheService_1.CacheService.set(cacheKey, books, 1800);
                 return books;
             }
             catch (error) {
@@ -255,16 +284,23 @@ class BookService {
             }
         });
     }
-    getLikedBooksByUser(sessionId) {
-        return __awaiter(this, void 0, void 0, function* () {
+    getLikedBooksByUser(sessionId_1) {
+        return __awaiter(this, arguments, void 0, function* (sessionId, isAdmin = false) {
+            const cacheKey = `books:liked:s:${sessionId}:admin:${isAdmin}`;
+            const cached = yield cacheService_1.CacheService.get(cacheKey);
+            if (cached)
+                return cached;
             const { user } = yield sessionService_1.default.getSession(sessionId);
             const userId = user._id;
             const likedBookIds = yield reactionService_1.default.getUserReaction(userId);
             const likedBooks = [];
             for (const bookId of likedBookIds) {
-                const book = yield this.fetchBook(bookId);
-                likedBooks.push(book);
+                const book = yield booksRepository_1.default.fetchOne(bookId);
+                if (book) {
+                    likedBooks.push(yield this.formatBookData(book, isAdmin));
+                }
             }
+            yield cacheService_1.CacheService.set(cacheKey, likedBooks, 1800);
             return likedBooks;
         });
     }
@@ -301,9 +337,9 @@ class BookService {
             }
         });
     }
-    formatBookData(book) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    formatBookData(book_1) {
+        return __awaiter(this, arguments, void 0, function* (book, isAdmin = false) {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
             const toAuthorResponse = (a) => {
                 var _a, _b;
                 if (typeof a === "object" && a !== null) {
@@ -338,22 +374,35 @@ class BookService {
                     active: true,
                 };
             };
+            const formatMetadata = (m) => {
+                var _a, _b;
+                if (!m)
+                    return "";
+                const isObject = typeof m === "object" && m !== null;
+                if (isAdmin) {
+                    return isObject ? ((_a = m._id) === null || _a === void 0 ? void 0 : _a.toString()) || m.toString() : m.toString();
+                }
+                return isObject
+                    ? m.title || m.name || ((_b = m._id) === null || _b === void 0 ? void 0 : _b.toString()) || m.toString()
+                    : m.toString();
+            };
             const formattedBook = {
                 id: ((_a = book._id) === null || _a === void 0 ? void 0 : _a.toString()) || "",
                 title: book.title.trim(),
                 description: ((_b = book.description) === null || _b === void 0 ? void 0 : _b.trim()) || "",
                 snippet: book.snippet,
-                category: ((_c = book.category) === null || _c === void 0 ? void 0 : _c.map((c) => c.title || c.toString())) || [],
+                category: ((_c = book.category) === null || _c === void 0 ? void 0 : _c.map(formatMetadata)) || [],
+                genres: ((_d = book.genres) === null || _d === void 0 ? void 0 : _d.map(formatMetadata)) || [],
                 authors: (book.authors || []).map(toAuthorResponse),
                 narrators: (book.narrators || []).map(toNarratorResponse),
-                languages: ((_d = book.languages) === null || _d === void 0 ? void 0 : _d.map((l) => l.title || l.toString())) || [],
+                languages: ((_e = book.languages) === null || _e === void 0 ? void 0 : _e.map(formatMetadata)) || [],
                 cover: book.cover.trim(),
                 meta: {
-                    played: ((_e = book.meta) === null || _e === void 0 ? void 0 : _e.played) || 0,
-                    views: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.views) || 0,
-                    likes: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.likes) || 0,
-                    dislikes: ((_h = book.meta) === null || _h === void 0 ? void 0 : _h.dislikes) || 0,
-                    comments: ((_j = book.meta) === null || _j === void 0 ? void 0 : _j.comments) || 0,
+                    played: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.played) || 0,
+                    views: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.views) || 0,
+                    likes: ((_h = book.meta) === null || _h === void 0 ? void 0 : _h.likes) || 0,
+                    dislikes: ((_j = book.meta) === null || _j === void 0 ? void 0 : _j.dislikes) || 0,
+                    comments: ((_k = book.meta) === null || _k === void 0 ? void 0 : _k.comments) || 0,
                 },
             };
             return formattedBook;

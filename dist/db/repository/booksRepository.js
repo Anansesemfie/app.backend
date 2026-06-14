@@ -68,6 +68,7 @@ class BookRepository {
                     .populate("authors")
                     .populate("narrators")
                     .populate("category")
+                    .populate("genres")
                     .populate("languages");
                 return fetchedBook;
             }
@@ -89,7 +90,10 @@ class BookRepository {
                 const cleanBook = Object.fromEntries(Object.entries(bookData).filter(([k, v]) => v !== "" && !k.startsWith("$") && k !== "_id"));
                 const updatedBook = yield models_1.Book.findOneAndUpdate({ _id: bookId }, { $set: cleanBook }, { new: true })
                     .populate("authors")
-                    .populate("narrators");
+                    .populate("narrators")
+                    .populate("category")
+                    .populate("genres")
+                    .populate("languages");
                 return updatedBook;
             }
             catch (error) {
@@ -120,6 +124,7 @@ class BookRepository {
                     .populate("authors")
                     .populate("narrators")
                     .populate("category")
+                    .populate("genres")
                     .populate("languages");
                 return fetchedBooks;
             }
