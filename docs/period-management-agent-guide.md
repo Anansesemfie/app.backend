@@ -161,16 +161,21 @@ No request body needed. The service:
 
 ---
 
-## 4. Auto-Creation Cron Job
+## 4. Auto-Creation BullMQ Job
 
-A `node-cron` job fires at **00:00 on the 1st of every month** (`0 0 1 * *`). It reads the `autoPeriodCreation` flag from the singleton `AppConfig` document.
+A **BullMQ** repeatable job fires at **00:00 on the 1st of every month** (`0 0 1 * *`). It reads the `autoPeriodCreation` flag from the singleton `AppConfig` document. 
+
+Compared to a standard cron job, BullMQ provides:
+- **Persistence:** If the server is down at midnight, the job is not lost; it remains in Redis and can be processed when the worker comes back online.
+- **Reliability:** Failed jobs can be automatically retried.
+- **Concurrency Control:** In a distributed setup with multiple API instances, only one worker will process the job.
 
 | Flag state | Behaviour |
 |-----------|-----------|
 | `true` (default) | Deactivates the current period, inserts a new one for the new month — identical to calling `POST /admin/period/create` with no body. |
 | `false` | Job skips silently. Admins must call `POST /admin/period/create` manually before the 1st or immediately after midnight. |
 
-The job is registered once in `src/jobs/periodJob.ts` and started after the MongoDB connection is confirmed in `src/index.ts`.
+The job is registered in `src/jobs/periodJob.ts` and started after the MongoDB connection is confirmed in `src/index.ts`. Monitoring can be done via BullMQ's queue events logged to the console.
 
 ---
 

@@ -42,11 +42,11 @@ Mongoose.connection
   });
 
 //Start server --------------------------------
-app.on("ready", () => {
+app.on("ready", async () => {
   try {
     console.log('Allowed Origins: ', ALLOWED_ORIGINS);
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
-    startPeriodJob();
+    await startPeriodJob();
   } catch (error) {
     console.log(error);
   }

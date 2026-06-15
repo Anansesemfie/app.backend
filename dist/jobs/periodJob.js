@@ -12,40 +12,71 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.periodWorker = exports.periodQueue = void 0;
 exports.startPeriodJob = startPeriodJob;
-const node_cron_1 = __importDefault(require("node-cron"));
+const bullmq_1 = require("bullmq");
+const ioredis_1 = __importDefault(require("ioredis"));
 const periodService_1 = __importDefault(require("../services/periodService"));
 const appConfigService_1 = __importDefault(require("../services/admin/appConfigService"));
 const helpers_1 = __importDefault(require("../utils/helpers"));
+const env_1 = require("../utils/env");
+const PERIOD_QUEUE_NAME = "period-automation";
 /**
- * Registers a cron job that fires at 00:00 on the 1st of every month.
- *
- * When autoPeriodCreation is enabled, the job deactivates the current period
- * and creates a new one for the incoming month (mirrors what periodService.create()
- * already does when called with no arguments).
- *
- * When autoPeriodCreation is disabled the job logs a skip message and returns
- * without touching the database — admins must create the period manually via
- * POST /admin/period/create.
- *
- * Call this function once, after the MongoDB connection is established.
+ * BullMQ requires a separate connection for workers and queues.
+ * ioredis is used for this purpose.
+ * Note: maxRetriesPerRequest must be null for BullMQ.
  */
-function startPeriodJob() {
-    // "0 0 1 * *" → at 00:00 on day 1 of every month
-    node_cron_1.default.schedule("0 0 1 * *", () => __awaiter(this, void 0, void 0, function* () {
+const connection = new ioredis_1.default(env_1.REDIS_URL, {
+    maxRetriesPerRequest: null,
+});
+// 1. Initialize the Queue
+exports.periodQueue = new bullmq_1.Queue(PERIOD_QUEUE_NAME, { connection });
+// 2. Initialize the Worker
+exports.periodWorker = new bullmq_1.Worker(PERIOD_QUEUE_NAME, (job) => __awaiter(void 0, void 0, void 0, function* () {
+    if (job.name === "monthly-period-creation") {
         try {
             const isEnabled = yield appConfigService_1.default.isAutoPeriodCreationEnabled();
             if (!isEnabled) {
                 helpers_1.default.LOG("Period auto-creation is disabled. Skipping monthly job.");
                 return;
             }
-            helpers_1.default.LOG("Running monthly period auto-creation job…");
+            helpers_1.default.LOG("Running monthly period auto-creation job (BullMQ)…");
             const created = yield periodService_1.default.create();
-            helpers_1.default.LOG(`Period created: ${JSON.stringify(created)}`);
+            helpers_1.default.LOG(`Period created via BullMQ: ${JSON.stringify(created)}`);
         }
         catch (error) {
-            console.error("Monthly period job failed:", error);
+            console.error("Monthly period job (BullMQ) failed:", error);
+            throw error; // Throwing allows BullMQ to handle retries
         }
-    }));
-    helpers_1.default.LOG("Monthly period job scheduled (fires on 1st of each month at 00:00).");
+    }
+}), { connection });
+// Optional: Listen for queue events
+const queueEvents = new bullmq_1.QueueEvents(PERIOD_QUEUE_NAME, { connection });
+exports.periodWorker.on("completed", (job) => {
+    helpers_1.default.LOG(`Job ${job.id} has completed!`);
+});
+exports.periodWorker.on("failed", (job, err) => {
+    helpers_1.default.LOG(`Job ${job === null || job === void 0 ? void 0 : job.id} has failed with ${err.message}`);
+});
+/**
+ * Registers a repeatable job that fires at 00:00 on the 1st of every month.
+ * This replaces the node-cron implementation.
+ */
+function startPeriodJob() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Add repeatable job
+            // pattern: "0 0 1 * *" → at 00:00 on day 1 of every month
+            yield exports.periodQueue.add("monthly-period-creation", {}, {
+                repeat: {
+                    pattern: "0 0 1 * *",
+                },
+                jobId: "monthly-period-creation-job", // Static ID to avoid duplicates
+            });
+            helpers_1.default.LOG("Monthly period job scheduled via BullMQ (fires on 1st of each month at 00:00).");
+        }
+        catch (error) {
+            console.error("Failed to schedule monthly period job via BullMQ:", error);
+        }
+    });
 }
