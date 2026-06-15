@@ -55,9 +55,10 @@ exports.deleteGenre = deleteGenre;
 const getAllGenres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 1000;
         const search = req.query.search;
-        const { genres, total, page: currentPage, limit: currentLimit } = yield genreService_1.default.fetchAllGenres({ page, limit, search });
+        const sort = { createdAt: -1 };
+        const { genres, total, page: currentPage, limit: currentLimit } = yield genreService_1.default.fetchAllGenres({ page, limit, search, sort });
         res.status(200).json({ data: genres, total, page: currentPage, limit: currentLimit });
     }
     catch (error) {

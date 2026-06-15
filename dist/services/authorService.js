@@ -103,8 +103,8 @@ class AuthorService {
         });
     }
     fetchAllAuthors() {
-        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", } = {}) {
-            const { authors, total } = yield authorRepository_1.default.getAll(limit, page, { search });
+        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", sort = { name: 1 }, } = {}) {
+            const { authors, total } = yield authorRepository_1.default.getAll(limit, page, { search, sort });
             const formattedAuthors = yield Promise.all(authors.map((author) => this.formatAuthor(author)));
             return { authors: formattedAuthors, total, page, limit };
         });

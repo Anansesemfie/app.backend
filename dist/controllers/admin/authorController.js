@@ -55,9 +55,10 @@ exports.deleteAuthor = deleteAuthor;
 const getAllAuthors = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 1000;
         const search = req.query.search;
-        const { authors, total, page: currentPage, limit: currentLimit } = yield authorService_1.default.fetchAllAuthors({ page, limit, search });
+        const sort = { createdAt: -1 };
+        const { authors, total, page: currentPage, limit: currentLimit } = yield authorService_1.default.fetchAllAuthors({ page, limit, search, sort });
         res.status(200).json({ data: authors, total, page: currentPage, limit: currentLimit });
     }
     catch (error) {

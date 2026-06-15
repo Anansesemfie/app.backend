@@ -83,7 +83,7 @@ class NarratorRepository {
         return __awaiter(this, arguments, void 0, function* (limit = 10, page = 1, params = {}) {
             var _a;
             try {
-                const { search } = params, rest = __rest(params, ["search"]);
+                const { search, sort = { name: 1 } } = params, rest = __rest(params, ["search", "sort"]);
                 const query = Object.assign({}, rest);
                 if (search) {
                     query.name = { $regex: search, $options: "i" };
@@ -92,7 +92,7 @@ class NarratorRepository {
                 const narrators = yield index_1.Narrator.find(query)
                     .skip(limit * (page - 1))
                     .limit(limit)
-                    .sort({ name: 1 });
+                    .sort(sort);
                 return { narrators, total };
             }
             catch (error) {

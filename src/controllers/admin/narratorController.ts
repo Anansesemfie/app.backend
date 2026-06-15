@@ -39,9 +39,10 @@ export const deleteNarrator = async (req: Request, res: Response) => {
 export const getAllNarrators = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 1000;
     const search = req.query.search as string;
-    const { narrators, total, page: currentPage, limit: currentLimit } = await narratorService.fetchAllNarrators({ page, limit, search });
+    const sort = { createdAt: -1 };
+    const { narrators, total, page: currentPage, limit: currentLimit } = await narratorService.fetchAllNarrators({ page, limit, search, sort });
     res.status(200).json({ data: narrators, total, page: currentPage, limit: currentLimit });
   } catch (error: any) {
     CustomErrorHandler.handle(error, res);

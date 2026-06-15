@@ -1,4 +1,6 @@
 import repo from "../db/repository/languageRepository";
+import sessionService from "./sessionService";
+import { UsersTypes } from "../db/models/utils";
 import { LanguageType } from "../dto";
 import { ErrorEnum } from "../utils/error";
 import CustomError, { ErrorCodes } from "../utils/CustomError";
@@ -6,13 +8,23 @@ import { CacheService } from "./utils/cacheService";
 
 class LanguageService {
   public async createLanguage(language: LanguageType, sessionID: string) {
-    if (sessionID) {
+    if (!sessionID) {
       throw new CustomError(
         ErrorEnum[403],
         "Invalid session ID",
         ErrorCodes.FORBIDDEN
       );
     }
+
+    const { user } = await sessionService.getSession(sessionID);
+    if (user.account !== UsersTypes.admin) {
+      throw new CustomError(
+        ErrorEnum[403],
+        "You are not authorized to create a language",
+        ErrorCodes.FORBIDDEN
+      );
+    }
+
     const lang = await repo.create(language);
     await CacheService.clearPattern("languages:*");
     return lang;

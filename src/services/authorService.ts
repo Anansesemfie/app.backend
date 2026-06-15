@@ -80,12 +80,14 @@ class AuthorService {
     limit = 10,
     page = 1,
     search = "",
+    sort = { name: 1 },
   }: {
     limit?: number;
     page?: number;
     search?: string;
+    sort?: any;
   } = {}): Promise<{ authors: AuthorResponseType[]; total: number; page: number; limit: number }> {
-    const { authors, total } = await repo.getAll(limit, page, { search });
+    const { authors, total } = await repo.getAll(limit, page, { search, sort });
     const formattedAuthors = await Promise.all(
       authors.map((author) => this.formatAuthor(author))
     );

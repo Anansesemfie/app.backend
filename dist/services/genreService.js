@@ -108,12 +108,12 @@ class GenreService {
         });
     }
     fetchAllGenres() {
-        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", } = {}) {
-            const cacheKey = `genres:list:l:${limit}:p:${page}:s:${search}`;
+        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", sort = { title: 1 }, } = {}) {
+            const cacheKey = `genres:list:l:${limit}:p:${page}:s:${search}:sort:${JSON.stringify(sort)}`;
             const cached = yield cacheService_1.CacheService.get(cacheKey);
             if (cached)
                 return cached;
-            const { genres, total } = yield genreRepository_1.default.getAll(limit, page, { search });
+            const { genres, total } = yield genreRepository_1.default.getAll(limit, page, { search, sort });
             const formattedGenres = genres.map((genre) => this.formatGenre(genre));
             const result = { genres: formattedGenres, total, page, limit };
             yield cacheService_1.CacheService.set(cacheKey, result, 3600);

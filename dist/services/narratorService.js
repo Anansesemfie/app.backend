@@ -103,8 +103,8 @@ class NarratorService {
         });
     }
     fetchAllNarrators() {
-        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", } = {}) {
-            const { narrators, total } = yield narratorRepository_1.default.getAll(limit, page, { search });
+        return __awaiter(this, arguments, void 0, function* ({ limit = 10, page = 1, search = "", sort = { name: 1 }, } = {}) {
+            const { narrators, total } = yield narratorRepository_1.default.getAll(limit, page, { search, sort });
             const formattedNarrators = yield Promise.all(narrators.map((narrator) => this.formatNarrator(narrator)));
             return { narrators: formattedNarrators, total, page, limit };
         });

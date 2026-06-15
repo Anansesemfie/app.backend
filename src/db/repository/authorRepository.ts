@@ -34,7 +34,7 @@ class AuthorRepository {
     params: any = {}
   ): Promise<{ authors: AuthorType[]; total: number }> {
     try {
-      const { search, ...rest } = params;
+      const { search, sort = { name: 1 }, ...rest } = params;
       const query = { ...rest };
       if (search) {
         query.name = { $regex: search, $options: "i" };
@@ -44,7 +44,7 @@ class AuthorRepository {
       const authors = await Author.find(query)
         .skip(limit * (page - 1))
         .limit(limit)
-        .sort({ name: 1 });
+        .sort(sort);
       return { authors, total };
     } catch (error) {
       throw new CustomError(

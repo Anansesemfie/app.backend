@@ -39,9 +39,10 @@ export const deleteGenre = async (req: Request, res: Response) => {
 export const getAllGenres = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 1000;
     const search = req.query.search as string;
-    const { genres, total, page: currentPage, limit: currentLimit } = await genreService.fetchAllGenres({ page, limit, search });
+    const sort = { createdAt: -1 };
+    const { genres, total, page: currentPage, limit: currentLimit } = await genreService.fetchAllGenres({ page, limit, search, sort });
     res.status(200).json({ data: genres, total, page: currentPage, limit: currentLimit });
   } catch (error: any) {
     CustomErrorHandler.handle(error, res);

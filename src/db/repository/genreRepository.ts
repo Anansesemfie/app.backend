@@ -36,7 +36,7 @@ class GenreRepository {
     params: any = {}
   ): Promise<{ genres: GenreType[]; total: number }> {
     try {
-      const { search, ...rest } = params;
+      const { search, sort = { title: 1 }, ...rest } = params;
       const query = { ...rest };
       if (search) {
         query.title = { $regex: search, $options: "i" };
@@ -46,7 +46,7 @@ class GenreRepository {
       const genres = await Genre.find(query)
         .skip(limit * (page - 1))
         .limit(limit)
-        .sort({ title: 1 });
+        .sort(sort);
       return { genres, total };
     } catch (error) {
       throw new CustomError(

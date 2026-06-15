@@ -80,12 +80,14 @@ class NarratorService {
     limit = 10,
     page = 1,
     search = "",
+    sort = { name: 1 },
   }: {
     limit?: number;
     page?: number;
     search?: string;
+    sort?: any;
   } = {}): Promise<{ narrators: NarratorResponseType[]; total: number; page: number; limit: number }> {
-    const { narrators, total } = await repo.getAll(limit, page, { search });
+    const { narrators, total } = await repo.getAll(limit, page, { search, sort });
     const formattedNarrators = await Promise.all(
       narrators.map((narrator) => this.formatNarrator(narrator))
     );

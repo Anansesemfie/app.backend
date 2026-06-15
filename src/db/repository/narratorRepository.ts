@@ -34,7 +34,7 @@ class NarratorRepository {
     params: any = {}
   ): Promise<{ narrators: NarratorType[]; total: number }> {
     try {
-      const { search, ...rest } = params;
+      const { search, sort = { name: 1 }, ...rest } = params;
       const query = { ...rest };
       if (search) {
         query.name = { $regex: search, $options: "i" };
@@ -44,7 +44,7 @@ class NarratorRepository {
       const narrators = await Narrator.find(query)
         .skip(limit * (page - 1))
         .limit(limit)
-        .sort({ name: 1 });
+        .sort(sort);
       return { narrators, total };
     } catch (error) {
       throw new CustomError(

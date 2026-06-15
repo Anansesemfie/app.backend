@@ -85,7 +85,7 @@ class GenreRepository {
         return __awaiter(this, arguments, void 0, function* (limit = 10, page = 1, params = {}) {
             var _a;
             try {
-                const { search } = params, rest = __rest(params, ["search"]);
+                const { search, sort = { title: 1 } } = params, rest = __rest(params, ["search", "sort"]);
                 const query = Object.assign({}, rest);
                 if (search) {
                     query.title = { $regex: search, $options: "i" };
@@ -94,7 +94,7 @@ class GenreRepository {
                 const genres = yield index_1.Genre.find(query)
                     .skip(limit * (page - 1))
                     .limit(limit)
-                    .sort({ title: 1 });
+                    .sort(sort);
                 return { genres, total };
             }
             catch (error) {

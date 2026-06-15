@@ -87,21 +87,23 @@ class GenreService {
     limit = 10,
     page = 1,
     search = "",
+    sort = { title: 1 },
   }: {
     limit?: number;
     page?: number;
     search?: string;
+    sort?: any;
   } = {}): Promise<{
     genres: GenreResponseType[];
     total: number;
     page: number;
     limit: number;
   }> {
-    const cacheKey = `genres:list:l:${limit}:p:${page}:s:${search}`;
+    const cacheKey = `genres:list:l:${limit}:p:${page}:s:${search}:sort:${JSON.stringify(sort)}`;
     const cached = await CacheService.get<any>(cacheKey);
     if (cached) return cached;
 
-    const { genres, total } = await repo.getAll(limit, page, { search });
+    const { genres, total } = await repo.getAll(limit, page, { search, sort });
     const formattedGenres = genres.map((genre) => this.formatGenre(genre));
     const result = { genres: formattedGenres, total, page, limit };
     await CacheService.set(cacheKey, result, 3600);

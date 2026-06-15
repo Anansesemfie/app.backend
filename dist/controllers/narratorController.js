@@ -18,7 +18,7 @@ const CustomError_1 = require("../utils/CustomError");
 const getNarrators = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 1000;
         const search = req.query.search;
         const { narrators, total, page: currentPage, limit: currentLimit } = yield narratorService_1.default.fetchAllNarrators({ page, limit, search });
         res.status(200).json({ data: narrators, total, page: currentPage, limit: currentLimit });

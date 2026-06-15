@@ -46,14 +46,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const languageRepository_1 = __importDefault(require("../db/repository/languageRepository"));
+const sessionService_1 = __importDefault(require("./sessionService"));
+const utils_1 = require("../db/models/utils");
 const error_1 = require("../utils/error");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const cacheService_1 = require("./utils/cacheService");
 class LanguageService {
     createLanguage(language, sessionID) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (sessionID) {
+            if (!sessionID) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid session ID", CustomError_1.ErrorCodes.FORBIDDEN);
+            }
+            const { user } = yield sessionService_1.default.getSession(sessionID);
+            if (user.account !== utils_1.UsersTypes.admin) {
+                throw new CustomError_1.default(error_1.ErrorEnum[403], "You are not authorized to create a language", CustomError_1.ErrorCodes.FORBIDDEN);
             }
             const lang = yield languageRepository_1.default.create(language);
             yield cacheService_1.CacheService.clearPattern("languages:*");
