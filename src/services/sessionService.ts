@@ -9,13 +9,13 @@ import CustomError, { ErrorCodes } from "../utils/CustomError";
 class SessionService {
   private logInfo = new String();
   private options = {
-    duration: 5000,
+    duration: "5000",
     external: false,
   };
   private day = dayjs().add(1, "day").toDate();
   public async create(
     userID: string,
-    options: { duration: number; external: boolean } = this.options
+    options: { duration: string; external: boolean } = this.options
   ): Promise<SessionType> {
     try {
       const now = new Date();

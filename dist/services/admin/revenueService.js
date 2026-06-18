@@ -51,6 +51,7 @@ const sessionService_1 = __importDefault(require("../sessionService"));
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
 const error_1 = require("../../utils/error");
 const utils_1 = require("../../db/models/utils");
+const helpers_1 = __importDefault(require("../../utils/helpers"));
 class RevenueService {
     assertAdmin(token) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,7 +73,7 @@ class RevenueService {
             const byPlan = grouped.map((g) => {
                 const plan = plans.find((p) => { var _a; return p._id.toString() === ((_a = g._id) === null || _a === void 0 ? void 0 : _a.toString()); });
                 const amount = plan ? plan.amount : 0;
-                const durationMs = plan ? plan.duration : 2592000000;
+                const durationMs = plan ? helpers_1.default.getDurationMs(plan.duration) : 2592000000;
                 const months = durationMs / 2592000000;
                 const monthlyRate = amount / months;
                 const contribution = Math.round(monthlyRate * g.count);

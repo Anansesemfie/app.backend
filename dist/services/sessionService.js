@@ -55,7 +55,7 @@ class SessionService {
     constructor() {
         this.logInfo = new String();
         this.options = {
-            duration: 5000,
+            duration: "5000",
             external: false,
         };
         this.day = (0, dayjs_1.default)().add(1, "day").toDate();

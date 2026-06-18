@@ -76,9 +76,13 @@ class AdminUserService {
     }
     fetchUsers(params, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const filter = {
-                email: { $regex: params.search },
-            };
+            const filter = {};
+            if (params.search) {
+                filter.email = { $regex: params.search, $options: "i" };
+            }
+            if (params.account !== undefined) {
+                filter.account = params.account;
+            }
             const session = yield sessionService_1.default.getSession(sessionId);
             if (session.user.account !== utils_1.UsersTypes.admin) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Unauthorized to fetch users", CustomError_1.ErrorCodes.FORBIDDEN);

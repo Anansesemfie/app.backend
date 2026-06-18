@@ -130,7 +130,7 @@ class UserService {
     formatForReturn(user) {
         return __awaiter(this, void 0, void 0, function* () {
             const token = yield sessionService_1.default.create(user === null || user === void 0 ? void 0 : user._id, {
-                duration: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+                duration: String(30 * 24 * 60 * 60 * 1000), // 30 days in milliseconds
                 external: false,
             });
             return {

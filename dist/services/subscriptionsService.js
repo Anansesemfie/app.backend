@@ -104,7 +104,7 @@ class SubscriptionService {
             if (!subscription.name || !subscription.amount) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription name and amount are required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            if (subscription.duration < 1) {
+            if (Number(subscription.duration) < 1) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid subscription duration", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             if (subscription.autorenew && typeof subscription.autorenew !== "boolean") {

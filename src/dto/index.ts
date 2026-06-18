@@ -1,7 +1,7 @@
 export type SessionType = {
   _id?: string;
   user?: string;
-  duration?: number;
+  duration?: string;
   expiredAt: string;
   external?: boolean;
   createdAt?: string;
@@ -23,6 +23,10 @@ export type BookType = {
   collections: string[];
   associates: string[];
   uploader: string;
+  organization?: string;
+  edition?: string;
+  publishedYear?: number;
+  duration?: string;
   createdAt?: Date;
   meta: {
     played: number;
@@ -44,6 +48,11 @@ export type BookResponseType = {
   genres: string[];
   languages: string[];
   cover: string;
+  edition?: string;
+  publishedYear?: number;
+  duration?: string;
+  associates?: string[];
+  organization?: string;
   meta: {
     played: number;
     views: number;
@@ -64,8 +73,12 @@ export type BookUpdateType = BookType & {
   languages?: string[];
   authors?: string[];
   narrators?: string[];
+  associates?: string[];
   folder?: string;
   cover?: string;
+  edition?: string;
+  publishedYear?: number;
+  duration?: string;
   meta?: {
     played?: number;
     views?: number;
@@ -126,7 +139,7 @@ export type SubscriptionsType = {
   name: string;
   active: boolean;
   visible: boolean;
-  duration: number;
+  duration: string;
   users: number;
   autorenew: boolean;
   amount: number;
@@ -140,7 +153,7 @@ export type SubscriptionsResponse = {
   name: string;
   active: boolean;
   visible: boolean;
-  duration: number;
+  duration: string;
   users: number;
   autorenew: boolean;
   amount: number;

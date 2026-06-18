@@ -178,11 +178,12 @@ class HELPERS {
    * If value is small (< 10000), assume it's in days and convert.
    * Otherwise assume it's already in milliseconds.
    */
-  public static getDurationMs(duration: number): number {
-    if (duration < 10000) {
-      return duration * 24 * 60 * 60 * 1000;
+  public static getDurationMs(duration: number | string): number {
+    const d = Number(duration);
+    if (d < 10000) {
+      return d * 24 * 60 * 60 * 1000;
     }
-    return duration;
+    return d;
   }
   public static hasSpecialCharacters(text: string): boolean {
     // Define a regular expression pattern to match special characters

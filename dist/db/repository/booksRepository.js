@@ -51,7 +51,10 @@ class BookRepository {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                return yield models_1.Book.create(book);
+                // Strip top-level empty-string values to avoid ObjectId cast errors
+                // (e.g. when the client sends organization: "" instead of omitting the field)
+                const cleanBook = Object.fromEntries(Object.entries(book).filter(([k, v]) => v !== "" && !k.startsWith("$") && k !== "_id"));
+                return yield models_1.Book.create(cleanBook);
             }
             catch (error) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], (_a = error.message) !== null && _a !== void 0 ? _a : "Error creating book", CustomError_1.ErrorCodes.BAD_REQUEST);
@@ -69,7 +72,9 @@ class BookRepository {
                     .populate("narrators")
                     .populate("category")
                     .populate("genres")
-                    .populate("languages");
+                    .populate("languages")
+                    .populate("organization")
+                    .populate("associates");
                 return fetchedBook;
             }
             catch (error) {
@@ -93,7 +98,9 @@ class BookRepository {
                     .populate("narrators")
                     .populate("category")
                     .populate("genres")
-                    .populate("languages");
+                    .populate("languages")
+                    .populate("organization")
+                    .populate("associates");
                 return updatedBook;
             }
             catch (error) {
@@ -125,7 +132,9 @@ class BookRepository {
                     .populate("narrators")
                     .populate("category")
                     .populate("genres")
-                    .populate("languages");
+                    .populate("languages")
+                    .populate("organization")
+                    .populate("associates");
                 return fetchedBooks;
             }
             catch (error) {

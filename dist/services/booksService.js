@@ -94,6 +94,11 @@ class BookService {
     //write a function that validates book data
     fetchBooks(_a) {
         return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, token = "", params = {}, isAdmin = false, }) {
+            if (token && !isAdmin) {
+                const { user } = yield sessionService_1.default.getSession(token);
+                if ((user === null || user === void 0 ? void 0 : user.account) === utils_1.UsersTypes.admin)
+                    isAdmin = true;
+            }
             const cacheKey = `books:list:p:${page}:l:${limit}:t:${token}:admin:${isAdmin}:params:${JSON.stringify(params)}`;
             const cached = yield cacheService_1.CacheService.get(cacheKey);
             if (cached)
@@ -121,6 +126,11 @@ class BookService {
         return __awaiter(this, arguments, void 0, function* (bookId, sessionId = "", isAdmin = false) {
             if (!bookId) {
                 throw new CustomError_1.default(error_1.ErrorEnum[403], "Invalid book ID", CustomError_1.ErrorCodes.BAD_REQUEST);
+            }
+            if (sessionId && !isAdmin) {
+                const { user } = yield sessionService_1.default.getSession(sessionId);
+                if ((user === null || user === void 0 ? void 0 : user.account) === utils_1.UsersTypes.admin)
+                    isAdmin = true;
             }
             const cacheKey = `books:one:id:${bookId}:s:${sessionId}:admin:${isAdmin}`;
             const cached = yield cacheService_1.CacheService.get(cacheKey);
@@ -232,6 +242,11 @@ class BookService {
     }
     filterBooks(_a) {
         return __awaiter(this, arguments, void 0, function* ({ page = 1, limit = 10, search, language, category, genre, author, narrator, token = "", isAdmin = false, }) {
+            if (token && !isAdmin) {
+                const { user } = yield sessionService_1.default.getSession(token);
+                if ((user === null || user === void 0 ? void 0 : user.account) === utils_1.UsersTypes.admin)
+                    isAdmin = true;
+            }
             const cacheKey = `books:filter:s:${search}:l:${language}:c:${category}:g:${genre}:a:${author}:n:${narrator}:p:${page}:limit:${limit}:t:${token}:admin:${isAdmin}`;
             const cached = yield cacheService_1.CacheService.get(cacheKey);
             if (cached)
@@ -397,6 +412,11 @@ class BookService {
                 narrators: (book.narrators || []).map(toNarratorResponse),
                 languages: ((_e = book.languages) === null || _e === void 0 ? void 0 : _e.map(formatMetadata)) || [],
                 cover: book.cover.trim(),
+                edition: book.edition,
+                publishedYear: book.publishedYear,
+                duration: book.duration,
+                associates: isAdmin ? (book.associates || []).map(formatMetadata) : undefined,
+                organization: formatMetadata(book.organization),
                 meta: {
                     played: ((_f = book.meta) === null || _f === void 0 ? void 0 : _f.played) || 0,
                     views: ((_g = book.meta) === null || _g === void 0 ? void 0 : _g.views) || 0,

@@ -4,6 +4,7 @@ import sessionService from "../sessionService";
 import CustomError, { ErrorCodes } from "../../utils/CustomError";
 import { ErrorEnum } from "../../utils/error";
 import { UsersTypes } from "../../db/models/utils";
+import HELPERS from "../../utils/helpers";
 
 class RevenueService {
   private async assertAdmin(token: string) {
@@ -34,7 +35,7 @@ class RevenueService {
         (p: any) => p._id.toString() === g._id?.toString()
       );
       const amount = plan ? (plan as any).amount : 0;
-      const durationMs = plan ? (plan as any).duration : 2592000000;
+      const durationMs = plan ? HELPERS.getDurationMs((plan as any).duration) : 2592000000;
       const months = durationMs / 2592000000;
       const monthlyRate = amount / months;
       const contribution = Math.round(monthlyRate * g.count);

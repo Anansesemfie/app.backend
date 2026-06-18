@@ -50,12 +50,13 @@ const sessionService_1 = __importDefault(require("../sessionService"));
 const CustomError_1 = __importStar(require("../../utils/CustomError"));
 const error_1 = require("../../utils/error");
 const utils_1 = require("../../db/models/utils");
+const helpers_1 = __importDefault(require("../../utils/helpers"));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatSubscriberRecord(s, plan) {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     const activatedAt = s.activatedAt ? new Date(s.activatedAt) : null;
     const expiresAt = activatedAt && (plan === null || plan === void 0 ? void 0 : plan.duration)
-        ? new Date(activatedAt.getTime() + plan.duration)
+        ? new Date(activatedAt.getTime() + helpers_1.default.getDurationMs(plan.duration))
         : null;
     const daysRemaining = expiresAt
         ? Math.ceil((expiresAt.getTime() - Date.now()) / 86400000)
@@ -135,7 +136,7 @@ class AdminSubscriptionsService {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription amount is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             // Only validate duration if it's provided, otherwise let the model use its default
-            if (data.duration !== undefined && data.duration !== null && data.duration < 1) {
+            if (data.duration !== undefined && data.duration !== null && Number(data.duration) < 1) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid subscription duration", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
             return yield models_1.Subscription.create(data);

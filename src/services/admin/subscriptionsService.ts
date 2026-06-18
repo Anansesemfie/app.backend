@@ -4,13 +4,14 @@ import CustomError, { ErrorCodes } from "../../utils/CustomError";
 import { ErrorEnum } from "../../utils/error";
 import { UsersTypes } from "../../db/models/utils";
 import type { AdminSubscriberRecord, SubscriptionsType } from "../../dto";
+import HELPERS from "../../utils/helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatSubscriberRecord(s: any, plan: any): AdminSubscriberRecord {
   const activatedAt = s.activatedAt ? new Date(s.activatedAt) : null;
   const expiresAt =
     activatedAt && plan?.duration
-      ? new Date(activatedAt.getTime() + (plan.duration as number))
+      ? new Date(activatedAt.getTime() + HELPERS.getDurationMs(plan.duration))
       : null;
   const daysRemaining = expiresAt
     ? Math.ceil((expiresAt.getTime() - Date.now()) / 86_400_000)
@@ -96,7 +97,7 @@ class AdminSubscriptionsService {
       throw new CustomError(ErrorEnum[400], "Subscription amount is required", ErrorCodes.BAD_REQUEST);
     }
     // Only validate duration if it's provided, otherwise let the model use its default
-    if (data.duration !== undefined && data.duration !== null && data.duration < 1) {
+    if (data.duration !== undefined && data.duration !== null && Number(data.duration) < 1) {
       throw new CustomError(
         ErrorEnum[400],
         "Invalid subscription duration",

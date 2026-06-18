@@ -78,7 +78,7 @@ class SubscriptionService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    if (subscription.duration < 1){
+    if (Number(subscription.duration) < 1){
       throw new CustomError(
         ErrorEnum[400],
         "Invalid subscription duration",

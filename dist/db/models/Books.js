@@ -64,6 +64,15 @@ const Books = (Mongoose) => {
             type: String,
             default: "/images/user_fire.jpg",
         },
+        edition: {
+            type: String,
+        },
+        publishedYear: {
+            type: Number,
+        },
+        duration: {
+            type: String,
+        },
         associates: [{
                 type: Mongoose.Schema.Types.ObjectId,
                 ref: 'users'

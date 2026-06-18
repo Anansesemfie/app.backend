@@ -8,7 +8,12 @@ import HELPERS from "../../utils/helpers";
 class BookRepository {
   public async create(book: BookType): Promise<BookType> {
     try {
-      return await Book.create(book);
+      // Strip top-level empty-string values to avoid ObjectId cast errors
+      // (e.g. when the client sends organization: "" instead of omitting the field)
+      const cleanBook = Object.fromEntries(
+        Object.entries(book).filter(([k, v]) => v !== "" && !k.startsWith("$") && k !== "_id")
+      );
+      return await Book.create(cleanBook);
     } catch (error) {
       throw new CustomError(
         ErrorEnum[400],
@@ -27,7 +32,9 @@ class BookRepository {
         .populate("narrators")
         .populate("category")
         .populate("genres")
-        .populate("languages");
+        .populate("languages")
+        .populate("organization")
+        .populate("associates");
       return fetchedBook;
     } catch (error) {
       // console.error("Error in fetchOne:", error);
@@ -60,7 +67,9 @@ class BookRepository {
         .populate("narrators")
         .populate("category")
         .populate("genres")
-        .populate("languages");
+        .populate("languages")
+        .populate("organization")
+        .populate("associates");
       return updatedBook;
     } catch (error) {
       throw new CustomError(
@@ -98,7 +107,9 @@ class BookRepository {
         .populate("narrators")
         .populate("category")
         .populate("genres")
-        .populate("languages");
+        .populate("languages")
+        .populate("organization")
+        .populate("associates");
       return fetchedBooks;
     } catch (error) {
       throw new CustomError(

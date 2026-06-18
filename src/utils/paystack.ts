@@ -8,7 +8,7 @@ type METADATA = {
   };
   subscription: {
     id: string;
-    duration: number;
+    duration: string;
   };
 };
 

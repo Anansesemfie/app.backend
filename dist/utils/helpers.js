@@ -164,10 +164,11 @@ class HELPERS {
      * Otherwise assume it's already in milliseconds.
      */
     static getDurationMs(duration) {
-        if (duration < 10000) {
-            return duration * 24 * 60 * 60 * 1000;
+        const d = Number(duration);
+        if (d < 10000) {
+            return d * 24 * 60 * 60 * 1000;
         }
-        return duration;
+        return d;
     }
     static hasSpecialCharacters(text) {
         // Define a regular expression pattern to match special characters

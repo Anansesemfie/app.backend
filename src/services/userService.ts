@@ -108,7 +108,7 @@ export class UserService {
 
   private async formatForReturn(user: UserType): Promise<any> {
       const token = await Session.create(user?._id as string, {
-        duration: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+        duration: String(30 * 24 * 60 * 60 * 1000), // 30 days in milliseconds
         external: false,
       });
       return {

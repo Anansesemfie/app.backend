@@ -78,6 +78,11 @@ class BookService {
     token?: string;
     isAdmin?: boolean;
   }): Promise<{ books: BookResponseType[]; page: number; limit: number }> {
+    if (token && !isAdmin) {
+      const { user } = await sessionService.getSession(token);
+      if (user?.account === UsersTypes.admin) isAdmin = true;
+    }
+
     const cacheKey = `books:list:p:${page}:l:${limit}:t:${token}:admin:${isAdmin}:params:${JSON.stringify(params)}`;
     const cached = await CacheService.get<{ books: BookResponseType[]; page: number; limit: number }>(cacheKey);
     if (cached) return cached;
@@ -117,6 +122,11 @@ class BookService {
         "Invalid book ID",
         ErrorCodes.BAD_REQUEST,
       );
+    }
+
+    if (sessionId && !isAdmin) {
+      const { user } = await sessionService.getSession(sessionId);
+      if (user?.account === UsersTypes.admin) isAdmin = true;
     }
     
     const cacheKey = `books:one:id:${bookId}:s:${sessionId}:admin:${isAdmin}`;
@@ -304,6 +314,10 @@ class BookService {
     token?: string;
     isAdmin?: boolean;
   }): Promise<BookResponseType[]> {
+    if (token && !isAdmin) {
+      const { user } = await sessionService.getSession(token);
+      if (user?.account === UsersTypes.admin) isAdmin = true;
+    }
     const cacheKey = `books:filter:s:${search}:l:${language}:c:${category}:g:${genre}:a:${author}:n:${narrator}:p:${page}:limit:${limit}:t:${token}:admin:${isAdmin}`;
     const cached = await CacheService.get<BookResponseType[]>(cacheKey);
     if (cached) return cached;
@@ -512,6 +526,11 @@ class BookService {
       narrators: (book.narrators || []).map(toNarratorResponse),
       languages: book.languages?.map(formatMetadata) || [],
       cover: book.cover.trim(),
+      edition: book.edition,
+      publishedYear: book.publishedYear,
+      duration: book.duration,
+      associates: isAdmin ? (book.associates || []).map(formatMetadata) : undefined,
+      organization: formatMetadata(book.organization),
       meta: {
         played: book.meta?.played || 0,
         views: book.meta?.views || 0,

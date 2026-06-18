@@ -39,12 +39,19 @@ class AdminUserService {
   }
 
   async fetchUsers(
-    params: { search: string; account?: UsersTypes },
+    params: { search?: string; account?: UsersTypes },
     sessionId: string
   ): Promise<UserResponse[]> {
-      const filter = {
-        email: { $regex: params.search },
-      };
+      const filter: any = {};
+      
+      if (params.search) {
+        filter.email = { $regex: params.search, $options: "i" };
+      }
+
+      if (params.account !== undefined) {
+        filter.account = params.account;
+      }
+
       const session = await Session.getSession(sessionId);
       if (session.user.account !== UsersTypes.admin){
         throw new CustomError(
