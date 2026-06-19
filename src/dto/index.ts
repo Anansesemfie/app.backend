@@ -1,3 +1,20 @@
+export type ApiResponse<T> = {
+  data: T;
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
+export type ApiErrorResponse = {
+  code: string;
+  message: string;
+  status: number;
+};
+
 export type SessionType = {
   _id?: string;
   user?: string;
