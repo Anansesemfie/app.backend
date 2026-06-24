@@ -51,6 +51,7 @@ const CustomError_1 = __importStar(require("../../utils/CustomError"));
 const error_1 = require("../../utils/error");
 const utils_1 = require("../../db/models/utils");
 const helpers_1 = __importDefault(require("../../utils/helpers"));
+const cacheService_1 = require("../utils/cacheService");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatSubscriberRecord(s, plan) {
     var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -139,7 +140,9 @@ class AdminSubscriptionsService {
             if (data.duration !== undefined && data.duration !== null && Number(data.duration) < 1) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid subscription duration", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
-            return yield models_1.Subscription.create(data);
+            const subscription = yield models_1.Subscription.create(data);
+            yield this.clearCache();
+            return subscription;
         });
     }
     update(token, id, data) {
@@ -152,6 +155,7 @@ class AdminSubscriptionsService {
             if (!subscription) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Subscription not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
+            yield this.clearCache();
             return subscription;
         });
     }
@@ -170,7 +174,13 @@ class AdminSubscriptionsService {
             if (!subscription) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Subscription not found", CustomError_1.ErrorCodes.NOT_FOUND);
             }
+            yield this.clearCache();
             return subscription;
+        });
+    }
+    clearCache() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield cacheService_1.CacheService.clearPattern("subscriptions:*");
         });
     }
 }

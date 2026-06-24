@@ -5,6 +5,7 @@ import { ErrorEnum } from "../../utils/error";
 import { UsersTypes } from "../../db/models/utils";
 import type { AdminSubscriberRecord, SubscriptionsType } from "../../dto";
 import HELPERS from "../../utils/helpers";
+import { CacheService } from "../utils/cacheService";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatSubscriberRecord(s: any, plan: any): AdminSubscriberRecord {
@@ -104,7 +105,9 @@ class AdminSubscriptionsService {
         ErrorCodes.BAD_REQUEST
       );
     }
-    return await Subscription.create(data);
+    const subscription = await Subscription.create(data);
+    await this.clearCache();
+    return subscription;
   }
 
   async update(token: string, id: string, data: Partial<SubscriptionsType>) {
@@ -120,6 +123,7 @@ class AdminSubscriptionsService {
     if (!subscription) {
       throw new CustomError(ErrorEnum[404], "Subscription not found", ErrorCodes.NOT_FOUND);
     }
+    await this.clearCache();
     return subscription;
   }
 
@@ -141,7 +145,12 @@ class AdminSubscriptionsService {
     if (!subscription) {
       throw new CustomError(ErrorEnum[404], "Subscription not found", ErrorCodes.NOT_FOUND);
     }
+    await this.clearCache();
     return subscription;
+  }
+
+  private async clearCache() {
+    await CacheService.clearPattern("subscriptions:*");
   }
 }
 
