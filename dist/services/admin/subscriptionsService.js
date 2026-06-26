@@ -140,6 +140,7 @@ class AdminSubscriptionsService {
             if (data.duration !== undefined && data.duration !== null && Number(data.duration) < 1) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Invalid subscription duration", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            data.origin = ""; // Prevent setting the origin field
             const subscription = yield models_1.Subscription.create(data);
             yield this.clearCache();
             return subscription;
@@ -151,6 +152,7 @@ class AdminSubscriptionsService {
             if (!id) {
                 throw new CustomError_1.default(error_1.ErrorEnum[400], "Subscription ID is required", CustomError_1.ErrorCodes.BAD_REQUEST);
             }
+            data.origin = ""; // Prevent changing the origin field
             const subscription = yield models_1.Subscription.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean();
             if (!subscription) {
                 throw new CustomError_1.default(error_1.ErrorEnum[404], "Subscription not found", CustomError_1.ErrorCodes.NOT_FOUND);

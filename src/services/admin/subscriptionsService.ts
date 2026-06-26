@@ -105,6 +105,7 @@ class AdminSubscriptionsService {
         ErrorCodes.BAD_REQUEST
       );
     }
+    data.origin = ""; // Prevent setting the origin field
     const subscription = await Subscription.create(data);
     await this.clearCache();
     return subscription;
@@ -115,6 +116,7 @@ class AdminSubscriptionsService {
     if (!id) {
       throw new CustomError(ErrorEnum[400], "Subscription ID is required", ErrorCodes.BAD_REQUEST);
     }
+    data.origin = ""; // Prevent changing the origin field
     const subscription = await Subscription.findByIdAndUpdate(
       id,
       { $set: data },

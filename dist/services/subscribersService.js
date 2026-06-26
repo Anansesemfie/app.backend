@@ -50,7 +50,6 @@ const subscriptionsService_1 = __importDefault(require("./subscriptionsService")
 const helpers_1 = __importDefault(require("../utils/helpers"));
 const error_1 = require("../utils/error");
 const paystack_1 = __importDefault(require("../utils/paystack"));
-const env_1 = require("../utils/env");
 const CustomError_1 = __importStar(require("../utils/CustomError"));
 const dayjs_1 = __importDefault(require("dayjs"));
 const cacheService_1 = require("./utils/cacheService");
@@ -70,7 +69,7 @@ class SubscriberService {
             const subscription = {
                 parent,
                 active: false,
-                books: books.length > 0 ? books : (parentSubscription.books || []),
+                books: books.length > 0 ? books : parentSubscription.books || [],
                 ref: `temp(${helpers_1.default.genRandCode()})`,
                 user: user._id,
             };
@@ -79,7 +78,7 @@ class SubscriberService {
                 throw new CustomError_1.default(error_1.ErrorEnum[500], "Failed to create subscription", CustomError_1.ErrorCodes.INTERNAL_SERVER_ERROR);
             }
             yield cacheService_1.CacheService.clearPattern("subscribers:*");
-            const callback_url = `${env_1.APP_BASE_URL}/api/v1/subscribers/callback`;
+            // const callback_url = `${APP_BASE_URL}/api/v1/subscribers/callback`;
             if (parentSubscription.amount === 0) {
                 yield this.update({ active: true, activatedAt: helpers_1.default.currentTime() }, newSubscription._id);
                 this.logInfo = `${helpers_1.default.loggerInfo.success} creating start up subscription @ ${helpers_1.default.currentTime()}`;
@@ -98,7 +97,7 @@ class SubscriberService {
                         id: newSubscription._id,
                         duration: parentSubscription.duration,
                     },
-                }, callback_url);
+                });
                 yield this.update({ ref: paystackResponse.data.reference }, newSubscription._id);
                 this.logInfo = `${helpers_1.default.loggerInfo.success} creating subscription @ ${helpers_1.default.currentTime()}`;
                 return {
