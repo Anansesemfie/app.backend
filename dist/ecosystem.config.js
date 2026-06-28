@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "anansesemfie_api",
-      script: "index.js", // or index.js, dist/main.js, etc.
+      script: "./dist/index.js", // or index.js, dist/main.js, etc.
       interpreter: "node",
       instances: 1, // or "max" for cluster mode
       autorestart: true,
